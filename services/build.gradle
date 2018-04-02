@@ -1,0 +1,15 @@
+
+dependencies {
+    compile project(':commons')
+    compile project(':entities')
+
+    compile 'org.projectlombok:lombok'
+    compile group: 'org.apache.stratos', name: 'net.schmizz.sshj', version: '0.8.1'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.41'
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+}
