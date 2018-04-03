@@ -1,4 +1,4 @@
-package com.hitales.dao.ch.jyk.impl;
+package com.hitales.dao.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;

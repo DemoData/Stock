@@ -1,4 +1,4 @@
-package com.hitales.service.temp.impl;
+package com.hitales.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -7,8 +7,8 @@ import com.hitales.common.util.AnchorUtil;
 import com.hitales.common.util.PatternUtil;
 import com.hitales.common.util.StringUtil;
 import com.hitales.common.util.TimeUtil;
-import com.hitales.dao.temp.standard.ICHYXDao;
-import com.hitales.dao.temp.standard.PandianDao;
+import com.hitales.dao.standard.ICHYXDao;
+import com.hitales.dao.standard.PandianDao;
 import com.hitales.entity.MedicalContentSplitModel;
 import com.hitales.service.standard.IMedicalContentSplitService;
 import com.mongodb.BasicDBObject;

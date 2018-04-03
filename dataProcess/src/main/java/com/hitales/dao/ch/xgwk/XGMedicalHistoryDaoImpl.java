@@ -1,4 +1,4 @@
-package com.hitales.dao.ch.xgwk.impl;
+package com.hitales.dao.ch.xgwk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;

@@ -1,4 +1,4 @@
-package com.hitales.dao.temp.standard;
+package com.hitales.dao.standard;
 
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.mongodb.core.query.Query;

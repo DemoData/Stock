@@ -1,8 +1,8 @@
-package com.hitales.dao.temp.impl;
+package com.hitales.dao.ch;
 
-import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.constant.CommonConstant;
-import com.hitales.dao.temp.standard.ICHYXDao;
+import com.hitales.common.config.MysqlDataSourceConfig;
+import com.hitales.dao.standard.ICHYXDao;
 import com.hitales.entity.MedicalContentSplitModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

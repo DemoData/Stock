@@ -5,6 +5,9 @@ import com.hitales.entity.Inspection;
 
 import java.util.List;
 
+/**
+ * @author aron
+ */
 public interface IInspectionDao extends TextDao<Inspection> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);

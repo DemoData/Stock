@@ -1,8 +1,8 @@
-package com.hitales.dao.temp.impl;
+package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MongoDataSourceConfig;
-import com.hitales.dao.temp.standard.PandianDao;
+import com.hitales.dao.standard.PandianDao;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.hitales.dao.ch.xgwk.impl;
+package com.hitales.dao.ch.xgwk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
@@ -13,12 +13,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-@Repository("xgInspectionFSDao")
-public class XGInspectionFSDaoImpl extends BaseDao implements IInspectionDao {
+@Repository("xgInspectionCSXDDao")
+public class XGInspectionCSXDDaoImpl extends BaseDao implements IInspectionDao {
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select * from `放射`";
+        String sql = "select * from `超声心电`";
         return sql;
     }
 
@@ -44,7 +44,7 @@ public class XGInspectionFSDaoImpl extends BaseDao implements IInspectionDao {
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(id) from `放射`", Integer.class);
+        return getJdbcTemplate(dataSource).queryForObject("select count(id) from `超声心电`", Integer.class);
     }
 
     @Override
@@ -63,12 +63,9 @@ public class XGInspectionFSDaoImpl extends BaseDao implements IInspectionDao {
             inspection.setInHospitalDate(rs.getString("入院日期"));
             inspection.setOutHospitalDate(rs.getString("出院日期"));
             inspection.setInspectionType(rs.getString("检查类别"));
-            inspection.setClinicalDiagnosis(rs.getString("临床诊断"));
-            inspection.setApplyProjectName(rs.getString("检查项目名称"));
-            inspection.setInspectionType(rs.getString("检查方式"));
-            inspection.setReportClinical(rs.getString("报告诊断"));
-            inspection.setResultDesc(rs.getString("报告结论"));
-            inspection.setAbnormalFlag(rs.getString("是否阳性"));
+            inspection.setApplyProjectName(rs.getString("项目"));
+            inspection.setResultDesc(rs.getString("描述"));
+            inspection.setResultContent(rs.getString("检查结果"));
             inspection.setInspectionDate(rs.getString("检查时间"));
             inspection.setReportDate(rs.getString("报告时间"));
             return inspection;

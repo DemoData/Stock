@@ -1,4 +1,4 @@
-package com.hitales.service.impl;
+package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.util.TimeUtil;
@@ -30,11 +30,11 @@ public class PatientServiceImpl extends BaseService {
 
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    private String batchNo = "bdsz20180328";
-    //北京大学深圳医院﻿57b1e211d897cd373ec76dc6
-    private String hospitalId = "57b1e211d897cd373ec76dc6";
+    private String batchNo = "shtr20180402";
+    //﻿上海市长宁区同仁医院
+    private String hospitalId = "57b1e21fd897cd373ec7a0ed";
 
-    private String patientPrefix = "bdsz_";
+    private String patientPrefix = "shtr_";
 
     @Override
     public JSONObject bean2Json(Object entity) {

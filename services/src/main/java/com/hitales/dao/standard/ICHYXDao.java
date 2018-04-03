@@ -1,4 +1,4 @@
-package com.hitales.dao.temp.standard;
+package com.hitales.dao.standard;
 
 import com.hitales.entity.MedicalContentSplitModel;
 

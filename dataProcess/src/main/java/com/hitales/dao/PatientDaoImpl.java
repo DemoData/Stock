@@ -1,4 +1,4 @@
-package com.hitales.dao.impl;
+package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.SqlServerDataSourceConfig;
@@ -62,9 +62,9 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         }
         String sql = null;
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
-            sql = "select count(t.id) from Patient t";
+            sql = "select count(t.id) from shtr_patient_20180402 t";
         } else {
-            sql = "select count(t.病人ID号) from `患者基本信息` t";
+            sql = "select count(t.id) from shtr_patient_20180402 t";
         }
         return getJdbcTemplate(dataSource).queryForObject(sql, Integer.class);
     }
@@ -72,7 +72,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     @Override
     protected String generateQuerySql() {
 //        String sql = "select t.id AS 'id',CONCAT('shch_', t.`病人ID号`) AS 'patientId',t.`性别` AS 'sex',t.`就诊年龄` AS 'age',t.`就诊日期` AS 'clinicDate',CONCAT('',(LEFT(t.`就诊日期`,4) - t.`就诊年龄`)) AS 'birthDay' from `患者基本信息` t group by t.`病人ID号`";
-        String sql = "select * from `患者基本信息`";
+        String sql = "select * from shtr_patient_20180402";
         return sql;
     }
 
@@ -93,21 +93,15 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
             patient.setName(rs.getString("姓名"));*/
 
             patient.setId(rs.getInt("id"));
-            patient.setName(rs.getString("Name"));
-            patient.setPatientId(rs.getString("PID"));
+            patient.setName(rs.getString("name"));
+            patient.setPatientId(rs.getString("patientId"));
 
-            Object birthYear = rs.getObject("Birthyear");
-            patient.setBirthDay(birthYear == null ? "" : birthYear.toString().substring(0, 10));
+            Object birthYear = rs.getObject("birthday");
+            patient.setBirthDay(birthYear == null ? "" : birthYear.toString().substring(0, 8));
 
-            patient.setOrigin(rs.getString("Origin"));
-            patient.setMarriage(rs.getString("Marriage"));
-            patient.setAddress(rs.getString("Address"));
+//            patient.setAddress(rs.getString("Address"));
             patient.setSex(rs.getString("sex"));
 
-            /*patient.setSex(rs.getString("sex"));
-            patient.setAge(rs.getString("age"));
-            patient.setClinicDate(rs.getString("clinicDate"));
-            patient.setBirthDay(rs.getString("birthDay"));*/
             return patient;
         }
 
