@@ -1,7 +1,7 @@
 package com.hitales.functions.main;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.common.util.PatternUtil;
+import com.hitales.common.util.PatternUtil;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;

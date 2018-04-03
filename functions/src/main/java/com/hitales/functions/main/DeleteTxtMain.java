@@ -1,6 +1,6 @@
 package com.hitales.functions.main;
 
-import com.example.demo.util.FileUtil;
+import com.hitales.common.util.FileUtil;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -35,7 +35,18 @@ public class MysqlDataSourceConfig {
     public static final String MYSQL_XZDM_DATASOURCE = "mysql.xzdmDataSource";
     public static final String MYSQL_XZDM_TEMPLATE = "xzdmJdbcTemplate";
 
+    public static final String MYSQL_RK_PREFIX = "mysql.rk";
+    public static final String MYSQL_RK_DATASOURCE = "mysql.rk";
+    public static final String MYSQL_RK_TEMPLATE = "rkJdbcTemplate";
+
     @Primary
+    @Bean(name = MYSQL_RK_DATASOURCE)
+    @Qualifier(MYSQL_RK_DATASOURCE)
+    @ConfigurationProperties(prefix = MYSQL_RK_PREFIX)
+    public DataSource rkDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
     @Bean(name = MYSQL_YXZW_DATASOURCE)
     @Qualifier(MYSQL_YXZW_DATASOURCE)
     @ConfigurationProperties(prefix = MYSQL_YXZW_PREFIX)
@@ -97,6 +108,12 @@ public class MysqlDataSourceConfig {
 
     @Bean(name = MYSQL_XZDM_TEMPLATE)
     public JdbcTemplate xzdmJdbcTemplate(@Qualifier(MYSQL_XZDM_DATASOURCE) DataSource dataSource) {
+        log.info(dataSource.toString());
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean(name = MYSQL_RK_TEMPLATE)
+    public JdbcTemplate rkJdbcTemplate(@Qualifier(MYSQL_RK_DATASOURCE) DataSource dataSource) {
         log.info(dataSource.toString());
         return new JdbcTemplate(dataSource);
     }

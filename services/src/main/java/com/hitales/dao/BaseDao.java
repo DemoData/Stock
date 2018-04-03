@@ -54,6 +54,10 @@ public abstract class BaseDao extends GenericDao {
     @Qualifier(MongoDataSourceConfig.HRS_MONGO_TEMPLATE)
     protected MongoTemplate hrsMongoTemplate;
 
+    @Autowired
+    @Qualifier(MysqlDataSourceConfig.MYSQL_RK_TEMPLATE)
+    protected JdbcTemplate rkJdbcTemplate;
+
     protected static Map<String, JdbcTemplate> jdbcTemplatePool = new HashMap<>();
 
     protected JdbcTemplate getJdbcTemplate(String dataSource) {
@@ -69,6 +73,7 @@ public abstract class BaseDao extends GenericDao {
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_TNB_DATASOURCE, tnbJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_YX_DATASOURCE, yxJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_XZDM_DATASOURCE, xzdmJdbcTemplate);
+        jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_RK_DATASOURCE, rkJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_DATASOURCE, sqlJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_FS_DATASOURCE, fsJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_FS_MZ_DATASOURCE, fsmzJdbcTemplate);

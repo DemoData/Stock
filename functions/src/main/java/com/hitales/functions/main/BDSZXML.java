@@ -1,6 +1,6 @@
 package com.hitales.functions.main;
 
-import com.example.demo.common.support.TextFormatter;
+import com.hitales.common.support.TextFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;

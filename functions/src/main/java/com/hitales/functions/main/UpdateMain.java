@@ -1,7 +1,7 @@
 package com.hitales.functions.main;
 
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.util.FileUtil;
+import com.hitales.common.util.FileUtil;
 import com.mongodb.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
