@@ -7,6 +7,7 @@ import com.hitales.dao.TextDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.util.StringUtils;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +61,7 @@ public abstract class TextService<T> extends BaseService {
                 //移除id,添加string类型_id
                 JSONObject jsonObject = bean2Json(record);
                 jsonObject.remove("id");
+                jsonObject.remove("reportDate");
                 jsonObject.put("_id", new ObjectId().toString());
                 jsonList.add(jsonObject);
             }
@@ -85,6 +87,10 @@ public abstract class TextService<T> extends BaseService {
      * @return
      */
     protected boolean validateRecord(Record record) {
+        String patientId = record.getPatientId();
+        if (StringUtils.isEmpty(patientId)) {
+            return false;
+        }
         return true;
     }
 

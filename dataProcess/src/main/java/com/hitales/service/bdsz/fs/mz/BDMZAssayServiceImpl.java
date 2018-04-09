@@ -26,14 +26,10 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
     @Qualifier("patientDao")
     IPatientDao patientDao;
 
-    private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
-
-    private List<JSONObject> newPatients = new ArrayList<>();
-
     @Override
     protected void initRecordBasicInfo(Record record) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
-        record.setBatchNo("bdsz20180328");
+        record.setBatchNo("bdsz2018032801");
         record.setDepartment("风湿免疫科");
         record.setFormat("table");
         record.setDeleted(false);
@@ -65,7 +61,7 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
                 if (result == null) {
                     JSONObject jsonObj = new JSONObject();
                     jsonObj.put(Patient.ColumnMapping.ID.value(), pid);
-                    jsonObj.put(Patient.ColumnMapping.BATCH_NO.value(), "bdsz20180328");
+                    jsonObj.put(Patient.ColumnMapping.BATCH_NO.value(), "bdsz2018032801");
                     jsonObj.put(Patient.ColumnMapping.HOSPITAL_ID.value(), "57b1e211d897cd373ec76dc6");
                     jsonObj.put(Patient.ColumnMapping.CREATE_TIME.value(), currentTimeMillis);
                     jsonObj.put(Patient.ColumnMapping.SEX.value(), EMPTY_FLAG);

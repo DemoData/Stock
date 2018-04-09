@@ -21,8 +21,8 @@ public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder> {
     private IMedicalOrderDao medicalOrderDao;
 
     @Override
-    protected String getArrayCondition(Record record) {
-        return record.getPatientId();
+    protected String[] getArrayCondition(Record record) {
+        return new String[]{record.getPatientId()};
     }
 
     @Override

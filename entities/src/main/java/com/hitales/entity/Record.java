@@ -29,6 +29,7 @@ public class Record {
     private String source;
     private String status;
     private Long createTime;
+    private String reportDate;//化验报告日期
 
     public Record() {
         initial();

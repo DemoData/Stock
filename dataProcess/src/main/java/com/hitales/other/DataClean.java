@@ -7,6 +7,7 @@ import com.hitales.common.support.MappingMatch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -27,48 +28,62 @@ public class DataClean {
     protected MongoTemplate hrsMongoTemplate;
 
     public void cleanData() {
-        Query query = new Query();
-//        query.with(new PageRequest(pageNum, PAGE_SIZE));
-        query.addCriteria(Criteria.where("batchNo").is("shch20180309"));
-        query.addCriteria(Criteria.where("recordType").in("入院记录", "出院记录"));
-        List<JSONObject> jsonObjects = hrsMongoTemplate.find(query, JSONObject.class, "Record");
-        log.info("jsonObjects:" + jsonObjects.size());
-        List<Mapping> mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+        int pageNum = 0;
+        int count = 0;
+        boolean isFinished = false;
+        while (!isFinished) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("batchNo").is("shch20180309"));
+            query.addCriteria(Criteria.where("sourceRecordType").ne(""));
+            query.addCriteria(Criteria.where("recordType").is("手术操作记录"));
+            log.info(">>>>>>>>> pageNum:" + pageNum);
+            query.with(new PageRequest(pageNum, 5000));
+            //分页
+            List<JSONObject> jsonObjects = hrsMongoTemplate.find(query, JSONObject.class, "Record");
+            log.info(">>>>>>>>> found jsonObjects:" + jsonObjects.size());
 
-        if (mapping == null || mapping.isEmpty()) {
-            MappingMatch.addMappingRule(hrsMongoTemplate);
-            mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
-        }
-
-        Long count = 0L;
-
-        for (JSONObject item : jsonObjects) {
-            JSONObject info = item.getJSONObject("info");
-            String dbRecordType = item.getString("recordType");
-            if (info == null) {
-                log.error("info is null ,_id: " + item.get("_id"));
-                continue;
+            if (jsonObjects.size() < 5000) {
+                isFinished = true;
             }
-            String textARS = info.getString("textARS");
-            if (textARS == null || "".equals(textARS)) {
-                log.error("textARS is null ,_id: " + item.get("_id"));
-                continue;
+
+            List<Mapping> mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+
+            if (mapping == null || mapping.isEmpty()) {
+                MappingMatch.addMappingRule(hrsMongoTemplate);
+                mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
             }
-            textARS = textARS.replaceAll("[　*| *| *|\\s*]*", "");
 
-            textARS = textARS.length() > 35 ? textARS.substring(0, 35) : textARS;
-            String mappedValue = MappingMatch.getMappedValue(mapping, textARS);
+            for (JSONObject item : jsonObjects) {
+                JSONObject info = item.getJSONObject("info");
+                String dbRecordType = item.getString("recordType");
+                String dbSubRecordType = item.getString("subRecordType");
+                if (info == null) {
+                    log.error("info is null ,_id: " + item.get("_id"));
+                    continue;
+                }
+                String textARS = info.getString("textARS");
+                if (textARS == null || "".equals(textARS)) {
+                    log.error("textARS is null ,_id: " + item.get("_id"));
+                    continue;
+                }
+                textARS = textARS.replaceAll("[　*| *| *|\\s*]*", "");
 
-            String[] types = mappedValue.split("-");
+                textARS = textARS.length() > 35 ? textARS.substring(0, 35) : textARS;
+                String mappedValue = MappingMatch.getMappedValue(mapping, textARS);
 
-            if (dbRecordType.equals(types[0])) {
-                continue;
+                String[] types = mappedValue.split("-");
+
+                //过滤掉出入院
+                if (dbSubRecordType.equals(types[1]) || "入院记录".equals(types[0]) || "出院记录".equals(types[0])) {
+                    continue;
+                }
+                item.put("recordType", types[0]);
+                item.put("subRecordType", types[1]);
+                hrsMongoTemplate.save(item, "Record");
+                log.info("updated old type:" + dbSubRecordType + ",new: " + types[1] + ",_id:" + item.get("_id"));
+                count++;
             }
-            item.put("recordType", types[0]);
-            item.put("subRecordType", types[1]);
-            hrsMongoTemplate.save(item, "Record");
-            log.info("update,_id:" + item.get("_id"));
-            count++;
+            pageNum++;
         }
         /*Query updateQuery = new Query();
         updateQuery.addCriteria(Criteria.where("_id").in());

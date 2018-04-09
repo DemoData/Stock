@@ -2,6 +2,7 @@ package com.hitales.service.bdsz.zl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
+import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.TableDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Assay;
@@ -26,8 +27,8 @@ public class BDZLAssayServiceImpl extends TableService<Assay> {
     private IAssayDao assayDao;
 
     @Override
-    protected String getArrayCondition(Record record) {
-        return record.getGroupRecordName();
+    protected String[] getArrayCondition(Record record) {
+        return new String[]{record.getId()};
     }
 
     @Override
@@ -63,7 +64,7 @@ public class BDZLAssayServiceImpl extends TableService<Assay> {
      */
     protected void initRecordBasicInfo(Record record) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
-        record.setBatchNo("bdsz20180320");
+        record.setBatchNo("bdsz2018032001");
         record.setDepartment("肿瘤内科");
         record.setFormat("table");
         record.setDeleted(false);
@@ -72,6 +73,7 @@ public class BDZLAssayServiceImpl extends TableService<Assay> {
         record.setRecordType("化验记录");
         record.setSubRecordType("化验");
         record.setPatientId(StringUtils.isEmpty(record.getPatientId()) ? CommonConstant.EMPTY_FLAG : "bdsz_" + record.getPatientId());
+        record.setCreateTime(currentTimeMillis);
     }
 
     protected void initInfoArray(Record record, List<Assay> assayList) {

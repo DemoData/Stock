@@ -14,10 +14,11 @@ import java.util.Map;
 @Service("bdfsAssayService")
 public class BDFSAssayServiceImpl extends BDZLAssayServiceImpl {
 
+
     @Override
     protected void initRecordBasicInfo(Record record) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
-        record.setBatchNo("bdsz20180328");
+        record.setBatchNo("bdsz2018032801");
         record.setDepartment("风湿免疫科");
         record.setFormat("table");
         record.setDeleted(false);
@@ -26,6 +27,7 @@ public class BDFSAssayServiceImpl extends BDZLAssayServiceImpl {
         record.setRecordType("化验记录");
         record.setSubRecordType("化验");
         record.setPatientId(StringUtils.isEmpty(record.getPatientId()) ? CommonConstant.EMPTY_FLAG : "bdsz_" + record.getPatientId());
+        record.setCreateTime(currentTimeMillis);
     }
 
     @Override

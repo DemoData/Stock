@@ -1,5 +1,6 @@
 package com.hitales.service.ch.xgwk;
 
+import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.TableDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Assay;
@@ -23,15 +24,17 @@ public class XGAssayServiceImpl extends TableService<Assay> {
     @Qualifier("xgAssayDao")
     private IAssayDao assayDao;
 
-    @Override
-    protected String getArrayCondition(Record record) {
-        String patientId = record.getPatientId();
+    private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-        if (StringUtils.isBlank(patientId)) {
+    @Override
+    protected String[] getArrayCondition(Record record) {
+        String groupRecordName = record.getGroupRecordName();
+        String reportDate = record.getReportDate();
+        if (StringUtils.isBlank(groupRecordName)) {
             log.error("getArrayCondition(): patientId is null");
             return null;
         }
-        return patientId;
+        return new String[]{groupRecordName, reportDate};
     }
 
     @Override
@@ -51,7 +54,7 @@ public class XGAssayServiceImpl extends TableService<Assay> {
      */
     protected void initRecordBasicInfo(Record record) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setBatchNo("shch20180315");
+        record.setBatchNo("shch20180316");
         record.setDepartment("血管外科");
         record.setFormat("table");
         record.setDeleted(false);
@@ -61,6 +64,7 @@ public class XGAssayServiceImpl extends TableService<Assay> {
         record.setSubRecordType("化验");
         record.setPatientId("shch_" + record.getPatientId());
         record.setOrgOdCategories(new String[]{});
+        record.setCreateTime(currentTimeMillis);
     }
 
     protected void initInfoArray(Record record, List<Assay> assayList) {
@@ -81,6 +85,5 @@ public class XGAssayServiceImpl extends TableService<Assay> {
             detailArray.add(map);
         }
     }
-
 
 }

@@ -2,6 +2,7 @@ package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MysqlDataSourceConfig;
+import com.hitales.common.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -18,7 +19,12 @@ public abstract class BaseService extends GenericService {
     @Value("${page.size}")
     private int pageSize;
     @Value("${datasource.list}")
-    private List<String> dataSourceList;
+    private String dataSourceList;
+
+    /**
+     * 用于createTime
+     */
+    protected Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
     /**
      * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
@@ -28,8 +34,10 @@ public abstract class BaseService extends GenericService {
     @Override
     public boolean processData() {
         try {
+            String dataSourceList = getDataSourceList();
+            String[] dataSourceArray = dataSourceList.split(",");
             //execute data process in every dataSource
-            for (String dataSource : getDataSourceList()) {
+            for (String dataSource : dataSourceArray) {
                 this.process(dataSource);
             }
             //处理结束
@@ -127,11 +135,11 @@ public abstract class BaseService extends GenericService {
         this.pageSize = pageSize;
     }
 
-    public List<String> getDataSourceList() {
+    public String getDataSourceList() {
         return dataSourceList;
     }
 
-    public void setDataSourceList(List<String> dataSourceList) {
+    public void setDataSourceList(String dataSourceList) {
         this.dataSourceList = dataSourceList;
     }
 

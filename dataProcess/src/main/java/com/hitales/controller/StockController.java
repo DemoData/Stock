@@ -55,7 +55,7 @@ public class StockController {
 
     @GetMapping("/dataClean")
     public String dataClean() {
-        dataClean.updateRecordTypeByAnchor();
+        dataClean.cleanData();
         return SUCCESS_FLAG;
     }
 

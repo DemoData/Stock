@@ -51,11 +51,11 @@ public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
     }
 
     @Override
-    public List<MedicalOrder> findArrayListByCondition(String dataSource, String condition) {
-        log.debug("findArrayList(): condition: " + condition);
+    public List<MedicalOrder> findArrayListByCondition(String dataSource, String... params) {
+        log.debug("findArrayList(): params: " + params[0]);
         String sql = "select `类型` AS 'type' , `长/临` AS 'timeType',`内容` AS 'content',`剂量` AS 'dosage',`单位` AS 'unit',`途径` AS 'approach',`频次` AS 'frequency',`开始时间` AS 'startDate',`停止时间` AS 'endDate' from 医嘱 where 病人ID号 =?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(MedicalOrder.class), condition);
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(MedicalOrder.class), params[0]);
     }
 
     class MedicalOrderRowMapper implements RowMapper<Record> {

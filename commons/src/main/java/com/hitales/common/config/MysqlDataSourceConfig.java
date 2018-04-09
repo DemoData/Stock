@@ -35,6 +35,10 @@ public class MysqlDataSourceConfig {
     public static final String MYSQL_XZDM_DATASOURCE = "mysql.xzdmDataSource";
     public static final String MYSQL_XZDM_TEMPLATE = "xzdmJdbcTemplate";
 
+    public static final String MYSQL_GA_PREFIX = "mysql.ganai";
+    public static final String MYSQL_GA_DATASOURCE = "mysql.gaDataSource";
+    public static final String MYSQL_GA_TEMPLATE = "gaJdbcTemplate";
+
     public static final String MYSQL_RK_PREFIX = "mysql.rk";
     public static final String MYSQL_RK_DATASOURCE = "mysql.rk";
     public static final String MYSQL_RK_TEMPLATE = "rkJdbcTemplate";
@@ -75,6 +79,13 @@ public class MysqlDataSourceConfig {
         return DataSourceBuilder.create().build();
     }
 
+    @Bean(name = MYSQL_GA_DATASOURCE)
+    @Qualifier(MYSQL_GA_DATASOURCE)
+    @ConfigurationProperties(prefix = MYSQL_GA_PREFIX)
+    public DataSource gaDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
     @Bean(name = MYSQL_XZDM_DATASOURCE)
     @Qualifier(MYSQL_XZDM_DATASOURCE)
     @ConfigurationProperties(prefix = MYSQL_XZDM_PREFIX)
@@ -108,6 +119,12 @@ public class MysqlDataSourceConfig {
 
     @Bean(name = MYSQL_XZDM_TEMPLATE)
     public JdbcTemplate xzdmJdbcTemplate(@Qualifier(MYSQL_XZDM_DATASOURCE) DataSource dataSource) {
+        log.info(dataSource.toString());
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean(name = MYSQL_GA_TEMPLATE)
+    public JdbcTemplate gaJdbcTemplate(@Qualifier(MYSQL_GA_DATASOURCE) DataSource dataSource) {
         log.info(dataSource.toString());
         return new JdbcTemplate(dataSource);
     }

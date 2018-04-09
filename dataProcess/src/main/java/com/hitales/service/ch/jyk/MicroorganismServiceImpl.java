@@ -23,8 +23,8 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
     IMicroorganismDao microorganismDao;
 
     @Override
-    protected String getArrayCondition(Record record) {
-        return record.getId();
+    protected String[] getArrayCondition(Record record) {
+        return new String[]{record.getId()};
     }
 
     @Override

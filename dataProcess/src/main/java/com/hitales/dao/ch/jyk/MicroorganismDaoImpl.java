@@ -25,11 +25,11 @@ public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao {
     }
 
     @Override
-    public List<Microorganism> findArrayListByCondition(String dataSource, String applyId) {
-        log.debug("findMicroorganismByApplyId(): 查找微生物报告通过检验申请号: " + applyId);
+    public List<Microorganism> findArrayListByCondition(String dataSource, String... params) {
+        log.debug("findMicroorganismByApplyId(): 查找微生物报告通过检验申请号: " + params[0]);
         String sql = "select `一次就诊号` AS 'groupRecordName',`检验方法编码` AS 'validateMethodCode',`检验时间` AS 'checkDate',`检验申请号` AS 'checkApplyNo',`微生物代码` AS 'microorganismCode',`微生物培养结果` AS 'microorganismGrowResult',`检验值` AS 'checkValue',`检验结果` AS 'checkResult',`抗生素名称` AS 'antibioticName',`微生物名称` AS 'microorganismName',`项目名称` AS 'projectName',`备注` AS 'remark' from `微生物报告明细` where `检验申请号`=? ";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        List<Microorganism> Microorganisms = jdbcTemplate.query(sql, new BeanPropertyRowMapper(Microorganism.class), applyId);
+        List<Microorganism> Microorganisms = jdbcTemplate.query(sql, new BeanPropertyRowMapper(Microorganism.class), params[0]);
         return Microorganisms;
     }
 

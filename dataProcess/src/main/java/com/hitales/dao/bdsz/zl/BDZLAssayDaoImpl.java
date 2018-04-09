@@ -5,6 +5,7 @@ import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Assay;
+import com.hitales.entity.AssayApply;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -40,7 +41,7 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     public List<Record> findRecord(String dataSource, int pageNum, int pageSize) {
 //        return super.queryForListInSqlServer(getJdbcTemplate(dataSource), pageNum, pageSize, "TM_LAB_ROUTINE_RESULT", "GROUPRECORDNAME", "group by GROUPRECORDNAME");
         //TODO: sqlserver 分组无法通过id分页问题
-        return getJdbcTemplate(dataSource).query("select PID,GROUPRECORDNAME from TM_LAB_ROUTINE_RESULT group by GROUPRECORDNAME,PID", this.generateRowMapper());
+        return getJdbcTemplate(dataSource).query("select PID,RID,GROUPRECORDNAME from TM_LAB_ROUTINE_RESULT group by PID,RID,GROUPRECORDNAME", this.generateRowMapper());
     }
 
     @Override
@@ -64,11 +65,11 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public List<Assay> findArrayListByCondition(String dataSource, String condition) {
-        log.debug("findArrayListByCondition(): condition: " + condition);
-        String sql = "select PID AS 'patientId', ITEM_CH_NAME AS 'assayName', ITEM_TIME AS 'assayTime',ITEM_RESULT_DES_CODE AS 'resultFlag',ITEM_RESULT_DES_NAME AS 'assayResult',ITEM_RESULT_NUM AS 'assayValue',ITEM_RESULT_UNIT AS 'assayUnit',RESULT_REFERENCE AS 'referenceRange' from TM_LAB_ROUTINE_RESULT where GROUPRECORDNAME =?";
+    public List<Assay> findArrayListByCondition(String dataSource, String... params) {
+        log.debug("findArrayListByCondition(): params: " + params[0]);
+        String sql = "select PID AS 'patientId', ITEM_CH_NAME AS 'assayName', ITEM_TIME AS 'assayTime',ITEM_RESULT_DES_CODE AS 'resultFlag',ITEM_RESULT_DES_NAME AS 'assayResult',ITEM_RESULT_NUM AS 'assayValue',ITEM_RESULT_UNIT AS 'assayUnit',RESULT_REFERENCE AS 'referenceRange' from TM_LAB_ROUTINE_RESULT where RID =?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(Assay.class), condition);
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(Assay.class), params[0]);
     }
 
     @Override
@@ -91,28 +92,44 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
         return result.get("PID").toString();
     }
 
+    @Override
+    public List<AssayApply> findBasicArrayByCondition(String dataSource, String applyId) {
+        return null;
+    }
+
     class AssayRowMapper implements RowMapper<Record> {
 
         @Override
         public Record mapRow(ResultSet rs, int rowNum) throws SQLException {
             Record record = new Record();
             Object pid = rs.getObject("PID");
-
-            if (pid != null && !(pid instanceof String) && pid.toString().indexOf(".") > 0 && pid.toString().indexOf("E") > 0) {
+            if (pid == null) {
+                pid = CommonConstant.EMPTY_FLAG;
+            }
+            if (!(pid instanceof String) && pid.toString().indexOf(".") > 0 && pid.toString().indexOf("E") > 0) {
                 pid = new BigDecimal(pid.toString()).toPlainString();
+            } else if (pid.toString().indexOf(".") > 0) {
+                pid = pid.toString().substring(0, pid.toString().indexOf("."));
             } else {
-                pid = pid != null ? pid.toString().substring(0, pid.toString().indexOf(".")) : CommonConstant.EMPTY_FLAG;
+                pid = pid.toString();
             }
 
             Object groupRecordName = rs.getObject("GROUPRECORDNAME");
-            if (groupRecordName != null && !(groupRecordName instanceof String) && groupRecordName.toString().indexOf(".") > 0 && groupRecordName.toString().indexOf("E") > 0) {
-                groupRecordName = new BigDecimal(groupRecordName.toString()).toPlainString();
-            } else {
-                groupRecordName = groupRecordName != null ? groupRecordName.toString().substring(0, groupRecordName.toString().indexOf(".")) : CommonConstant.EMPTY_FLAG;
+            if (groupRecordName == null) {
+                groupRecordName = CommonConstant.EMPTY_FLAG;
             }
+            if (!(groupRecordName instanceof String) && groupRecordName.toString().indexOf(".") > 0 && groupRecordName.toString().indexOf("E") > 0) {
+                groupRecordName = new BigDecimal(groupRecordName.toString()).toPlainString();
+            } else if (groupRecordName.toString().indexOf(".") > 0) {
+                groupRecordName = groupRecordName.toString().substring(0, groupRecordName.toString().indexOf("."));
+            } else {
+                groupRecordName = groupRecordName.toString();
+            }
+
             record.setPatientId(pid.toString());
             record.setSourceId(groupRecordName.toString());
             record.setGroupRecordName(groupRecordName.toString());
+            record.setId(rs.getString("RID"));
             return record;
         }
     }

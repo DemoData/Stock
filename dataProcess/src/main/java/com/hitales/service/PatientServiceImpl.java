@@ -30,7 +30,7 @@ public class PatientServiceImpl extends BaseService {
 
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    private String batchNo = "shtr20180402";
+    private String batchNo = "shtr2018040201";
     //﻿上海市长宁区同仁医院
     private String hospitalId = "57b1e21fd897cd373ec7a0ed";
 

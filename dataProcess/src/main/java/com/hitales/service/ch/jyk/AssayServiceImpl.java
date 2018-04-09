@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.TableDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Assay;
+import com.hitales.entity.AssayApply;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +27,15 @@ public class AssayServiceImpl extends TableService<Assay> {
     private IAssayDao assayDao;
 
     @Override
-    protected String getArrayCondition(Record record) {
+    protected String[] getArrayCondition(Record record) {
         //这里是检验申请号
-        return record.getId();
+        return new String[]{record.getId()};
     }
 
     @Override
     protected void customProcess(Record record, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
+        initBasicInfo(record, dataSource);
+
         String groupRecordName = record.getGroupRecordName();
         if (StringUtils.isEmpty(groupRecordName)) {
             return;
@@ -48,6 +52,32 @@ public class AssayServiceImpl extends TableService<Assay> {
 
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
         record.setPatientId(patientCaches.get(groupRecordName));
+    }
+
+    @Override
+    protected void initBasicInfo(Record record, String dataSource) {
+        List<AssayApply> applyList = assayDao.findBasicArrayByCondition(dataSource, record.getId());
+        if (applyList == null || applyList.isEmpty()) {
+            return;
+        }
+        JSONObject basicInfo = record.getInfo().getJSONObject("basicInfo");
+        //init detail array
+        List<String> names = new ArrayList<>();
+        for (AssayApply assayApply : applyList) {
+            if (StringUtils.isEmpty(assayApply.getAssayName())) {
+                log.info("initBasicInfo(): assay name is empty:" + assayApply.toString());
+                continue;
+            }
+            names.add(assayApply.getAssayName());
+        }
+        basicInfo.put(AssayApply.ColumnMapping.ASSAY_NAME.value(), names.toArray(new String[]{}));
+        AssayApply assayApply = applyList.get(0);
+        basicInfo.put(AssayApply.ColumnMapping.APPLY_DATE.value(), assayApply.getApplyDate() == null ? EMPTY_FLAG : assayApply.getApplyDate());
+        basicInfo.put(AssayApply.ColumnMapping.APPLY_ID.value(), assayApply.getApplyId() == null ? EMPTY_FLAG : assayApply.getApplyId());
+        basicInfo.put(AssayApply.ColumnMapping.SPECIMEN.value(), assayApply.getSpecimen() == null ? EMPTY_FLAG : assayApply.getSpecimen());
+        basicInfo.put(AssayApply.ColumnMapping.STATE_NAME.value(), assayApply.getStateName() == null ? EMPTY_FLAG : assayApply.getStateName());
+        basicInfo.put(AssayApply.ColumnMapping.SUB_ITEM_EN_CODE.value(), assayApply.getSubItemEnCode() == null ? EMPTY_FLAG : assayApply.getSubItemEnCode());
+        basicInfo.put(AssayApply.ColumnMapping.SUB_ITEM_EN_NAME.value(), assayApply.getSubItemEnName() == null ? EMPTY_FLAG : assayApply.getSubItemEnName());
     }
 
     @Override
@@ -68,7 +98,7 @@ public class AssayServiceImpl extends TableService<Assay> {
     protected void initRecordBasicInfo(Record record) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
         record.setUserId("5a7c0adcc2f9c4944dd2b070");
-        record.setBatchNo("shch20180309");
+        record.setBatchNo("shch2018040801");
         record.setDepartment("检验科");
         record.setFormat("table");
         record.setDeleted(false);
@@ -76,6 +106,7 @@ public class AssayServiceImpl extends TableService<Assay> {
         record.setStatus("AMD识别完成");
         record.setRecordType("化验记录");
         record.setSubRecordType("化验");
+        record.setCreateTime(currentTimeMillis);
     }
 
     protected void initInfoArray(Record record, List<Assay> assayList) {
@@ -99,6 +130,15 @@ public class AssayServiceImpl extends TableService<Assay> {
             map.put(Assay.ColumnMapping.ASSAY_METHODNAME.value(), assay.getAssayMethodName() == null ? EMPTY_FLAG : assay.getAssayMethodName());
             detailArray.add(map);
         }
+    }
+
+    protected boolean validateRecord(Record record) {
+        List<Map<String, String>> detailArray = record.getInfo().getObject("detailArray", List.class);
+        if (detailArray == null || detailArray.isEmpty()) {
+            log.info("validateRecord(): detailArray is empty:" + record.toString());
+            return false;
+        }
+        return true;
     }
 
 }

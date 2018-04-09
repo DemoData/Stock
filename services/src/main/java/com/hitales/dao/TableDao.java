@@ -15,5 +15,5 @@ public interface TableDao<T> {
 
     List<Record> findRecord(String dataSource, int pageNum, int pageSize);
 
-    List<T> findArrayListByCondition(String dataSource, String condition);
+    List<T> findArrayListByCondition(String dataSource, String... params);
 }

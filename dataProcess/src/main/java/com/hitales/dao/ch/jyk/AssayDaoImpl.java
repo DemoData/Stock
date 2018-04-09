@@ -5,6 +5,7 @@ import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Assay;
+import com.hitales.entity.AssayApply;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,7 +26,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(t.`检验申请号`) from (select `检验申请号` from `检验报告明细` GROUP BY `检验申请号`) t", Integer.class);
+        return getJdbcTemplate(dataSource).queryForObject("select count(t.`检验申请号`) from (select `检验申请号` from `化验申请单` GROUP BY `检验申请号`,`一次就诊号`) t", Integer.class);
     }
 
     @Override
@@ -34,11 +35,19 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public List<Assay> findArrayListByCondition(String dataSource, String applyId) {
-        log.debug("findAssaysByApplyId(): 查找化验报告通过检验申请号: " + applyId);
+    public List<Assay> findArrayListByCondition(String dataSource, String... params) {
+        log.debug("findAssaysByApplyId(): 查找化验报告通过检验申请号: " + params[0]);
         String sql = "select t.`检验时间` AS 'assayTime',t.`项目名称` AS 'assayName',t.`结果正常标志` AS 'resultFlag',t.`检验结果` AS 'assayResult',t.`检验值` AS 'assayValue',t.`单位` AS 'assayUnit',t.`标本` AS 'assaySpecimen',t.`参考范围` AS 'referenceRange',t.`检验状态` AS 'assayState',t.`检验方法名称` AS 'assayMethodName' from `检验报告明细` t where t.`检验申请号`=?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        List<Assay> assays = jdbcTemplate.query(sql, new BeanPropertyRowMapper(Assay.class), applyId);
+        List<Assay> assays = jdbcTemplate.query(sql, new BeanPropertyRowMapper(Assay.class), params[0]);
+        return assays;
+    }
+
+    @Override
+    public List<AssayApply> findBasicArrayByCondition(String dataSource, String applyId) {
+        String sql = "select t.`一次就诊号` AS 'groupRecordName',t.`检验申请号` AS 'applyId',t.`项目名称` AS 'assayName',t.`申请时间` AS 'applyDate',t.`标本` AS 'specimen',t.`检验子项英文名` AS 'subItemEnName',t.`检验子项目编码` AS 'subItemEnCode' from `化验申请单` t where t.`检验申请号`=?";
+        JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
+        List<AssayApply> assays = jdbcTemplate.query(sql, new BeanPropertyRowMapper(AssayApply.class), applyId);
         return assays;
     }
 
@@ -52,7 +61,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
     @Override
     public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
         String sql = "select t.`诊断名称` from `诊断信息` t where t.`一次就诊号`= ? group by t.`诊断名称`";
-        return super.findOrgOdCatByGroupRecordName(sql,dataSource, groupRecordName);
+        return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }
 
     @Override
@@ -83,7 +92,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select t.`一次就诊号` AS 'groupRecordName',t.`检验申请号` AS 'applyId' from `检验报告明细` t GROUP BY t.`检验申请号` ";
+        String sql = "select t.`一次就诊号` AS 'groupRecordName',t.`检验申请号` AS 'applyId' from `化验申请单` t GROUP BY t.`检验申请号`,`一次就诊号` ";
         return sql;
     }
 
@@ -100,9 +109,18 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
         @Override
         public Record mapRow(ResultSet rs, int rowNum) throws SQLException {
             Record record = new Record();
+            /*AssayApply assayApply = new AssayApply();
+            assayApply.setGroupRecordName(rs.getString("groupRecordName"));
+            assayApply.setApplyId(rs.getString("applyId"));
+            assayApply.setAssayName(rs.getString("assayName"));
+            assayApply.setApplyDate(rs.getString("applyDate"));
+            assayApply.setSpecimen(rs.getString("specimen"));
+            assayApply.setSubItemEnName(rs.getString("subItemEnName"));
+            assayApply.setSubItemEnCode(rs.getString("subItemEnCode"));
+            assayApply.setId(rs.getString("id"));*/
             record.setGroupRecordName(rs.getString("groupRecordName"));
-            record.setId(rs.getString("applyId"));
             record.setSourceId(rs.getString("applyId"));
+            record.setId(rs.getString("applyId"));
             return record;
         }
     }
