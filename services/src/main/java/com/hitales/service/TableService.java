@@ -6,12 +6,12 @@ import com.hitales.dao.TableDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public abstract class TableService<T> extends BaseService {
@@ -43,37 +43,48 @@ public abstract class TableService<T> extends BaseService {
             List<JSONObject> jsonList = new ArrayList<>();
             //遍历record
             for (Record record : orderList) {
-                record.setOdCategories(new String[]{getOdCategory(dataSource)});
-                record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
-
-                initBasicInfo(record, dataSource);
-                initRecordBasicInfo(record);
-
+                log.debug(record.toString());
+                initial(record, dataSource);
                 customProcess(record, orgOdCatCaches, patientCaches, dataSource);
-
-                //查找医嘱通过patientId
-                initInfoArray(record, currentDao().findArrayListByCondition(dataSource, getArrayCondition(record)));
                 //校验Record,不满足则跳过
                 if (!validateRecord(record)) {
                     continue;
                 }
-                //移除id,添加string类型_id
-                JSONObject jsonObject = bean2Json(record);
-                jsonObject.remove("id");
-                jsonObject.remove("reportDate");
-                jsonObject.put("_id", new ObjectId().toString());
-                jsonList.add(jsonObject);
+                postProcess(record, jsonList);
             }
             if (orgOdCatCaches.size() > 50000) {
                 orgOdCatCaches.clear();
             }
-            postProcess(jsonList, orgOdCatCaches, patientCaches, dataSource);
+            finalProcess(jsonList, orgOdCatCaches, patientCaches, dataSource);
             count += jsonList.size();
             log.info("inserting record total count: " + jsonList.size());
             batchInsert(jsonList);
             pageNum++;
         }
         log.info(">>>>>>>>>>>total inserted records: " + count + " from " + dataSource);
+    }
+
+    private void postProcess(Record record, List<JSONObject> jsonList) {
+        //移除id,添加string类型_id
+        JSONObject jsonObject = bean2Json(record);
+        jsonObject.remove("id");
+        jsonObject.remove("reportDate");
+        jsonObject.put("_id", new ObjectId().toString());
+        jsonList.add(jsonObject);
+    }
+
+    private void initial(Record record, String dataSource) {
+        initRecordBasicColumn(record);
+
+        record.setOdCategories(new String[]{getOdCategory(dataSource)});
+        record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
+
+        customInitInfo(record);
+
+        initBasicInfo(record, dataSource);
+
+        //设置detailArray值
+        initInfoArray(record, currentDao().findArrayListByCondition(dataSource, getArrayCondition(record)));
     }
 
     protected void batchInsert(List<JSONObject> jsonList) {
@@ -112,6 +123,10 @@ public abstract class TableService<T> extends BaseService {
         if (StringUtils.isEmpty(patientId)) {
             return false;
         }
+        String groupRecordName = record.getGroupRecordName();
+        if (StringUtils.isEmpty(groupRecordName)) {
+            return false;
+        }
         return true;
     }
 
@@ -125,7 +140,7 @@ public abstract class TableService<T> extends BaseService {
 
     }
 
-    protected void postProcess(List<JSONObject> jsonList, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
+    protected void finalProcess(List<JSONObject> jsonList, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
     }
 
     protected abstract String[] getArrayCondition(Record record);
@@ -139,13 +154,44 @@ public abstract class TableService<T> extends BaseService {
         return currentDao().getCount(dataSource);
     }
 
-
     /**
-     * Set Record basic info
+     * Set Record basic column
      *
      * @param record
      */
-    protected abstract void initRecordBasicInfo(Record record);
+    protected void initRecordBasicColumn(Record record) {
+        Record basicInfo = getBasicInfo();
+        if (basicInfo == null) {
+            return;
+        }
+        BeanUtils.copyProperties(basicInfo, record, getNullPropertyNames(basicInfo));
+        record.setCreateTime(currentTimeMillis);
+    }
+
+    /**
+     * 找到空属性名
+     *
+     * @param source
+     * @return
+     */
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<String>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || EMPTY_FLAG.equals(srcValue)) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        //这里由于record info中存在集合，所以需要把info过滤
+        emptyNames.add("info");
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
+    protected abstract void customInitInfo(Record record);
 
     protected abstract void initInfoArray(Record record, List<T> assayList);
 }

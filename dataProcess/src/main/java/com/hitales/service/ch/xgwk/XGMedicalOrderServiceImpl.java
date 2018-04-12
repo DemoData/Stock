@@ -36,7 +36,7 @@ public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record) {
+    protected void customInitInfo(Record record) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
         record.setBatchNo("shch20180315");
         record.setDepartment("血管外科");

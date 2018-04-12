@@ -64,7 +64,7 @@ public class BDZLInspectionServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Inspection inspection) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz20180320");
         record.setDepartment("肿瘤内科");

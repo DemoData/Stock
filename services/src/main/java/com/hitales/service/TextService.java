@@ -7,18 +7,17 @@ import com.hitales.dao.TextDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.StringUtils;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public abstract class TextService<T> extends BaseService {
-
 
     @Override
     protected void runStart(String dataSource, Integer startPage, Integer endPage) {
@@ -46,24 +45,16 @@ public abstract class TextService<T> extends BaseService {
             //遍历record
             for (T entity : resultList) {
                 Record record = new Record();
-                record.setOdCategories(new String[]{getOdCategory(dataSource)});
-                record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
-
-                initRecordBasicInfo(record, entity);
+                initial(record, entity, dataSource);
 
                 customProcess(record, entity, orgOdCatCaches, patientCaches, dataSource);
-
                 putText2Record(entity, record);
+
                 //校验Record,不满足则跳过
                 if (!validateRecord(record)) {
                     continue;
                 }
-                //移除id,添加string类型_id
-                JSONObject jsonObject = bean2Json(record);
-                jsonObject.remove("id");
-                jsonObject.remove("reportDate");
-                jsonObject.put("_id", new ObjectId().toString());
-                jsonList.add(jsonObject);
+                postProcess(entity, record, jsonList);
             }
             if (orgOdCatCaches.size() > 50000) {
                 orgOdCatCaches.clear();
@@ -80,6 +71,25 @@ public abstract class TextService<T> extends BaseService {
         log.info(">>>>>>>>>>>total inserted records: " + count + " from " + dataSource);
     }
 
+    private void initial(Record record, T entity, String dataSource) {
+        initRecordBasicColumn(record);
+
+        record.setOdCategories(new String[]{getOdCategory(dataSource)});
+        record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
+
+        customInitInfo(record, entity);
+
+    }
+
+    protected void postProcess(T entity, Record record, List<JSONObject> jsonList) {
+        //移除id,添加string类型_id
+        JSONObject jsonObject = bean2Json(record);
+        jsonObject.remove("id");
+        jsonObject.remove("reportDate");
+        jsonObject.put("_id", new ObjectId().toString());
+        jsonList.add(jsonObject);
+    }
+
     /**
      * 相关校验规则,用于子类去重写
      *
@@ -91,8 +101,14 @@ public abstract class TextService<T> extends BaseService {
         if (StringUtils.isEmpty(patientId)) {
             return false;
         }
+        String groupRecordName = record.getGroupRecordName();
+        if (StringUtils.isEmpty(groupRecordName)) {
+            return false;
+        }
         return true;
     }
+
+    protected abstract void customInitInfo(Record record, T entity);
 
     protected abstract TextDao<T> currentDao();
 
@@ -128,7 +144,36 @@ public abstract class TextService<T> extends BaseService {
      *
      * @param record
      */
-    protected abstract void initRecordBasicInfo(Record record, T entity);
+    protected void initRecordBasicColumn(Record record) {
+        Record basicInfo = getBasicInfo();
+        if (basicInfo == null) {
+            return;
+        }
+        BeanUtils.copyProperties(basicInfo, record, getNullPropertyNames(basicInfo));
+        record.setCreateTime(currentTimeMillis);
+    }
 
+    /**
+     * 找到空属性名
+     *
+     * @param source
+     * @return
+     */
+    private String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<String>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null || EMPTY_FLAG.equals(srcValue)) {
+                emptyNames.add(pd.getName());
+            }
+        }
+        //这里由于record info中存在集合，所以需要把info过滤
+        emptyNames.add("info");
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.hitales.controller;
 
 import com.hitales.other.BlobToContent;
-import com.hitales.other.DataClean;
 import com.hitales.other.DataToMysql;
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;
@@ -29,9 +28,6 @@ public class StockController {
     private DataToMysql dataToMysql;
 
     @Autowired
-    private DataClean dataClean;
-
-    @Autowired
     private BlobToContent blobToContent;
 
     /**
@@ -50,12 +46,6 @@ public class StockController {
     @GetMapping("/processTest")
     public String processTest() {
         dataToMysql.process();
-        return SUCCESS_FLAG;
-    }
-
-    @GetMapping("/dataClean")
-    public String dataClean() {
-        dataClean.cleanData();
         return SUCCESS_FLAG;
     }
 

@@ -51,7 +51,7 @@ public class TextFormatter {
     }
 
     /**
-     * Format info.text adn info.textARS
+     * Format info.text and info.textARS for 非病历文书
      *
      * @param properties
      * @param bean

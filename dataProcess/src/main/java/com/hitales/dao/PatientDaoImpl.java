@@ -64,7 +64,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
             sql = "select count(t.id) from shtr_patient_20180402 t";
         } else {
-            sql = "select count(t.id) from shtr_patient_20180402 t";
+            sql = "select count(t.`病人ID号`) from (select `病人ID号` from `患者基本信息` group by `病人ID号`) t";
         }
         return getJdbcTemplate(dataSource).queryForObject(sql, Integer.class);
     }
@@ -72,7 +72,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     @Override
     protected String generateQuerySql() {
 //        String sql = "select t.id AS 'id',CONCAT('shch_', t.`病人ID号`) AS 'patientId',t.`性别` AS 'sex',t.`就诊年龄` AS 'age',t.`就诊日期` AS 'clinicDate',CONCAT('',(LEFT(t.`就诊日期`,4) - t.`就诊年龄`)) AS 'birthDay' from `患者基本信息` t group by t.`病人ID号`";
-        String sql = "select * from shtr_patient_20180402";
+        String sql = "select id,性别 AS 'sex',就诊年龄 AS 'age',出院日期 AS 'outHospitalDate',病人ID号 AS 'patientId' from `患者基本信息` group by `病人ID号`";
         return sql;
     }
 
@@ -93,11 +93,22 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
             patient.setName(rs.getString("姓名"));*/
 
             patient.setId(rs.getInt("id"));
-            patient.setName(rs.getString("name"));
+            String age = rs.getString("age");
+            if (age != null) {
+                age = age.substring(0, age.indexOf("."));
+                patient.setAge(age);
+            }
+
+            if (rs.getString("outHospitalDate") != null) {
+                String outHospitalYear = rs.getString("outHospitalDate").substring(0, 4);
+                Integer birthYear = Integer.valueOf(outHospitalYear) - Integer.valueOf(age);
+                patient.setBirthDay(birthYear.toString());
+            }
+//            patient.setName(rs.getString("name"));
             patient.setPatientId(rs.getString("patientId"));
 
-            Object birthYear = rs.getObject("birthday");
-            patient.setBirthDay(birthYear == null ? "" : birthYear.toString().substring(0, 8));
+//            Object birthYear = rs.getObject("birthday");
+//            patient.setBirthDay(birthYear == null ? "" : birthYear.toString().substring(0, 8));
 
 //            patient.setAddress(rs.getString("Address"));
             patient.setSex(rs.getString("sex"));

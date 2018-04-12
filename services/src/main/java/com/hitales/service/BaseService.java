@@ -3,6 +3,7 @@ package com.hitales.service;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.util.TimeUtil;
+import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -20,6 +21,8 @@ public abstract class BaseService extends GenericService {
     private int pageSize;
     @Value("${datasource.list}")
     private String dataSourceList;
+
+    private Record basicInfo = new Record();
 
     /**
      * 用于createTime
@@ -120,6 +123,9 @@ public abstract class BaseService extends GenericService {
         if (MysqlDataSourceConfig.MYSQL_XZDM_DATASOURCE.equals(dataSource)) {
             odCategorie = OD_CATEGORIE_XZDM;
         }
+        if (MysqlDataSourceConfig.MYSQL_GA_DATASOURCE.equals(dataSource)) {
+            odCategorie = OD_CATEGORIE_GA;
+        }
         return odCategorie;
     }
 
@@ -137,6 +143,11 @@ public abstract class BaseService extends GenericService {
 
     public String getDataSourceList() {
         return dataSourceList;
+    }
+
+    @Override
+    public Record getBasicInfo() {
+        return basicInfo;
     }
 
     public void setDataSourceList(String dataSourceList) {

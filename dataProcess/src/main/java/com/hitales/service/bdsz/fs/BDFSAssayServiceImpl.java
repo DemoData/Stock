@@ -16,7 +16,7 @@ public class BDFSAssayServiceImpl extends BDZLAssayServiceImpl {
 
 
     @Override
-    protected void initRecordBasicInfo(Record record) {
+    protected void customInitInfo(Record record) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz2018032801");
         record.setDepartment("风湿免疫科");

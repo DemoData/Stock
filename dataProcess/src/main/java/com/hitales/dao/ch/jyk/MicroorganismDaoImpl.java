@@ -42,13 +42,13 @@ public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao {
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(t.`检验申请号`) from `微生物报告明细` t GROUP BY t.`检验申请号`", Integer.class);
+        return getJdbcTemplate(dataSource).queryForObject("select count(t.`检验申请号`) from (select `检验申请号` from `微生物报告明细` GROUP BY `检验申请号`) t ", Integer.class);
     }
 
     @Override
     public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
         String sql = "select t.`诊断名称` from `诊断信息` t where t.`一次就诊号`= ? group by t.`诊断名称`";
-        return super.findOrgOdCatByGroupRecordName(sql,dataSource, groupRecordName);
+        return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }
 
     @Override
@@ -56,8 +56,11 @@ public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao {
         log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + groupRecordName);
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        String patientId = jdbcTemplate.queryForObject(sql, String.class, groupRecordName);
-        return "shch_" + patientId;
+        List<String> patientList = jdbcTemplate.queryForList(sql, String.class, groupRecordName);
+        if (patientList == null || patientList.isEmpty()) {
+            return null;
+        }
+        return "shch_" + patientList.get(0);
     }
 
     @Override

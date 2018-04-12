@@ -77,7 +77,7 @@ public class BlobToContent extends TextService<MedicalHistory> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, MedicalHistory entity) {
+    protected void customInitInfo(Record record, MedicalHistory entity) {
 
     }
 }

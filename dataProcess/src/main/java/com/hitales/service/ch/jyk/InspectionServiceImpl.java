@@ -60,17 +60,7 @@ public class InspectionServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, Inspection inspection) {
-        record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setUserId("5a7c0adcc2f9c4944dd2b070");
-        record.setBatchNo("shch20180309");
-        record.setDepartment("检验科");
-        record.setFormat("text");
-        record.setDeleted(false);
-        record.setSource("采集入库");
-        record.setStatus("AMD识别完成");
-        record.setRecordType("检查记录");
-        record.setSubRecordType("检查");
+    protected void customInitInfo(Record record, Inspection inspection) {
         record.setPatientId("shch_" + inspection.getPatientId());
         record.setGroupRecordName(inspection.getGroupRecordName());
         record.setSourceId(inspection.getReportId());

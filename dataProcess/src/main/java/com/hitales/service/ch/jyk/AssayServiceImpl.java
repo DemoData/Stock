@@ -95,18 +95,8 @@ public class AssayServiceImpl extends TableService<Assay> {
      *
      * @param record
      */
-    protected void initRecordBasicInfo(Record record) {
-        record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setUserId("5a7c0adcc2f9c4944dd2b070");
-        record.setBatchNo("shch2018040801");
-        record.setDepartment("检验科");
-        record.setFormat("table");
-        record.setDeleted(false);
-        record.setSource("采集入库");
-        record.setStatus("AMD识别完成");
-        record.setRecordType("化验记录");
-        record.setSubRecordType("化验");
-        record.setCreateTime(currentTimeMillis);
+    protected void customInitInfo(Record record) {
+
     }
 
     protected void initInfoArray(Record record, List<Assay> assayList) {
@@ -135,7 +125,7 @@ public class AssayServiceImpl extends TableService<Assay> {
     protected boolean validateRecord(Record record) {
         List<Map<String, String>> detailArray = record.getInfo().getObject("detailArray", List.class);
         if (detailArray == null || detailArray.isEmpty()) {
-            log.info("validateRecord(): detailArray is empty:" + record.toString());
+            log.debug("validateRecord(): detailArray is empty:" + record.toString());
             return false;
         }
         return true;

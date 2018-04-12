@@ -78,10 +78,12 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         StringBuffer patientId = new StringBuffer("shch_");
-        String id;
         try {
-            id = jdbcTemplate.queryForObject(sql, String.class, groupRecordName);
-            patientId.append(id);
+            List<String> patientList = jdbcTemplate.queryForList(sql, String.class, groupRecordName);
+            if (patientList == null || patientList.isEmpty()) {
+                return null;
+            }
+            patientId.append(patientList.get(0));
         } catch (EmptyResultDataAccessException e) {
             log.error("Can not found patientId via groupRecordName:" + groupRecordName);
             e.printStackTrace();

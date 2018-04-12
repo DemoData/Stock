@@ -22,16 +22,9 @@ public class MedicalHistory {
 
     public enum ColumnMapping {
         GROUP_RECORD_NAME("一次就诊号"),
-        BED_NO("床号"),
-        DOCUMENT_TYPE("文档类型名称"),
-        CREATE_DATE("创建日期"),
         MEDICAL_CONTENT("更新内容"),
-        RECORD_DATE("记录日期"),
         PATIENT_ID("病人ID号"),
-        MEDICAL_STATUS("病历状态"),
-        HOSPITALIZED_FLAG("住院标识"),
-        MEDICAL_HISTORY_NAME("病历名称"),
-        HOSPITALIZED_MODE("入院方式");
+        MEDICAL_HISTORY_NAME("病历名称");
 
         private final String value;
 

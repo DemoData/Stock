@@ -68,7 +68,7 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, MedicalHistory medicalHistory) {
+    protected void customInitInfo(Record record, MedicalHistory medicalHistory) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz20180320");
         record.setDepartment("肿瘤内科");

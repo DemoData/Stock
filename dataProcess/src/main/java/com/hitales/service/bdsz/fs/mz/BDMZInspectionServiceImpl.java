@@ -17,7 +17,7 @@ public class BDMZInspectionServiceImpl extends BDFSInspectionServiceImpl {
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
     @Override
-    protected void initRecordBasicInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Inspection inspection) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz20180328");
         record.setDepartment("风湿免疫科");

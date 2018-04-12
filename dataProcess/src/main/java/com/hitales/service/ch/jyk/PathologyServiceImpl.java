@@ -40,8 +40,6 @@ public class PathologyServiceImpl extends TextService<Pathology> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
-        //init odCategories
-        record.setOdCategories(new String[]{OD_CATEGORY, this.getOdCategory(dataSource)});
     }
 
     @Override
@@ -60,18 +58,7 @@ public class PathologyServiceImpl extends TextService<Pathology> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, Pathology pathology) {
-        record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setUserId("5a7c0adcc2f9c4944dd2b070");
-        record.setBatchNo("shch20180309");
-        record.setTemplateId(EMPTY_FLAG);
-        record.setDepartment("检验科");
-        record.setRecordType("病理");
-        record.setSubRecordType("病理");
-        record.setFormat("text");
-        record.setDeleted(false);
-        record.setSource("采集入库");
-        record.setStatus("AMD识别完成");
+    protected void customInitInfo(Record record, Pathology pathology) {
         record.setPatientId("shch_" + pathology.getPatientId());
         record.setGroupRecordName(pathology.getGroupRecordName());
         record.setSourceId(pathology.getId().toString());

@@ -30,6 +30,9 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
     @Override
     protected void customProcess(Record record, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
         String groupRecordName = record.getGroupRecordName();
+        if(StringUtils.isEmpty(groupRecordName)){
+            return;
+        }
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
             List<String> orgOdCategories = microorganismDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
@@ -53,11 +56,10 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
      *
      * @param record
      */
-    protected void initRecordBasicInfo(Record record) {
+    protected void customInitInfo(Record record) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setUserId("5a7c0adcc2f9c4944dd2b070");
-        record.setBatchNo("shch20180309");
-        record.setTemplateId(EMPTY_FLAG);
+        record.setUserId("5acaddea85271af7af884b3a");
+        record.setBatchNo("shch2018040801");
         record.setDepartment("检验科");
         record.setFormat("table");
         record.setDeleted(false);

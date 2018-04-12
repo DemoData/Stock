@@ -28,14 +28,16 @@ public class Record {
     private boolean deleted;
     private String source;
     private String status;
+//    private int version;
     private Long createTime;
+//    private Long updateTime;//上次更新时间
     private String reportDate;//化验报告日期
 
     public Record() {
         initial();
     }
 
-    private void initial() {
+    public void initial() {
         //init info
         List<Map<String, String>> detailArray = new ArrayList<>();
         List<Map<String, String>> formattedText = new ArrayList<>();

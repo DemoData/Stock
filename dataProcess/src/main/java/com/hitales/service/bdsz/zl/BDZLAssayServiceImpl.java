@@ -62,7 +62,7 @@ public class BDZLAssayServiceImpl extends TableService<Assay> {
      *
      * @param record
      */
-    protected void initRecordBasicInfo(Record record) {
+    protected void customInitInfo(Record record) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz2018032001");
         record.setDepartment("肿瘤内科");

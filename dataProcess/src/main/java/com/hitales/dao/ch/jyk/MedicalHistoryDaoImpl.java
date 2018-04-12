@@ -18,12 +18,12 @@ public class MedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(id) from `病历文书` where (mapping not like '%入院%') AND (mapping not like '%出院%')", Integer.class);
+        return getJdbcTemplate(dataSource).queryForObject("select count(*) from `病历文书` where status=0", Integer.class);
     }
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select id,`一次就诊号`,`病人ID号`,mapping,`更新内容`,`病历名称` from `病历文书` where (mapping not like '%入院%') AND (mapping not like '%出院%') ";
+        String sql = "select id,`一次就诊号`,`病人ID号`,`更新内容`,`病历名称` from `病历文书` where status=0 ";
         return sql;
     }
 
@@ -43,7 +43,7 @@ public class MedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao
     @Override
     public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
         String sql = "select t.`诊断名称` from `诊断信息` t where t.`一次就诊号`= ? group by t.`诊断名称`";
-        return super.findOrgOdCatByGroupRecordName(sql,dataSource, groupRecordName);
+        return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao
             medicalHistory.setGroupRecordName(rs.getString(MedicalHistory.ColumnMapping.GROUP_RECORD_NAME.value()));
             medicalHistory.setPatientId(rs.getString(MedicalHistory.ColumnMapping.PATIENT_ID.value()));
             //用于获取所属类型
-            medicalHistory.setMapping(rs.getString("mapping"));
+//            medicalHistory.setMapping(rs.getString("mapping"));
             medicalHistory.setMedicalHistoryName(rs.getString(MedicalHistory.ColumnMapping.MEDICAL_HISTORY_NAME.value()));
             medicalHistory.setMedicalContent(rs.getString(MedicalHistory.ColumnMapping.MEDICAL_CONTENT.value()));
             return medicalHistory;

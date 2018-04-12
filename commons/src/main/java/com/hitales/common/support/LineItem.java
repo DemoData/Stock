@@ -36,7 +36,7 @@ public class LineItem {
     /**
      * TODO 这里由用了一个正则是不对的，因为没有完整的日期正则，这里偷懒只用一个来截取位置
      */
-    protected List<Pattern> dataPatternList= new ArrayList<>();
+    protected List<Pattern> dataPatternList = new ArrayList<>();
     private String dateFormatStrRecordDate = "^(?!0000)[0-9]{4}[ －　\\-:：0-9]+";
 
     protected Pattern patternRecordDate = Pattern.compile(dateFormatStrRecordDate);
@@ -101,11 +101,11 @@ public class LineItem {
             }
 
             lineWithA = sb.toString();
-            if(lineWithA.contains("【【【")){
-                lineWithA = lineWithA.replaceAll("【【【","【【");
+            if (lineWithA.contains("【【【")) {
+                lineWithA = lineWithA.replaceAll("【【【", "【【");
             }
-            if(lineWithA.contains("】】】"))
-            lineWithA = lineWithA.replaceAll("】】】","】】");
+            if (lineWithA.contains("】】】"))
+                lineWithA = lineWithA.replaceAll("】】】", "】】");
         }
 
         //第二行如果没有锚点，就给一个默认的
@@ -115,45 +115,45 @@ public class LineItem {
         }*/
 
         //打上记录时间
-        if (lineCounter == 0){
-            if ( (patternEn.matcher(lineWithA).find() || patternZh.matcher(lineWithA).find())){
+        /*if (lineCounter == 0) {
+            if ((patternEn.matcher(lineWithA).find() || patternZh.matcher(lineWithA).find())) {
                 //TODO 这里由用了一个正则是不对的，因为没有完整的日期正则，这里偷懒只用一个来截取位置
                 Matcher matcher = null;
-                Pattern pattern = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
+                Pattern pattern = Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}－\\d{1,2}－\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}－\\d{1,2}－\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}－\\d{1,2}－\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}－\\d{1,2}－\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}-\\d{1,2}-\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}-\\d{1,2}-\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}－\\d{1,2}－\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}－\\d{1,2}－\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}年\\d{1,2}月\\d{1,2}日");
+                pattern = Pattern.compile("^\\d{4}年\\d{1,2}月\\d{1,2}日");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s*\\d{1,2}:\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s*\\d{1,2}：\\d{1,2}");
                 dataPatternList.add(pattern);
-                pattern = Pattern.compile("\\d{4}\\.\\d{1,2}\\.\\d{1,2}");
+                pattern = Pattern.compile("^\\d{4}\\.\\d{1,2}\\.\\d{1,2}");
                 dataPatternList.add(pattern);
-                for(int i =0; i< dataPatternList.size(); i++){
+                for (int i = 0; i < dataPatternList.size(); i++) {
                     matcher = dataPatternList.get(i).matcher(lineWithA);
-                    if (matcher.find()){
+                    if (matcher.find()) {
                         int startPos = matcher.start(0);
                         int endPos = matcher.end(0);
                         String datePart = lineWithA.substring(startPos, endPos);
                         String otherPart = lineWithA.length() > endPos ? lineWithA.substring(endPos, lineWithA.length()) : "";
-                        lineWithA = i+"【【记录时间】】" + datePart + (otherPart.trim().length() > 0 ? ("【【原文记录标题】】" + otherPart) : "【【时间结束标记】】" );
+                        lineWithA = i + "【【记录时间】】" + datePart + (otherPart.trim().length() > 0 ? ("【【原文记录标题】】" + otherPart) : "【【时间结束标记】】");
                         break;
                     }
                 }
 
 
             }
-        }
+        }*/
 
         return lineWithA;
     }

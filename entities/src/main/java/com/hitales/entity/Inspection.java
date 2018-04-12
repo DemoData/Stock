@@ -68,7 +68,7 @@ public class Inspection {
         SEX("sex", "性别", true),//性别
         REPORT_DATE("reportDate", "报告时间", true),//报告时间
         AUDIT_DATE("auditDate", "审核时间", true),//审核时间
-        APPLY_PROJECT_NAME("applyProjectName", "检查项目名称", true),//申请项目名称/检查项目名称
+        APPLY_PROJECT_NAME("applyProjectName", "申请项目名称", true),//申请项目名称/检查项目名称
         ADVICE("advice", "建议", true),//建议
         AGE("age", "年龄", true);//年龄
         private final String propName;

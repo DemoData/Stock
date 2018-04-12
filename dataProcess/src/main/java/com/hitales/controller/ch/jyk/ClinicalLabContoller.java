@@ -1,5 +1,6 @@
 package com.hitales.controller.ch.jyk;
 
+import com.hitales.entity.Record;
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,102 @@ public class ClinicalLabContoller {
      */
     @GetMapping("/processPathology")
     public String processPathology() {
+        if (pathologyService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+//==============肝癌===============
+
+    @GetMapping("/ga/processAssay")
+    public String processGAAssay() {
+        Record basicInfo = assayService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setUserId("5acaddea85271af7af884b3a");
+        basicInfo.setBatchNo("shch2018040901");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("化验");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("化验记录");
+        basicInfo.setSubRecordType("化验");
+
+        if (assayService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/ga/processInspection")
+    public String processGAInspection() {
+        Record basicInfo = inspectionService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setUserId("5acaddea85271af7af884b3a");
+        basicInfo.setBatchNo("shch2018040901");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("检查");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("检查记录");
+        basicInfo.setSubRecordType("检查");
+        if (inspectionService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/ga/processMedicalHistory")
+    public String processGAMedicalHistory() {
+        Record basicInfo = medicalHistoryService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setUserId("5acaddea85271af7af884b3a");
+        basicInfo.setBatchNo("shch2018040901");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病历文书");
+        basicInfo.setStatus("AMD识别完成");
+        if (medicalHistoryService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/ga/processMicroorganism")
+    public String processGAMicroorganism() {
+        Record basicInfo = microorganismService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setUserId("5acaddea85271af7af884b3a");
+        basicInfo.setBatchNo("shch2018040901");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("微生物");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("化验记录");
+        basicInfo.setSubRecordType("微生物");
+        if (microorganismService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/ga/processPathology")
+    public String processGAPathology() {
+        Record basicInfo = pathologyService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setUserId("5acaddea85271af7af884b3a");
+        basicInfo.setBatchNo("shch2018040901");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setRecordType("病理");
+        basicInfo.setSubRecordType("病理");
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病理");
+        basicInfo.setStatus("AMD识别完成");
         if (pathologyService.processData()) {
             return SUCCESS_FLAG;
         }

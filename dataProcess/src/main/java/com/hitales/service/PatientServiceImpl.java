@@ -30,11 +30,11 @@ public class PatientServiceImpl extends BaseService {
 
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    private String batchNo = "shtr2018040201";
-    //﻿上海市长宁区同仁医院
-    private String hospitalId = "57b1e21fd897cd373ec7a0ed";
+    private String batchNo = "shch2018040901";
+    //﻿上海长海
+    private String hospitalId = "57b1e21fd897cd373ec7a14f";
 
-    private String patientPrefix = "shtr_";
+    private String patientPrefix = "shch_";
 
     @Override
     public JSONObject bean2Json(Object entity) {
@@ -60,6 +60,7 @@ public class PatientServiceImpl extends BaseService {
         int pageNum = startPage;
         boolean isFinish = false;
         Long count = 0L;
+        Map<String, JSONObject> patientMap = new HashMap<>();
         while (!isFinish) {
             if (pageNum >= endPage) {
                 isFinish = true;
@@ -72,10 +73,12 @@ public class PatientServiceImpl extends BaseService {
             if (patientList == null || patientList.isEmpty()) {
                 continue;
             }
-            Map<String, JSONObject> patients = new HashMap<>();
             for (Patient patient : patientList) {
+                if (StringUtils.isEmpty(patient.getPatientId())) {
+                    continue;
+                }
                 //对于重复的PID只取一个
-                if (patients.containsKey(patient.getPatientId())) {
+                if (patientMap.containsKey(patient.getPatientId())) {
                     continue;
                 }
                 //如果patient已近存在于mongodb中则不再插入
@@ -87,12 +90,12 @@ public class PatientServiceImpl extends BaseService {
                 patient.setCreateTime(currentTimeMillis);
                 JSONObject patientJson = this.bean2Json(patient);
 
-                patients.put(patient.getPatientId(), patientJson);
+                patientMap.put(patient.getPatientId(), patientJson);
             }
             //插入到mongodb中
-            log.info("inserting available patient count: " + patients.size());
+            log.info("inserting available patient count: " + patientMap.size());
             List<JSONObject> insertList = new ArrayList<>();
-            for (Map.Entry<String, JSONObject> entry : patients.entrySet()) {
+            for (Map.Entry<String, JSONObject> entry : patientMap.entrySet()) {
                 if (entry != null) {
                     insertList.add(entry.getValue());
                 }
@@ -100,8 +103,10 @@ public class PatientServiceImpl extends BaseService {
             count += insertList.size();
             patientDao.batchInsert2HRS(insertList);
             pageNum++;
-            //清空
-            patients.clear();
+            //大小大于30000清空
+            if (patientMap.size() > 30000) {
+                patientMap.clear();
+            }
         }
         log.info(">>>>>>>>>>>total inserted patients: " + count + " from " + dataSource + ",currentTimeMillis:" + currentTimeMillis);
     }

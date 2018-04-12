@@ -62,7 +62,7 @@ public class XGMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, MedicalHistory medicalHistory) {
+    protected void customInitInfo(Record record, MedicalHistory medicalHistory) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
         record.setBatchNo("shch20180315");
 //        record.setBatchNo("shch20180327");

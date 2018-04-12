@@ -53,7 +53,7 @@ public class XGInspectionCSXDServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected void initRecordBasicInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Inspection inspection) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
         record.setBatchNo("shch20180315");
         record.setDepartment("血管外科");
