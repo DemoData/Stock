@@ -1,6 +1,6 @@
 package com.hitales.service.bdsz.fs;
 
-import com.hitales.entity.Inspection;
+import com.hitales.entity.Exam;
 import com.hitales.entity.Record;
 import com.hitales.service.bdsz.zl.BDZLInspectionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class BDFSInspectionServiceImpl extends BDZLInspectionServiceImpl {
 
     @Override
-    protected void customInitInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Exam inspection) {
         record.setHospitalId("57b1e211d897cd373ec76dc6");
         record.setBatchNo("bdsz20180328");
         record.setDepartment("风湿免疫科");
@@ -31,7 +31,7 @@ public class BDFSInspectionServiceImpl extends BDZLInspectionServiceImpl {
     }
 
     @Override
-    protected void customProcess(Record record, Inspection entity, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
+    protected void customProcess(Record record, Exam entity, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
         super.customProcess(record, entity, orgOdCatCaches, patientCaches, dataSource);
         record.setOdCategories(new String[]{"风湿"});
     }

@@ -2,8 +2,11 @@ package com.hitales.entity;
 
 import lombok.Data;
 
+/**
+ * 化验/检验 报告明细
+ */
 @Data
-public class Assay {
+public class LabDetail {
 
     private String id;//id
     private String onceClinicId;//一次就诊号

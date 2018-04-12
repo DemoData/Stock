@@ -3,7 +3,7 @@ package com.hitales.dao.bdsz.zl;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IInspectionDao;
-import com.hitales.entity.Inspection;
+import com.hitales.entity.Exam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,7 +31,7 @@ public class BDZLInspectionDaoImpl extends BaseDao implements IInspectionDao {
     }
 
     @Override
-    public List<Inspection> findRecord(String dataSource, int pageNum, int pageSize) {
+    public List<Exam> findRecord(String dataSource, int pageNum, int pageSize) {
         return super.queryForListInSqlServer(getJdbcTemplate(dataSource), pageNum, pageSize, "TM_PACS_RESULT", null, null);
     }
 
@@ -53,11 +53,11 @@ public class BDZLInspectionDaoImpl extends BaseDao implements IInspectionDao {
         return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }
 
-    class InspectionRowMapper implements RowMapper<Inspection> {
+    class InspectionRowMapper implements RowMapper<Exam> {
 
         @Override
-        public Inspection mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Inspection inspection = new Inspection();
+        public Exam mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Exam inspection = new Exam();
             inspection.setId(rs.getInt("id"));
             inspection.setPatientId(rs.getString("PID"));
             inspection.setHospitalId(rs.getString("groupRecordName"));

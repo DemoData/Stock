@@ -3,7 +3,7 @@ package com.hitales.service.ch.xgwk;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.TableDao;
 import com.hitales.dao.standard.IAssayDao;
-import com.hitales.entity.Assay;
+import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chxgAssayService")
-public class XGAssayServiceImpl extends TableService<Assay> {
+public class XGAssayServiceImpl extends TableService<LabDetail> {
 
     @Autowired
     @Qualifier("xgAssayDao")
@@ -43,7 +43,7 @@ public class XGAssayServiceImpl extends TableService<Assay> {
     }
 
     @Override
-    protected TableDao<Assay> currentDao() {
+    protected TableDao<LabDetail> currentDao() {
         return assayDao;
     }
 
@@ -67,21 +67,21 @@ public class XGAssayServiceImpl extends TableService<Assay> {
         record.setCreateTime(currentTimeMillis);
     }
 
-    protected void initInfoArray(Record record, List<Assay> assayList) {
+    protected void initInfoArray(Record record, List<LabDetail> assayList) {
         if (assayList == null || assayList.isEmpty()) {
             return;
         }
         //init info
         List<Map<String, String>> detailArray = record.getInfo().getObject("detailArray", List.class);
         //init detail array
-        for (Assay assay : assayList) {
+        for (LabDetail assay : assayList) {
             Map<String, String> map = new HashMap<>();
-            map.put(Assay.ColumnMapping.ASSAY_SPECIMEN.value(), assay.getAssaySpecimen() == null ? EMPTY_FLAG : assay.getAssaySpecimen());
-            map.put(Assay.ColumnMapping.ASSAY_NAME.value(), assay.getAssayName() == null ? EMPTY_FLAG : assay.getAssayName());
-            map.put(Assay.ColumnMapping.ASSAY_RESULT.value(), assay.getAssayResult() == null ? EMPTY_FLAG : assay.getAssayResult());
-            map.put(Assay.ColumnMapping.ASSAY_UNIT.value(), assay.getAssayUnit() == null ? EMPTY_FLAG : assay.getAssayUnit());
-            map.put(Assay.ColumnMapping.RESULT_FLAG.value(), assay.getResultFlag() == null ? EMPTY_FLAG : assay.getResultFlag());
-            map.put(Assay.ColumnMapping.ASSAY_TIME.value(), assay.getAssayTime() == null ? EMPTY_FLAG : assay.getAssayTime());
+            map.put(LabDetail.ColumnMapping.ASSAY_SPECIMEN.value(), assay.getAssaySpecimen() == null ? EMPTY_FLAG : assay.getAssaySpecimen());
+            map.put(LabDetail.ColumnMapping.ASSAY_NAME.value(), assay.getAssayName() == null ? EMPTY_FLAG : assay.getAssayName());
+            map.put(LabDetail.ColumnMapping.ASSAY_RESULT.value(), assay.getAssayResult() == null ? EMPTY_FLAG : assay.getAssayResult());
+            map.put(LabDetail.ColumnMapping.ASSAY_UNIT.value(), assay.getAssayUnit() == null ? EMPTY_FLAG : assay.getAssayUnit());
+            map.put(LabDetail.ColumnMapping.RESULT_FLAG.value(), assay.getResultFlag() == null ? EMPTY_FLAG : assay.getResultFlag());
+            map.put(LabDetail.ColumnMapping.ASSAY_TIME.value(), assay.getAssayTime() == null ? EMPTY_FLAG : assay.getAssayTime());
             detailArray.add(map);
         }
     }

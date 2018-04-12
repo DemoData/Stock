@@ -3,7 +3,7 @@ package com.hitales.dao.ch.xgwk;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IInspectionDao;
-import com.hitales.entity.Inspection;
+import com.hitales.entity.Exam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -31,7 +31,7 @@ public class XGInspectionFSDaoImpl extends BaseDao implements IInspectionDao {
     }
 
     @Override
-    public List<Inspection> findRecord(String dataSource, int pageNum, int pageSize) {
+    public List<Exam> findRecord(String dataSource, int pageNum, int pageSize) {
         return super.queryForList(getJdbcTemplate(dataSource), pageNum, pageSize);
     }
 
@@ -52,11 +52,11 @@ public class XGInspectionFSDaoImpl extends BaseDao implements IInspectionDao {
         return null;
     }
 
-    class InspectionRowMapper implements RowMapper<Inspection> {
+    class InspectionRowMapper implements RowMapper<Exam> {
 
         @Override
-        public Inspection mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Inspection inspection = new Inspection();
+        public Exam mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Exam inspection = new Exam();
             inspection.setId(rs.getInt("id"));
             inspection.setPatientId(rs.getString("病人ID号"));
             inspection.setHospitalId(rs.getString("住院号"));

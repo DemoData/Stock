@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.support.TextFormatter;
 import com.hitales.dao.TextDao;
 import com.hitales.dao.standard.IInspectionDao;
-import com.hitales.entity.Inspection;
+import com.hitales.entity.Exam;
 import com.hitales.entity.Record;
 import com.hitales.service.TextService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +22,19 @@ import java.util.Map;
 
 @Slf4j
 @Service("chyxInspectionService")
-public class InspectionServiceImpl extends TextService<Inspection> {
+public class InspectionServiceImpl extends TextService<Exam> {
 
     @Autowired
     @Qualifier("jyInspectionDao")
     private IInspectionDao inspectionDao;
 
     @Override
-    protected TextDao<Inspection> currentDao() {
+    protected TextDao<Exam> currentDao() {
         return inspectionDao;
     }
 
     @Override
-    protected void customProcess(Record record, Inspection inspection, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
+    protected void customProcess(Record record, Exam inspection, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
         String groupRecordName = inspection.getGroupRecordName();
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
@@ -45,9 +45,9 @@ public class InspectionServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected Map<String, String> getFormattedText(Inspection inspection) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+    protected Map<String, String> getFormattedText(Exam inspection) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
         List<Map<String, String>> infoList = new ArrayList<>();
-        for (Inspection.ColumnMapping columnMapping : Inspection.ColumnMapping.values()) {
+        for (Exam.ColumnMapping columnMapping : Exam.ColumnMapping.values()) {
             Map<String, String> row = new HashMap<>();
             if (!columnMapping.isRequired()) {
                 continue;
@@ -60,7 +60,7 @@ public class InspectionServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected void customInitInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Exam inspection) {
         record.setPatientId("shch_" + inspection.getPatientId());
         record.setGroupRecordName(inspection.getGroupRecordName());
         record.setSourceId(inspection.getReportId());

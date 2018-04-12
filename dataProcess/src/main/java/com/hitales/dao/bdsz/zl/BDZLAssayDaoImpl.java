@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IAssayDao;
-import com.hitales.entity.Assay;
-import com.hitales.entity.AssayApply;
+import com.hitales.entity.LabDetail;
+import com.hitales.entity.LabBasic;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -65,11 +65,11 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public List<Assay> findArrayListByCondition(String dataSource, String... params) {
+    public List<LabDetail> findArrayListByCondition(String dataSource, String... params) {
         log.debug("findArrayListByCondition(): params: " + params[0]);
         String sql = "select PID AS 'patientId', ITEM_CH_NAME AS 'assayName', ITEM_TIME AS 'assayTime',ITEM_RESULT_DES_CODE AS 'resultFlag',ITEM_RESULT_DES_NAME AS 'assayResult',ITEM_RESULT_NUM AS 'assayValue',ITEM_RESULT_UNIT AS 'assayUnit',RESULT_REFERENCE AS 'referenceRange' from TM_LAB_ROUTINE_RESULT where RID =?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(Assay.class), params[0]);
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper(LabDetail.class), params[0]);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public List<AssayApply> findBasicArrayByCondition(String dataSource, String applyId) {
+    public List<LabBasic> findBasicArrayByCondition(String dataSource, String applyId) {
         return null;
     }
 

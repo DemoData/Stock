@@ -3,7 +3,7 @@ package com.hitales.service.ch.xgwk;
 import com.hitales.common.support.TextFormatter;
 import com.hitales.dao.TextDao;
 import com.hitales.dao.standard.IInspectionDao;
-import com.hitales.entity.Inspection;
+import com.hitales.entity.Exam;
 import com.hitales.entity.Record;
 import com.hitales.service.TextService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,26 +20,26 @@ import java.util.Map;
 
 @Slf4j
 @Service("chxgInspectionFSService")
-public class XGInspectionFSServiceImpl extends TextService<Inspection> {
+public class XGInspectionFSServiceImpl extends TextService<Exam> {
 
     @Autowired
     @Qualifier("xgInspectionFSDao")
     private IInspectionDao inspectionFSDao;
 
     @Override
-    protected TextDao<Inspection> currentDao() {
+    protected TextDao<Exam> currentDao() {
         return inspectionFSDao;
     }
 
     @Override
-    protected void customProcess(Record record, Inspection entity, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
+    protected void customProcess(Record record, Exam entity, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
 
     }
 
     @Override
-    protected Map<String, String> getFormattedText(Inspection entity) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+    protected Map<String, String> getFormattedText(Exam entity) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
         List<Map<String, String>> infoList = new ArrayList<>();
-        for (Inspection.ColumnMapping columnMapping : Inspection.ColumnMapping.values()) {
+        for (Exam.ColumnMapping columnMapping : Exam.ColumnMapping.values()) {
             Map<String, String> row = new HashMap<>();
             if (!columnMapping.isRequired()) {
                 continue;
@@ -52,7 +52,7 @@ public class XGInspectionFSServiceImpl extends TextService<Inspection> {
     }
 
     @Override
-    protected void customInitInfo(Record record, Inspection inspection) {
+    protected void customInitInfo(Record record, Exam inspection) {
         record.setHospitalId("57b1e21fd897cd373ec7a14f");
         record.setBatchNo("shch20180315");
         record.setDepartment("血管外科");

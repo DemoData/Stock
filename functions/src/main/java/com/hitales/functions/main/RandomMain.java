@@ -33,24 +33,22 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 public class RandomMain {
-    static MongoCredential mongoCredential = MongoCredential.createCredential("xh", "HRS-test", "rt0hizu{j9lzJNqi".toCharArray());
+    private static MongoCollection dc;
+    private static List<JSONObject> result = new ArrayList<>();
+    private final static String ANCHOR_EXCEL_PATH = "/Users/aron/stock/技术用-症状&体征-锚点使用.xlsx";
+    private static List<String> anchors;
 
-    static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
-
-    static List<MongoCredential> mongoCredentials = new ArrayList<>();
     static {
+        MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
+        ServerAddress serverAddress = new ServerAddress("localhost", 27017);
+        List<MongoCredential> mongoCredentials = new ArrayList<>();
         mongoCredentials.add(mongoCredential);
+        MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
+        MongoDatabase db = mongo.getDatabase("HRS");
+        dc = db.getCollection("Record");
     }
-    //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
-    static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
-    //static MongoClient mongo = new MongoClient("localhost", 27017);
-    static MongoDatabase db = mongo.getDatabase("HRS-test");
-    static MongoCollection dc = db.getCollection("Record");
-    static List<JSONObject> result = new ArrayList<>();
-    public final static String ANCHOR_EXCEL_PATH = "/Users/aron/技术用-症状&体征-锚点使用.xlsx";
 
-    public static List<String> anchors;
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         try {
             //制定需要获取的列
             List<Integer> list = new ArrayList<>();
@@ -62,21 +60,21 @@ public class RandomMain {
             //锚点数据
             anchors = readExcelContent(ANCHOR_EXCEL_PATH, 0, list);
             imRecord();
-            writer("/Users/aron/北大深圳","北大深圳风湿出入院表_yy", "xlsx", result, new String[]{"原类型","子类型","记录类型",
-                    "原文","锚点数量", "RID"});
+            writer("/Users/aron/", "长海肝癌入出院50份_reason2", "xlsx", result, new String[]{"原类型", "子类型", "记录类型",
+                    "原文", "锚点数量", "RID"});
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     public static void imRecord() throws Exception {
-        String[] recordArr = new String[]{"入院记录","出院记录"};
-        for(int i = 0; i < recordArr.length; i++){
+//        String[] recordArr = new String[]{"出院记录", "出院小结", "死亡小结", "死亡记录", "入院记录", "病案首页", "24小时内入出院"};
+        String[] recordArr = new String[]{"入院记录", "出院记录"};
+        for (int i = 0; i < recordArr.length; i++) {
             System.out.println(recordArr[i]);
             List<Bson> bsons = new ArrayList<>();
-            bsons.add(new Document("$match", new Document("batchNo", "bdsz20180328")));
-            bsons.add(new Document("$match", new Document("source", "病历文书")));
+            bsons.add(new Document("$match", new Document("batchNo", "shch2018040901")));
+//            bsons.add(new Document("$match", new Document("source", "病历文书")));
             List<Document> recordTypeList = new ArrayList<Document>();
             recordTypeList.add(new Document("recordType", recordArr[i]));
 //            bsons.add(new Document("$match", new Document("recordType", new Document("$ne", "入院记录"))));
@@ -87,7 +85,7 @@ public class RandomMain {
             AggregateIterable<Document> iterable = dc.aggregate(bsons).allowDiskUse(true);
             MongoCursor<Document> itor = iterable.iterator();
             int j = 0;
-            while(itor.hasNext()){
+            while (itor.hasNext()) {
                 System.out.println(j++);
                 Document document = itor.next();
                 JSONObject jsonObject = JSONObject.parseObject(document.toJson());
@@ -98,10 +96,11 @@ public class RandomMain {
 
     }
 
-    private static JSONObject processJSONObject(JSONObject jsonObject) throws Exception{
+    private static JSONObject processJSONObject(JSONObject jsonObject) throws Exception {
         String text = jsonObject.getJSONObject("info").getString("text");
 //        String text = TextFormatter.addAnchor(textARS, anchors);
         JSONObject resultItem = new JSONObject();
+        text = text.replaceAll("【【", "\n【【");
         resultItem.put("原文", text);
         resultItem.put("原类型", jsonObject.getString("sourceRecordType"));
         resultItem.put("子类型", jsonObject.getString("subRecordType"));
@@ -112,26 +111,26 @@ public class RandomMain {
     }
 
 
-    public static int countAnchorCount(String text){
+    public static int countAnchorCount(String text) {
         int count = 0;
         Matcher matcher = PatternUtil.ANCHOR_PATTERN.matcher(text);
-        while(matcher.find()){
+        while (matcher.find()) {
             count++;
         }
         return count;
     }
 
-    public static void writer(String path, String fileName,String fileType,List<JSONObject> result,String titleRow[]) throws IOException {
+    public static void writer(String path, String fileName, String fileType, List<JSONObject> result, String titleRow[]) throws IOException {
         Workbook wb = null;
-        String excelPath = path+File.separator+fileName+"."+fileType;
+        String excelPath = path + File.separator + fileName + "." + fileType;
         File file = new File(excelPath);
-        Sheet sheet =null;
+        Sheet sheet = null;
         //创建工作文档对象
         if (!file.exists()) {
             if (fileType.equals("xls")) {
                 wb = new HSSFWorkbook();
 
-            } else if(fileType.equals("xlsx")) {
+            } else if (fileType.equals("xlsx")) {
 
                 wb = new XSSFWorkbook();
             } else {
@@ -148,7 +147,7 @@ public class RandomMain {
             if (fileType.equals("xls")) {
                 wb = new HSSFWorkbook();
 
-            } else if(fileType.equals("xlsx")) {
+            } else if (fileType.equals("xlsx")) {
                 wb = new XSSFWorkbook();
 
             } else {
@@ -156,19 +155,19 @@ public class RandomMain {
             }
         }
         //创建sheet对象
-        if (sheet==null) {
+        if (sheet == null) {
             sheet = (Sheet) wb.createSheet("记录类型表");
         }
 
         //添加表头
         Row row = sheet.createRow(0);
         Cell cell;
-        for(int i = 0;i < titleRow.length;i++){
+        for (int i = 0; i < titleRow.length; i++) {
             cell = row.createCell(i);
             cell.setCellValue(titleRow[i]);
         }
         int rowIndex = 0;
-        for(JSONObject jsonObject : result) {
+        for (JSONObject jsonObject : result) {
             row = sheet.createRow(++rowIndex);
             for (int i = 0; i < titleRow.length; i++) {
                 cell = row.createCell(i);
