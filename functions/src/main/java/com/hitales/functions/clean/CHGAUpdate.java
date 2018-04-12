@@ -57,6 +57,7 @@ public class CHGAUpdate {
         anchorsList.add("身份证编号");
         anchorsList.add("体 格 检 查");
         anchorsList.add("体    格    检    查");
+        anchorsList.add("邮编");
     }
 
     //禁用的锚点
@@ -67,6 +68,8 @@ public class CHGAUpdate {
         notAnchorList.add("住院");
         notAnchorList.add("影像号");
         notAnchorList.add("疼痛评分");
+        notAnchorList.add("门诊");
+        notAnchorList.add("健康指导");
     }
 
     //前面不是中文的需要打上锚点
@@ -101,6 +104,14 @@ public class CHGAUpdate {
         colonAnchorList.add("现病史");
         colonAnchorList.add("普通门诊");
         colonAnchorList.add("中医诊断");
+        colonAnchorList.add("医疗院长");
+        colonAnchorList.add("MRI号");
+        colonAnchorList.add("住院号");
+        colonAnchorList.add("CT号");
+        colonAnchorList.add("病人ID");
+        colonAnchorList.add("登记号");
+        colonAnchorList.add("彩超号");
+        colonAnchorList.add("门诊");
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -126,6 +137,8 @@ public class CHGAUpdate {
         colonEndAnchorList.add("根本死亡原因");
         colonEndAnchorList.add("死亡原因");
         colonEndAnchorList.add("病理诊断");
+        colonEndAnchorList.add("主治医师");
+        colonEndAnchorList.add("住院医师");
     }
 
     public static void main(String[] args) {
@@ -167,6 +180,10 @@ public class CHGAUpdate {
             textARS = textARS.replaceAll("死者【【姓名】】", "【【死者姓名】】");
             textARS = textARS.replaceAll("死亡【【日期】】", "【【死亡日期】】");
             textARS = textARS.replaceAll("术后【【病理诊断】】", "【【术后病理诊断】】");
+            textARS = textARS.replaceAll("康复【【建议】】", "康复建议");
+            textARS = textARS.replaceAll("患者【【入院后完善相关检查】】", "【【患者入院后完善相关检查】】");
+            textARS = textARS.replaceAll("检查【【单位】】", "检查单位");
+            textARS = textARS.replaceAll("【【门诊】】复查", "门诊复查");
             //textARS = textARS.replaceAll("【【原文记录标题】】", "");
             for (String anchor : anchorsList) {
                 textARS = textARS.replaceAll(anchor, "【【" + anchor + "】】");
