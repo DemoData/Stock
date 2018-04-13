@@ -70,6 +70,12 @@ public class CHGAUpdate {
         notAnchorList.add("疼痛评分");
         notAnchorList.add("门诊");
         notAnchorList.add("健康指导");
+        notAnchorList.add("MRI号");
+        notAnchorList.add("住院号");
+        notAnchorList.add("CT号");
+        notAnchorList.add("病人ID");
+        notAnchorList.add("登记号");
+        notAnchorList.add("彩超号");
     }
 
     //前面不是中文的需要打上锚点
