@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class DataClean {
 
-    //    @Autowired
-//    @Qualifier(MongoDataSourceConfig.HRS_MONGO_TEMPLATE)
     private static MongoTemplate hrsMongoTemplate;
 
     private static JdbcTemplate jdbcTemplate;
@@ -248,7 +246,6 @@ public class DataClean {
         options.clear();
         return effected;
     }
-
 
     /**
      * 锚点匹配操作，目前只对入院做处理

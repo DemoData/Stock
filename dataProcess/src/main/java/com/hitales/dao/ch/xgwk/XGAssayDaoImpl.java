@@ -63,7 +63,7 @@ public class XGAssayDaoImpl extends BaseDao implements IAssayDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records, String collectionName) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, collectionName);
+            super.insert(records, collectionName);
         }
     }
 

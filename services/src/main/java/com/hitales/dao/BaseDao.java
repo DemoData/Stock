@@ -97,4 +97,9 @@ public abstract class BaseDao extends GenericDao {
         return results;
     }
 
+    @Override
+    public MongoTemplate getMongoTemplate() {
+        return this.hrsMongoTemplate;
+    }
+
 }

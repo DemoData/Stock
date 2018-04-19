@@ -28,6 +28,9 @@ public class MongoOperations {
 
     private DBCollection dbCollection;
 
+    public MongoOperations() {
+    }
+
     public MongoOperations(MongoTemplate pMongoTemplate) {
         this.mongoTemplate = pMongoTemplate;
     }
@@ -41,63 +44,63 @@ public class MongoOperations {
     }
 
     public <T> List<T> find(Query query, Class<T> entityClass, String collectionName) {
-        return this.mongoTemplate.find(query, entityClass, collectionName);
+        return this.getMongoTemplate().find(query, entityClass, collectionName);
     }
 
     public <T> List<T> find(Query query, Class<T> entityClass) {
-        return this.mongoTemplate.find(query, entityClass);
+        return this.getMongoTemplate().find(query, entityClass);
     }
 
     public <T> T findOne(Query query, Class<T> entityClass, String collectionName) {
-        return this.mongoTemplate.findOne(query, entityClass, collectionName);
+        return this.getMongoTemplate().findOne(query, entityClass, collectionName);
     }
 
     public <T> T findById(Object id, Class<T> entityClass) {
-        return this.mongoTemplate.findById(id, entityClass);
+        return this.getMongoTemplate().findById(id, entityClass);
     }
 
     public <T> T findById(Object id, Class<T> entityClass, String collectionName) {
-        return this.mongoTemplate.findById(id, entityClass, collectionName);
+        return this.getMongoTemplate().findById(id, entityClass, collectionName);
     }
 
     public void save(JSONObject objectToSave) {
         objectToSave.put("updateTime", System.currentTimeMillis());
-        this.mongoTemplate.save(objectToSave);
+        this.getMongoTemplate().save(objectToSave);
     }
 
     public void save(JSONObject objectToSave, String collectionName) {
         objectToSave.put("updateTime", System.currentTimeMillis());
-        this.mongoTemplate.save(objectToSave, collectionName);
+        this.getMongoTemplate().save(objectToSave, collectionName);
     }
 
     public void insert(Collection<JSONObject> batchToSave, Class<?> entityClass) {
         for (JSONObject objectToSave : batchToSave) {
             objectToSave.put("updateTime", System.currentTimeMillis());
         }
-        this.mongoTemplate.insert(batchToSave, entityClass);
+        this.getMongoTemplate().insert(batchToSave, entityClass);
     }
 
     public void insert(Collection<JSONObject> batchToSave, String collectionName) {
         for (JSONObject objectToSave : batchToSave) {
             objectToSave.put("updateTime", System.currentTimeMillis());
         }
-        this.mongoTemplate.insert(batchToSave, collectionName);
+        this.getMongoTemplate().insert(batchToSave, collectionName);
     }
 
     public int remove(Query query, String collectionName) {
-        WriteResult remove = this.mongoTemplate.remove(query, collectionName);
+        WriteResult remove = this.getMongoTemplate().remove(query, collectionName);
         return remove == null ? 0 : remove.getN();
     }
 
     public int updateMulti(Query query, Update update, String collectionName) {
         update.set("updateTime", System.currentTimeMillis());
-        WriteResult writeResult = this.mongoTemplate.updateMulti(query, update, collectionName);
+        WriteResult writeResult = this.getMongoTemplate().updateMulti(query, update, collectionName);
         return writeResult == null ? 0 : writeResult.getN();
     }
 
     public int updateFirst(Query query, Update update, String collectionName) {
         update.set("updateTime", System.currentTimeMillis());
-        WriteResult writeResult = this.mongoTemplate.updateFirst(query, update, collectionName);
+        WriteResult writeResult = this.getMongoTemplate().updateFirst(query, update, collectionName);
         return writeResult == null ? 0 : writeResult.getN();
     }
 
@@ -107,28 +110,28 @@ public class MongoOperations {
      * @return
      */
     public FindIterable<Document> findAll() {
-        return this.mongoCollection.find();
+        return this.getMongoCollection().find();
     }
 
     public FindIterable<Document> find(Bson filter) {
-        return this.mongoCollection.find(filter);
+        return this.getMongoCollection().find(filter);
     }
 
     public AggregateIterable<Document> aggregate(List<? extends Bson> pipeline) {
-        return this.mongoCollection.aggregate(pipeline);
+        return this.getMongoCollection().aggregate(pipeline);
     }
 
     public <TResult> DistinctIterable<TResult> distinct(String fieldName, Bson filter, Class<TResult> resultClass) {
-        return this.mongoCollection.distinct(fieldName, filter, resultClass);
+        return this.getMongoCollection().distinct(fieldName, filter, resultClass);
     }
 
     public int batchUpdate(String collectionName,
                            List<BatchUpdateOption> options) {
-        return doBatchUpdate(this.mongoTemplate.getCollection(collectionName),
+        return doBatchUpdate(this.getMongoTemplate().getCollection(collectionName),
                 collectionName, options, true);
     }
 
-    public int doBatchUpdate(DBCollection dbCollection, String collName,
+    public int doBatchUpdate(DBCollection pDbCollection, String collName,
                              List<BatchUpdateOption> options, boolean ordered) {
         DBObject command = new BasicDBObject();
         command.put("update", collName);
@@ -146,7 +149,7 @@ public class MongoOperations {
         }
         command.put("updates", updateList);
         command.put("ordered", ordered);
-        CommandResult commandResult = dbCollection.getDB().command(command);
+        CommandResult commandResult = pDbCollection.getDB().command(command);
         if (commandResult == null || commandResult.get("n") == null) {
             return 0;
         }

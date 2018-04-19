@@ -1,5 +1,6 @@
 package com.hitales.dao;
 
+import com.hitales.common.support.MongoOperations;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
@@ -9,7 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.util.List;
 
 @Slf4j
-public abstract class GenericDao {
+public abstract class GenericDao extends MongoOperations {
     private RowMapper rowMapper;
 
     /**
