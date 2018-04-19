@@ -1,5 +1,6 @@
 package com.hitales.controller;
 
+import com.hitales.entity.StockInfo;
 import com.hitales.other.BlobToContent;
 import com.hitales.other.DataToMysql;
 import com.hitales.service.standard.IDataService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author aron
@@ -53,5 +55,18 @@ public class StockController {
     public String blobToContent() {
         blobToContent.processData();
         return SUCCESS_FLAG;
+    }
+
+    @RequestMapping("/index")
+    public ModelAndView stock() {
+        StockInfo info = new StockInfo();
+        info.setBatchNo("shch20180416");
+        info.setHospitalId("57b1e21fd897cd373ec7a14f");
+        info.setUserId("aron3");
+        //这里指在templates目录下面去找index.html
+
+        ModelAndView modelAndView = new ModelAndView("/index");
+        modelAndView.addObject("stockInfo", info);
+        return modelAndView;
     }
 }

@@ -37,7 +37,6 @@ public class BDMZMedicalHistoryServiceImpl extends BDFSMedicalHistoryServiceImpl
         record.setGroupRecordName(medicalHistory.getGroupRecordName());
         record.setSourceId(medicalHistory.getId().toString());
         record.setSourceRecordType(medicalHistory.getMedicalHistoryName());
-        record.setCreateTime(currentTimeMillis);
     }
 
     @Override

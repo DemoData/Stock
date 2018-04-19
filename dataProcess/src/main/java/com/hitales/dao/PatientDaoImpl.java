@@ -2,7 +2,6 @@ package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.SqlServerDataSourceConfig;
-import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
 import lombok.extern.slf4j.Slf4j;

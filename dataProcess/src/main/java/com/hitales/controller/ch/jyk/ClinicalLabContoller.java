@@ -37,6 +37,10 @@ public class ClinicalLabContoller {
     @Qualifier("chyxPathologyService")
     private IDataService pathologyService;
 
+    @Autowired
+    @Qualifier("chyxMedicalOrderService")
+    private IDataService medicalOrderService;
+
     /**
      * 长海医院化验数据处理
      *
@@ -195,6 +199,127 @@ public class ClinicalLabContoller {
         basicInfo.setSource("病理");
         basicInfo.setStatus("AMD识别完成");
         if (pathologyService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    //==============胃肠肿瘤===============
+
+    @GetMapping("/zl/processAssay")
+    public String processZLAssay() {
+        Record basicInfo = assayService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setSourceType(Record.SourceType.TABLE.value());
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("化验");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("化验记录");
+        basicInfo.setSubRecordType("化验");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+
+        if (assayService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processInspection")
+    public String processZLInspection() {
+        Record basicInfo = inspectionService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setSourceType(Record.SourceType.HALF_TEXT.value());
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("检查");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("检查记录");
+        basicInfo.setSubRecordType("检查");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        if (inspectionService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processMedicalHistory")
+    public String processZLMedicalHistory() {
+        Record basicInfo = medicalHistoryService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setSourceType(Record.SourceType.TEXT.value());
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病历文书");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        if (medicalHistoryService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processMicroorganism")
+    public String processZLMicroorganism() {
+        Record basicInfo = microorganismService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setSourceType(Record.SourceType.TABLE.value());
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("微生物");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("化验记录");
+        basicInfo.setSubRecordType("微生物");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        if (microorganismService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processPathology")
+    public String processZLPathology() {
+        Record basicInfo = pathologyService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setRecordType("病理");
+        basicInfo.setSubRecordType("病理");
+        basicInfo.setSourceType(Record.SourceType.HALF_TEXT.value());
+        basicInfo.setFormat("text");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病理");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        if (pathologyService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processMedicalOrder")
+    public String processZLMedicalOrder() {
+        Record basicInfo = medicalOrderService.getBasicInfo();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setRecordType("治疗方案");
+        basicInfo.setSubRecordType("药品医嘱");
+        basicInfo.setSourceType(Record.SourceType.TABLE.value());
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("药品医嘱");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        if (medicalOrderService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

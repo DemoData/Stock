@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
-import com.hitales.service.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,7 +29,7 @@ public class PatientServiceImpl extends BaseService {
 
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    private String batchNo = "shch2018040901";
+    private String batchNo = "shch20180416";
     //﻿上海长海
     private String hospitalId = "57b1e21fd897cd373ec7a14f";
 
@@ -44,6 +43,7 @@ public class PatientServiceImpl extends BaseService {
         jsonObj.put(Patient.ColumnMapping.BATCH_NO.value(), batchNo);
         jsonObj.put(Patient.ColumnMapping.HOSPITAL_ID.value(), hospitalId);
         jsonObj.put(Patient.ColumnMapping.CREATE_TIME.value(), patient.getCreateTime());
+        jsonObj.put(Patient.ColumnMapping.UPDATE_TIME.value(), patient.getUpdateTime());
         jsonObj.put(Patient.ColumnMapping.SEX.value(), StringUtils.isEmpty(patient.getSex()) ? EMPTY_FLAG : patient.getSex());
         jsonObj.put(Patient.ColumnMapping.AGE.value(), StringUtils.isEmpty(patient.getAge()) ? EMPTY_FLAG : patient.getAge());
         jsonObj.put(Patient.ColumnMapping.BIRTHDAY.value(), StringUtils.isEmpty(patient.getBirthDay()) ? EMPTY_FLAG : patient.getBirthDay());
@@ -115,6 +115,5 @@ public class PatientServiceImpl extends BaseService {
     protected Integer getCount(String dataSource) {
         return patientDao.getCount(dataSource);
     }
-
 
 }

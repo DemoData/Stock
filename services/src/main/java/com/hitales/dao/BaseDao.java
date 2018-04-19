@@ -43,6 +43,10 @@ public abstract class BaseDao extends GenericDao {
     protected JdbcTemplate gaJdbcTemplate;
 
     @Autowired
+    @Qualifier(MysqlDataSourceConfig.MYSQL_ZL_TEMPLATE)
+    protected JdbcTemplate zlJdbcTemplate;
+
+    @Autowired
     @Qualifier(SqlServerDataSourceConfig.SQL_SERVER_TEMPLATE)
     protected JdbcTemplate sqlJdbcTemplate;
 
@@ -79,6 +83,7 @@ public abstract class BaseDao extends GenericDao {
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_XZDM_DATASOURCE, xzdmJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_RK_DATASOURCE, rkJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_GA_DATASOURCE, gaJdbcTemplate);
+        jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_ZL_DATASOURCE, zlJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_DATASOURCE, sqlJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_FS_DATASOURCE, fsJdbcTemplate);
         jdbcTemplatePool.put(SqlServerDataSourceConfig.SQL_SERVER_FS_MZ_DATASOURCE, fsmzJdbcTemplate);

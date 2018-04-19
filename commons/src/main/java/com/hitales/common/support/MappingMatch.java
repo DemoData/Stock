@@ -195,7 +195,10 @@ public class MappingMatch {
             return null;
         }
         for (String includeKey : includes) {
-            return checkInclude(includeKey, mapping, content, currentType, parentType);
+            mappedValue = checkInclude(includeKey, mapping, content, currentType, parentType);
+            if (StringUtils.isNotBlank(mappedValue)) {
+                return mappedValue;
+            }
         }
         return null;
     }

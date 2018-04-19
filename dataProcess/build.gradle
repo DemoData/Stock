@@ -1,3 +1,6 @@
+/*bootRun {
+    addResources = true
+}*/
 
 dependencies {
     compile project(':commons')
@@ -14,6 +17,9 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
     compile 'org.springframework.boot:spring-boot-starter-mail'
+
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
 }
 
 task createWebProject(dependsOn: 'createJavaProject') << {

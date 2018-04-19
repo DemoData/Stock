@@ -26,11 +26,11 @@ public class Record {
     private String sourceId;
     private String format;
     private boolean deleted;
+    private String sourceType;//数据类型 文本text，半结构化half-text，结构化table
     private String source;
     private String status;
-//    private int version;
     private Long createTime;
-//    private Long updateTime;//上次更新时间
+    private Long updateTime = System.currentTimeMillis();//上次更新时间
     private String reportDate;//化验报告日期
 
     public Record() {
@@ -62,5 +62,20 @@ public class Record {
         this.source = "";
         this.status = "";
         this.sourceRecordType = "";
+    }
+
+    public enum SourceType {
+        TEXT("text"),
+        HALF_TEXT("half-text"),
+        TABLE("table");
+        private final String value;
+
+        SourceType(String pValue) {
+            this.value = pValue;
+        }
+
+        public String value() {
+            return this.value;
+        }
     }
 }

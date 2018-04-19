@@ -39,6 +39,10 @@ public class MysqlDataSourceConfig {
     public static final String MYSQL_GA_DATASOURCE = "mysql.gaDataSource";
     public static final String MYSQL_GA_TEMPLATE = "gaJdbcTemplate";
 
+    public static final String MYSQL_ZL_PREFIX = "mysql.zhongliu";
+    public static final String MYSQL_ZL_DATASOURCE = "mysql.wczlDataSource";
+    public static final String MYSQL_ZL_TEMPLATE = "wczlJdbcTemplate";
+
     public static final String MYSQL_RK_PREFIX = "mysql.rk";
     public static final String MYSQL_RK_DATASOURCE = "mysql.rk";
     public static final String MYSQL_RK_TEMPLATE = "rkJdbcTemplate";
@@ -86,6 +90,13 @@ public class MysqlDataSourceConfig {
         return DataSourceBuilder.create().build();
     }
 
+    @Bean(name = MYSQL_ZL_DATASOURCE)
+    @Qualifier(MYSQL_ZL_DATASOURCE)
+    @ConfigurationProperties(prefix = MYSQL_ZL_PREFIX)
+    public DataSource zlDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
     @Bean(name = MYSQL_XZDM_DATASOURCE)
     @Qualifier(MYSQL_XZDM_DATASOURCE)
     @ConfigurationProperties(prefix = MYSQL_XZDM_PREFIX)
@@ -125,6 +136,12 @@ public class MysqlDataSourceConfig {
 
     @Bean(name = MYSQL_GA_TEMPLATE)
     public JdbcTemplate gaJdbcTemplate(@Qualifier(MYSQL_GA_DATASOURCE) DataSource dataSource) {
+        log.info(dataSource.toString());
+        return new JdbcTemplate(dataSource);
+    }
+    
+    @Bean(name = MYSQL_ZL_TEMPLATE)
+    public JdbcTemplate wczlJdbcTemplate(@Qualifier(MYSQL_ZL_DATASOURCE) DataSource dataSource) {
         log.info(dataSource.toString());
         return new JdbcTemplate(dataSource);
     }

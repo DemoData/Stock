@@ -29,14 +29,15 @@ public abstract class BaseService extends GenericService {
      */
     protected Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    /**
-     * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
-     */
-    private ExecutorService threadPool = Executors.newFixedThreadPool(8);
+    private ExecutorService threadPool;
 
     @Override
     public boolean processData() {
         try {
+            /*
+             * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
+             */
+            threadPool = Executors.newFixedThreadPool(8);
             String dataSourceList = getDataSourceList();
             String[] dataSourceArray = dataSourceList.split(",");
             //execute data process in every dataSource
@@ -49,6 +50,8 @@ public abstract class BaseService extends GenericService {
                 // 超时的时候向线程池中所有的线程发出中断(interrupted)
                 threadPool.shutdownNow();
             }
+            //清空
+            threadPool = null;
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();

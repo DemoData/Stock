@@ -7,6 +7,7 @@ import com.hitales.entity.Record;
 import com.hitales.service.TableService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder> {
 
     @Autowired
+    @Qualifier("xgMedicalOrderDao")
     private IMedicalOrderDao medicalOrderDao;
 
     @Override

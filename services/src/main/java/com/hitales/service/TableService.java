@@ -76,7 +76,6 @@ public abstract class TableService<T> extends BaseService {
     private void initial(Record record, String dataSource) {
         initRecordBasicColumn(record);
 
-        record.setOdCategories(new String[]{getOdCategory(dataSource)});
         record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
 
         customInitInfo(record);

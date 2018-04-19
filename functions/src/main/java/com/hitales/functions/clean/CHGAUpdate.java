@@ -20,9 +20,9 @@ import java.util.List;
 
 public class CHGAUpdate {
 
-    static MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
-    //static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
-    static ServerAddress serverAddress = new ServerAddress("192.168.1.153", 27017);
+    static MongoCredential mongoCredential = MongoCredential.createCredential("xh", "HRS-live", "rt0hizu{j9lzJNqi".toCharArray());
+    static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
+//    static ServerAddress serverAddress = new ServerAddress("192.168.1.153", 27017);
 
     static List<MongoCredential> mongoCredentials = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class CHGAUpdate {
     //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
     static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
     //static MongoClient mongo = new MongoClient("localhost", 27017);
-    static MongoDatabase db = mongo.getDatabase("HRS");
+    static MongoDatabase db = mongo.getDatabase("HRS-live");
     static MongoCollection dc = db.getCollection("Record");
 
     private static MongoTemplate hrsMongoTemplate;
@@ -41,23 +41,25 @@ public class CHGAUpdate {
     static {
         MongoProperties mongoProperties = new MongoProperties();
         mongoProperties.setHost("localhost");
-        mongoProperties.setPort(27017);
-        mongoProperties.setDatabase("HRS");
-        mongoProperties.setUsername("aron");
-        mongoProperties.setPassword("aron".toCharArray());
+        mongoProperties.setPort(3718);
+        mongoProperties.setDatabase("HRS-live");
+        mongoProperties.setUsername("xh");
+        mongoProperties.setPassword("rt0hizu{j9lzJNqi".toCharArray());
         hrsMongoTemplate = DBConnection.generateTemplate(mongoProperties);
     }
-
 
     static List<String> anchorsList = new ArrayList<>();
 
     static {
-        anchorsList.add("死者姓名");
+        /*anchorsList.add("死者姓名");
         anchorsList.add("婚否");
         anchorsList.add("身份证编号");
         anchorsList.add("体 格 检 查");
-        anchorsList.add("体    格    检    查");
-        anchorsList.add("邮编");
+        anchorsList.add("体    格    检    查");*/
+
+        anchorsList.add("手术日期");
+        anchorsList.add("手术人员");
+        anchorsList.add("麻醉人员");
     }
 
     //禁用的锚点
@@ -70,12 +72,14 @@ public class CHGAUpdate {
         notAnchorList.add("疼痛评分");
         notAnchorList.add("门诊");
         notAnchorList.add("健康指导");
-        notAnchorList.add("MRI号");
-        notAnchorList.add("住院号");
-        notAnchorList.add("CT号");
-        notAnchorList.add("病人ID");
-        notAnchorList.add("登记号");
-        notAnchorList.add("彩超号");
+
+        /*notAnchorList.add("手术过程");
+        notAnchorList.add("手术经过");
+        notAnchorList.add("术前诊断");
+        notAnchorList.add("术后诊断");
+        notAnchorList.add("手术方式");
+        notAnchorList.add("麻醉方式");
+        notAnchorList.add("医师");*/
     }
 
     //前面不是中文的需要打上锚点
@@ -118,6 +122,12 @@ public class CHGAUpdate {
         colonAnchorList.add("登记号");
         colonAnchorList.add("彩超号");
         colonAnchorList.add("门诊");
+
+        /*colonAnchorList.add("诊断");
+        colonAnchorList.add("结果");
+        colonAnchorList.add("术者");
+        colonAnchorList.add("操作者");
+        colonAnchorList.add("DSA");*/
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -145,14 +155,28 @@ public class CHGAUpdate {
         colonEndAnchorList.add("病理诊断");
         colonEndAnchorList.add("主治医师");
         colonEndAnchorList.add("住院医师");
+
+        /*colonEndAnchorList.add("拟施手术");
+        colonEndAnchorList.add("操作步骤");
+        colonEndAnchorList.add("内镜诊断");
+        colonEndAnchorList.add("穿刺过程");
+        colonEndAnchorList.add("具体操作如下");
+        colonEndAnchorList.add("手术经过如下");
+
+        colonEndAnchorList.add("手术过程");
+        colonEndAnchorList.add("手术经过");
+        colonEndAnchorList.add("术前诊断");
+        colonEndAnchorList.add("术后诊断");
+        colonEndAnchorList.add("手术方式");
+        colonEndAnchorList.add("麻醉方式");*/
     }
 
     public static void main(String[] args) {
         BasicDBObject docQuery = new BasicDBObject();
-        docQuery.append("batchNo", "shch2018040901");
+        docQuery.append("batchNo", "shch20180309");
         BasicDBList recordTypeList = new BasicDBList();
-        recordTypeList.add(new BasicDBObject("recordType", "入院记录"));
-        recordTypeList.add(new BasicDBObject("recordType", "出院记录"));
+        recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
+//        recordTypeList.add(new BasicDBObject("recordType", "出院记录"));
         docQuery.put("$or", recordTypeList);
         long sum = dc.count(docQuery);
         System.out.println(sum);
@@ -164,19 +188,20 @@ public class CHGAUpdate {
             Document document = itor.next();
             JSONObject jsonObject = JSONObject.parseObject(document.toJson());
             System.out.println(jsonObject.getString("_id"));
-            /*String textARS = jsonObject.getJSONObject("info").getString("text");
+            String textARS = jsonObject.getJSONObject("info").getString("text");
+            String text_back = textARS;
             if (!jsonObject.getJSONObject("info").containsKey("text_back")) {
-                jsonObject.getJSONObject("info").put("text_back", textARS);
+                jsonObject.getJSONObject("info").put("text_back", text_back);
             } else {
                 textARS = jsonObject.getJSONObject("info").getString("text_back");
-            }*/
-            String textARS = jsonObject.getJSONObject("info").getString("textARS");
-            textARS = TextFormatter.formatTextByAnchaor(textARS);
+            }
+//            String textARS = jsonObject.getJSONObject("info").getString("textARS");
+//            textARS = TextFormatter.formatTextByAnchaor(textARS);
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
             /*for(String anchor : anchorsList){
                 textARS = textARS.replaceAll(anchor, "【【" + anchor + "】】");
             }*/
-            textARS = textARS.replaceAll("生前【【工作单位】】", "【【生前工作单位】】");
+            /*textARS = textARS.replaceAll("生前【【工作单位】】", "【【生前工作单位】】");
             textARS = textARS.replaceAll("常住【【户口地址】】", "【【常住户口地址】】");
             textARS = textARS.replaceAll("主诊【【医师】】", "【【主诊医师】】");
             textARS = textARS.replaceAll("发出【【日期】】", "【【发出日期】】");
@@ -189,7 +214,8 @@ public class CHGAUpdate {
             textARS = textARS.replaceAll("康复【【建议】】", "康复建议");
             textARS = textARS.replaceAll("患者【【入院后完善相关检查】】", "【【患者入院后完善相关检查】】");
             textARS = textARS.replaceAll("检查【【单位】】", "检查单位");
-            textARS = textARS.replaceAll("【【门诊】】复查", "门诊复查");
+            textARS = textARS.replaceAll("【【门诊】】复查", "门诊复查");*/
+
             //textARS = textARS.replaceAll("【【原文记录标题】】", "");
             for (String anchor : anchorsList) {
                 textARS = textARS.replaceAll(anchor, "【【" + anchor + "】】");
@@ -249,7 +275,7 @@ public class CHGAUpdate {
                 int lastIndex = 0;
                 while (textARS.indexOf(anchor, lastIndex) != -1) {
                     int index = textARS.indexOf(anchor, lastIndex);
-                    if ('：' == textARS.charAt(index + anchor.length()) || ':' == textARS.charAt(index + anchor.length())) {
+                    if ('：' == textARS.charAt(index + anchor.length()) || ':' == textARS.charAt(index + anchor.length()) || ' ' == textARS.charAt(index + anchor.length())) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append(textARS.substring(0, index));
                         stringBuilder.append("【【" + anchor + "】】");
@@ -260,9 +286,31 @@ public class CHGAUpdate {
                 }
             }
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
+
+            textARS = textARS.replaceAll("拟实施【【手术名称】】", "【【拟实施手术名称】】");
+            textARS = textARS.replaceAll("实施【【手术名称】】", "【【实施手术名称】】");
+            textARS = textARS.replaceAll("术后向患者交代的【【注意事项】】", "【【术后向患者交代的注意事项】】");
+            textARS = textARS.replaceAll("向患者告知【【注意事项】】", "【【向患者告知注意事项】】");
+            textARS = textARS.replaceAll("手术人员【【\\(第一为主刀医师\\)】】", "【【手术人员(第一为主刀医师)】】");
+            textARS = textARS.replaceAll("手术人员【【（第一为主刀医师）】】", "【【手术人员（第一为主刀医师）】】");
+            textARS = textARS.replaceAll("【【手术人员】】（第一为主刀医师）", "【【手术人员（第一为主刀医师）】】");
+            textARS = textARS.replaceAll("【【手术人员】】\\(第一为主刀医师\\)", "【【手术人员(第一为主刀医师)】】");
+            textARS = textARS.replaceAll("【【手术经过】】时间】】", "【【手术经过时间】】");
+            textARS = textARS.replaceAll("患者【【术前诊断】】", "【【患者术前诊断】】");
+
+            if (textARS.lastIndexOf("【【术中诊断】】") > 0) {
+                String temp = textARS.substring(0, textARS.lastIndexOf("【【术中诊断】】"));
+                if (temp.lastIndexOf("【【手术经过】】") > 0) {
+                    String pre = textARS.substring(0, textARS.lastIndexOf("【【术中诊断】】"));
+                    String suffix = textARS.substring(textARS.lastIndexOf("【【术中诊断】】"));
+                    textARS = pre + suffix.replaceAll("【【术中诊断】】", "术中诊断");
+                }
+            }
+
+            textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
             BathUpdateOptions bathUpdateOption = BathUpdateOptions.getInstance();
             bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(jsonObject.get("_id"))));
-            bathUpdateOption.setUpdate(Update.update("info.text", textARS));
+            bathUpdateOption.setUpdate(Update.update("info.text", textARS).set("info.text_back", text_back));
             bathUpdateOption.setMulti(true);
             bathUpdateOption.setUpsert(false);
             options.add(bathUpdateOption);

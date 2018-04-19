@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by chenzhiheng on 15-3-23.<br>
+ * Created by aron
  * Desc:JDBC基础操作接口实现类
  */
 //implements IJdbcOperations
