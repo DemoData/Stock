@@ -22,6 +22,8 @@ public class Patient {
 
     private String address;//住址
 
+    private Long updateTime = System.currentTimeMillis();//上次更新时间
+
     private Long createTime;
 
     public enum ColumnMapping {
@@ -32,6 +34,7 @@ public class Patient {
         AGE("年龄"),
         BIRTHDAY("出生日期"),
         CREATE_TIME("createTime"),
+        UPDATE_TIME("updateTime"),
         ORIGIN("籍贯"),
         MARRIAGE("婚姻状况"),
         ADDRESS("现住址"),

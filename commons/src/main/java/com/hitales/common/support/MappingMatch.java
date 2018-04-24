@@ -30,7 +30,7 @@ public class MappingMatch {
         String[] containArray = new String[]{"宣教", "清单", "报告卡", "计划", "告知", "计划", "通知书", "评分", "健康教育", "全院通用", "责任书", "心电图、TCD、脑电图", "病历名称",
                 "输血反应报告", "体检封面", "检测表", "自费", "饮食-低脂普食", "入院介绍表", "同意书", "承诺书", "记录单", "志愿书",
                 "申请单", "审批表", "评估单", "评估表", "登记表", "报告单", "观察表", "监控表", "指肠切除术", "胰腺癌化疗", "胰腺肿瘤手术", "输血", "镇痛记录", "高危患者", "冠脉造影", "病史摘要",
-                "专用单", "评价表", "调查表", "拒绝书", "讨论记录", "术前小结", "输血前评估", "谈话记录"};
+                "专用单", "评价表", "调查表", "拒绝书", "讨论记录", "输血前评估", "谈话记录"};
         //TODO:改进成Object类型 然后通过哦按段类型做不同的处理方式
         subList.add(generateItem(containArray, new String[]{"查房", "病程"}, "其他", null, 2, 1));
         subList.add(generateItem(new String[]{"会诊单", "会诊记录"}, null, "会诊单", null, 2, 2));
@@ -40,6 +40,7 @@ public class MappingMatch {
         subList.add(generateItem(new String[]{"护理记录", "入院护理评估"}, null, "护理文书", null, 2, 6));
         subList.add(generateItem(new String[]{"临时"}, null, "临时文件", null, 2, 7));
         subList.add(generateItem(new String[]{"协议书"}, null, "协议书", null, 2, 8));
+        subList.add(generateItem(new String[]{"术前小结"}, null, "术前小结", null, 2, 8));
         //治疗方案
         JSONObject bingcheng = new JSONObject();
         subList = new ArrayList<>();
@@ -195,7 +196,10 @@ public class MappingMatch {
             return null;
         }
         for (String includeKey : includes) {
-            return checkInclude(includeKey, mapping, content, currentType, parentType);
+            mappedValue = checkInclude(includeKey, mapping, content, currentType, parentType);
+            if (StringUtils.isNotBlank(mappedValue)) {
+                return mappedValue;
+            }
         }
         return null;
     }

@@ -38,7 +38,7 @@ public class XGInspectionCSXDDaoImpl extends BaseDao implements IInspectionDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records, String collectionName) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, collectionName);
+            super.insert(records, collectionName);
         }
     }
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js" > <!--<![endif]-->
+<head th:include="/common/common_head :: commonHeader('Patient')">
+    <script src="../static/js/patient.js" th:src="@{/js/patient.js}"></script>
+</head>
+<body style="background-image: none;">
+<div class="body_wrap">
+    <div class="container">
+        <div class="alert alert-success text-center" role="alert">Patient入库界面</div>
+
+        <div class="add-comment styled boxed boxed-cream" id="addcomments">
+            <div class="add-comment-title gradient"><h3>入库信息</h3></div>
+            <div class="comment-form">
+                <script type="text/javascript">
+                    bkLib.onDomLoaded(function() {
+                        var myNicEditor = new nicEditor({
+                            buttonList : [
+                                'bold',
+                                'italic',
+                                'underline',
+                                'forecolor',
+                                'left',
+                                'center',
+                                'right',
+                                'justify'
+                            ]
+                        });
+                        myNicEditor.setPanel('edit_buttons');
+                        myNicEditor.addInstance('styled_message');
+                    });
+                    setTimeout(function () {
+                        var nic_width = $('.nicEdit-panel').width();
+                        $('.nicEdit-container').css('width', nic_width);
+                        $('.nicEdit-main').css('width', nic_width-24);
+                    }, 2000);
+                    $(window).resize(function() {
+                        var nic_width = $('.nicEdit-panel').width();
+                        $('.nicEdit-container').css('width', nic_width);
+                        $('.nicEdit-main').css('width', nic_width-24);
+                    });
+                </script>
+                <form action="#" method="post" id="commentForm" class="ajax_form">
+                    <div class="form-inner">
+                        <div class="field_select">
+                            <label for="contact_name" class="label_title">Name:</label>
+                            <select name="contact_name" id="contact_name" multiple data-placeholder="Your Selection">
+                                <option value='example1@gmail.com'>Mike Charley</option>
+                                <option value='example2@gmail.com'>Andy Lurs</option>
+                                <option value='example3@gmail.com'>Toby Lightman</option>
+                                <option value='example4@gmail.com'>Lene Marlin</option>
+                                <option value='example5@gmail.com'>Deep Purple</option>
+                            </select>
+                        </div>
+                        <div class="field_text">
+                            <label for="batchNo" class="label_title">批次号:</label>
+                            <input type="text" name="subject" id="batchNo" value="" placeholder="ex. 20180316" class="inputtext input_middle required" />
+                        </div>
+                        <div class="clear"></div>
+                        <div class="field_text">
+                            <label for="tableName" class="label_title">源数据库表名:</label>
+                            <input type="text" name="tableName" id="tableName" value="" placeholder="ex. Patient/患者基本信息" class="inputtext input_middle required gradient" />
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="rowSubmit">
+                        <a onclick="document.getElementById('commentForm').reset();return false" href="#" class="link-reset btn btn-white"><span>Discard</span></a>
+                        <span class="btn"><input type="submit" id="send" value="Send" /></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <!--/ container -->
+</div>
+</body>
+</html>

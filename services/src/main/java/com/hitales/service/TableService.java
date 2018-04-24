@@ -2,7 +2,7 @@ package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -76,7 +76,6 @@ public abstract class TableService<T> extends BaseService {
     private void initial(Record record, String dataSource) {
         initRecordBasicColumn(record);
 
-        record.setOdCategories(new String[]{getOdCategory(dataSource)});
         record.setOrgOdCategories(new String[]{CommonConstant.EMPTY_FLAG});
 
         customInitInfo(record);
@@ -160,7 +159,7 @@ public abstract class TableService<T> extends BaseService {
      * @param record
      */
     protected void initRecordBasicColumn(Record record) {
-        Record basicInfo = getBasicInfo();
+        Record basicInfo = (Record) getBasicInfo();
         if (basicInfo == null) {
             return;
         }

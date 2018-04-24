@@ -1,5 +1,6 @@
 dependencies {
     compile project(':commons')
+    runtime "mysql:mysql-connector-java"
     compile 'org.projectlombok:lombok'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
     compile group: 'com.alibaba', name: 'fastjson', version: '1.2.41'

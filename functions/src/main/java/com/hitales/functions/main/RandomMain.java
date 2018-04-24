@@ -39,12 +39,13 @@ public class RandomMain {
     private static List<String> anchors;
 
     static {
-        MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
-        ServerAddress serverAddress = new ServerAddress("localhost", 27017);
+        MongoCredential mongoCredential = MongoCredential.createCredential("xh", "HRS-live", "rt0hizu{j9lzJNqi".toCharArray());
+//        MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
+        ServerAddress serverAddress = new ServerAddress("localhost", 3718);
         List<MongoCredential> mongoCredentials = new ArrayList<>();
         mongoCredentials.add(mongoCredential);
         MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
-        MongoDatabase db = mongo.getDatabase("HRS");
+        MongoDatabase db = mongo.getDatabase("HRS-live");
         dc = db.getCollection("Record");
     }
 
@@ -60,7 +61,7 @@ public class RandomMain {
             //锚点数据
             anchors = readExcelContent(ANCHOR_EXCEL_PATH, 0, list);
             imRecord();
-            writer("/Users/aron/", "长海肝癌入出院50份_reason2", "xlsx", result, new String[]{"原类型", "子类型", "记录类型",
+            writer("/Users/aron/", "长海胰腺手术50份质检", "xlsx", result, new String[]{"原类型", "子类型", "记录类型",
                     "原文", "锚点数量", "RID"});
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,14 +70,16 @@ public class RandomMain {
 
     public static void imRecord() throws Exception {
 //        String[] recordArr = new String[]{"出院记录", "出院小结", "死亡小结", "死亡记录", "入院记录", "病案首页", "24小时内入出院"};
-        String[] recordArr = new String[]{"入院记录", "出院记录"};
+        String[] recordArr = new String[]{"手术记录","操作记录"};
+//        String[] recordArr = new String[]{"手术操作记录"};
         for (int i = 0; i < recordArr.length; i++) {
             System.out.println(recordArr[i]);
             List<Bson> bsons = new ArrayList<>();
-            bsons.add(new Document("$match", new Document("batchNo", "shch2018040901")));
-//            bsons.add(new Document("$match", new Document("source", "病历文书")));
+            bsons.add(new Document("$match", new Document("batchNo", "shch20180309")));
+//            bsons.add(new Document("$match", new Document("sourceType", "text")));
+//            bsons.add(new Document("$match", new Document("sour、ceRecordType", new Document("$ne", ""))));
             List<Document> recordTypeList = new ArrayList<Document>();
-            recordTypeList.add(new Document("recordType", recordArr[i]));
+            recordTypeList.add(new Document("subRecordType", recordArr[i]));
 //            bsons.add(new Document("$match", new Document("recordType", new Document("$ne", "入院记录"))));
 //            bsons.add(new Document("$match", new Document("recordType", new Document("$ne", "出院记录"))));
 
@@ -109,7 +112,6 @@ public class RandomMain {
         resultItem.put("RID", jsonObject.getString("_id"));
         return resultItem;
     }
-
 
     public static int countAnchorCount(String text) {
         int count = 0;

@@ -2,7 +2,7 @@ package com.hitales.service.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.support.TextFormatter;
-import com.hitales.dao.TextDao;
+import com.hitales.dao.standard.TextDao;
 import com.hitales.dao.standard.IPathologyDao;
 import com.hitales.entity.Pathology;
 import com.hitales.entity.Record;

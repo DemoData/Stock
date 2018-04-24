@@ -248,7 +248,7 @@ public class SplitAnchor {
     }
 
     public static boolean isChinese(char c) {
-        return (c >= 0x4E00 && c <= 0x9FA5) || c == '【';// 根据字节码判断
+        return (c >= 0x4E00 && c <= 0x9FA5) || c == '【' || c == '（' || c == '(' ;// 根据字节码判断
     }
 
     public static void main(String[] args) {

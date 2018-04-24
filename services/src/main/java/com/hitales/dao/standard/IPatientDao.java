@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author aron
  */
-public interface IPatientDao {
+public interface IPatientDao extends IDataDao {
 
     JSONObject findPatientByIdInHRS(String pid);
 

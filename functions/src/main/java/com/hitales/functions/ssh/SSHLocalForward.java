@@ -108,7 +108,7 @@ public class SSHLocalForward {
 
     public static void main(String[] args){
         SSHLocalForward forward = new SSHLocalForward("121.199.24.144", "xh", "rt0hizu{j9lzJNqi",
-                "dds-bp1f7b56b50093041.mongodb.rds.aliyuncs.com", 3717);
+                "dds-bp1baff8ad4002a41.mongodb.rds.aliyuncs.com", 3717);
         forward.localPort = 3718;
         try {
             forward.connectSSH();

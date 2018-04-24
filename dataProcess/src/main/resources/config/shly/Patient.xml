@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <table name="shly_patient_20180423" groupCol="PatientNo" displayCol="PatientNo,SexName,PatientName,ContactAdd">
+        <column name="id" sourceName="PatientNo" isRequired="true"/>
+        <column name="patientId" sourceName="PatientNo" isRequired="true"/>
+        <column name="sex" sourceName="SexName" isRequired="true"/>
+        <column name="name" sourceName="PatientName" isRequired="true"/>
+        <column name="address" sourceName="ContactAdd" isRequired="true"/>
+    </table>
+</body>

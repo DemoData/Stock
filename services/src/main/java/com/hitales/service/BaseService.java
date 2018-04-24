@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,21 +24,22 @@ public abstract class BaseService extends GenericService {
     @Value("${datasource.list}")
     private String dataSourceList;
 
-    private Record basicInfo = new Record();
+    private Object basicInfo;
 
     /**
      * 用于createTime
      */
     protected Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    /**
-     * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
-     */
-    private ExecutorService threadPool = Executors.newFixedThreadPool(8);
+    private ExecutorService threadPool;
 
     @Override
     public boolean processData() {
         try {
+            /*
+             * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
+             */
+            threadPool = Executors.newFixedThreadPool(8);
             String dataSourceList = getDataSourceList();
             String[] dataSourceArray = dataSourceList.split(",");
             //execute data process in every dataSource
@@ -49,6 +52,8 @@ public abstract class BaseService extends GenericService {
                 // 超时的时候向线程池中所有的线程发出中断(interrupted)
                 threadPool.shutdownNow();
             }
+            //清空
+            threadPool = null;
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
@@ -146,7 +151,11 @@ public abstract class BaseService extends GenericService {
     }
 
     @Override
-    public Record getBasicInfo() {
+    public void setBasicInfo(Object pBasicInfo) {
+        this.basicInfo = pBasicInfo;
+    }
+
+    public Object getBasicInfo() {
         return basicInfo;
     }
 

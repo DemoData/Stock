@@ -1,5 +1,6 @@
 package com.hitales.controller;
 
+import com.hitales.entity.StockInfo;
 import com.hitales.other.BlobToContent;
 import com.hitales.other.DataToMysql;
 import com.hitales.service.standard.IDataService;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author aron
@@ -25,19 +30,43 @@ public class StockController {
     private IDataService patientService;
 
     @Autowired
+    @Qualifier("assayService")
+    private IDataService assayService;
+
+    @Autowired
     private DataToMysql dataToMysql;
 
     @Autowired
     private BlobToContent blobToContent;
 
     /**
-     * 长海医院Patient数据处理
+     * Patient数据处理
      *
      * @return
      */
     @GetMapping("/processPatient")
     public String processPatient() {
+        Map<Object, Object> basicInfo = new HashMap<>();
+        basicInfo.put("hospitalId", "5ad86cb8acc162a73ee74f16");
+        basicInfo.put("batchNo", "shly20180423");
+        basicInfo.put("patientPrefix", "shly_");
+        patientService.setBasicInfo(basicInfo);
+
         if (patientService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processAssay")
+    public String processAssay() {
+        Map<Object, Object> basicInfo = new HashMap<>();
+        basicInfo.put("hospitalId", "5ad86cb8acc162a73ee74f16");
+        basicInfo.put("batchNo", "shly20180423");
+        basicInfo.put("patientPrefix", "shly_");
+        assayService.setBasicInfo(basicInfo);
+
+        if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -53,5 +82,18 @@ public class StockController {
     public String blobToContent() {
         blobToContent.processData();
         return SUCCESS_FLAG;
+    }
+
+    @RequestMapping("/index")
+    public ModelAndView stock() {
+        StockInfo info = new StockInfo();
+        info.setBatchNo("shch20180416");
+        info.setHospitalId("57b1e21fd897cd373ec7a14f");
+        info.setUserId("aron3");
+        //这里指在templates目录下面去找index.html
+
+        ModelAndView modelAndView = new ModelAndView("/main");
+        modelAndView.addObject("stockInfo", info);
+        return modelAndView;
     }
 }

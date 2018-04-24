@@ -1,0 +1,19 @@
+.sun-top {
+	height: 66px;
+	color: #F3F3F4;
+	background: url(../../img/top-bg.png) repeat-x left top;
+}
+
+.sun-top-table {
+	float: right;
+	position: relative;
+	right: 30px;
+	top: 10px;
+}
+
+.sun-top-img-logo {
+	width: 315px;
+	height: 66px;
+	position: relative;
+	left: 10px;
+}

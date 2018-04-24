@@ -46,11 +46,6 @@ public class XGAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public JSONObject findRecordByIdInHRS(String applyId) {
-        return null;
-    }
-
-    @Override
     public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
         return null;
     }
@@ -63,7 +58,7 @@ public class XGAssayDaoImpl extends BaseDao implements IAssayDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records, String collectionName) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, collectionName);
+            super.insert(records, collectionName);
         }
     }
 

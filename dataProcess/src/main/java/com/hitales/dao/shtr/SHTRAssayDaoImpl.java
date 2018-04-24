@@ -48,7 +48,7 @@ public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records, String collectionName) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, collectionName);
+            super.insert(records, collectionName);
         }
     }
 
@@ -63,11 +63,6 @@ public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao {
         String sql = "select patientId AS 'patientId', itemName AS 'assayName', itemTime AS 'assayTime',itemResultCode AS 'resultFlag',itemResultName AS 'assayResult',itemResultNum AS 'assayValue',itemUnit AS 'assayUnit',resultRefrence AS 'referenceRange' from shtr_lab_20180402 where groupRecordName =? and itemTime=?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper(LabDetail.class), params[0], params[1]);
-    }
-
-    @Override
-    public JSONObject findRecordByIdInHRS(String applyId) {
-        return null;
     }
 
     @Override

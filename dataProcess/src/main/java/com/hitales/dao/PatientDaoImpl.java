@@ -2,19 +2,28 @@ package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.SqlServerDataSourceConfig;
-import com.hitales.dao.BaseDao;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author aron
@@ -23,12 +32,33 @@ import java.util.List;
 @Repository("patientDao")
 public class PatientDaoImpl extends BaseDao implements IPatientDao {
 
+    private Element table = null;
+
+    private String groupCol;
+    private String displayCol;
+
+    {
+        String path = this.getClass().getClassLoader().getResource("config/shly/Patient.xml").getPath();
+        SAXReader reader = new SAXReader();
+        File xml = new File(path);
+        try {
+            Document document = reader.read(xml);
+            table = document.getRootElement().element("table");
+            String tableName = table.attribute("name").getValue();
+            groupCol = table.attribute("groupCol").getValue();
+            displayCol = table.attribute("displayCol").getValue();
+            super.setTableName(tableName);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public List<Patient> findPatients(String dataSource, int pageNum, int pageSize) {
         log.info(">>>>>>>>>>>Searching patients from : " + dataSource + "<<<<<<<<<<<<<<<");
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
-            return super.queryForListInSqlServer(jdbcTemplate, pageNum, pageSize, "Patient", null, null);
+            return super.queryForListInSqlServer(jdbcTemplate, pageNum, pageSize, getTableName(), null, null);
         }
         return super.queryForList(jdbcTemplate, pageNum, pageSize);
     }
@@ -62,57 +92,48 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         }
         String sql = null;
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
-            sql = "select count(t.id) from shtr_patient_20180402 t";
+            sql = "select count(t.id) from " + getTableName() + " t";
         } else {
-            sql = "select count(t.`病人ID号`) from (select `病人ID号` from `患者基本信息` group by `病人ID号`) t";
+            sql = "select count(*) from (select " + groupCol + " from " + getTableName() + " group by " + groupCol + ") t";
         }
         return getJdbcTemplate(dataSource).queryForObject(sql, Integer.class);
     }
 
     @Override
     protected String generateQuerySql() {
-//        String sql = "select t.id AS 'id',CONCAT('shch_', t.`病人ID号`) AS 'patientId',t.`性别` AS 'sex',t.`就诊年龄` AS 'age',t.`就诊日期` AS 'clinicDate',CONCAT('',(LEFT(t.`就诊日期`,4) - t.`就诊年龄`)) AS 'birthDay' from `患者基本信息` t group by t.`病人ID号`";
-        String sql = "select id,性别 AS 'sex',就诊年龄 AS 'age',出院日期 AS 'outHospitalDate',病人ID号 AS 'patientId' from `患者基本信息` group by `病人ID号`";
+        String sql = "select " + displayCol + " from " + getTableName() + " group by " + groupCol;
         return sql;
     }
 
     @Override
     protected RowMapper<Patient> generateRowMapper() {
         if (getRowMapper() == null) {
-            setRowMapper(new PatientRowMapper());
+            setRowMapper(new PatientRowMapper(table));
         }
         return getRowMapper();
     }
 
     class PatientRowMapper implements RowMapper<Patient> {
+        private Element element;
+
+        public PatientRowMapper(Element table) {
+            this.element = table;
+        }
 
         @Override
         public Patient mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Patient patient = new Patient();
-            /*patient.setPatientId("shch_" + rs.getString("病人ID号"));
-            patient.setName(rs.getString("姓名"));*/
-
-            patient.setId(rs.getInt("id"));
-            String age = rs.getString("age");
-            if (age != null) {
-                age = age.substring(0, age.indexOf("."));
-                patient.setAge(age);
+            Map<String, Object> dataMap = new HashMap<>();
+            Iterator iterator = element.elementIterator();
+            while (iterator.hasNext()) {
+                Element columnElement = (Element) iterator.next();
+                String beanName = columnElement.attribute("name").getValue();
+                String sourceValue = columnElement.attribute("sourceName").getValue();
+                if (beanName == null || sourceValue == null) {
+                    continue;
+                }
+                dataMap.put(beanName, rs.getObject(sourceValue));
             }
-
-            if (rs.getString("outHospitalDate") != null) {
-                String outHospitalYear = rs.getString("outHospitalDate").substring(0, 4);
-                Integer birthYear = Integer.valueOf(outHospitalYear) - Integer.valueOf(age);
-                patient.setBirthDay(birthYear.toString());
-            }
-//            patient.setName(rs.getString("name"));
-            patient.setPatientId(rs.getString("patientId"));
-
-//            Object birthYear = rs.getObject("birthday");
-//            patient.setBirthDay(birthYear == null ? "" : birthYear.toString().substring(0, 8));
-
-//            patient.setAddress(rs.getString("Address"));
-            patient.setSex(rs.getString("sex"));
-
+            Patient patient = map2Bean(dataMap, Patient.class);
             return patient;
         }
 

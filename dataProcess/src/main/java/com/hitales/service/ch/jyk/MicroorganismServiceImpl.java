@@ -1,7 +1,7 @@
 package com.hitales.service.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IMicroorganismDao;
 import com.hitales.entity.Microorganism;
 import com.hitales.entity.Record;
@@ -57,16 +57,6 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
      * @param record
      */
     protected void customInitInfo(Record record) {
-        record.setHospitalId("57b1e21fd897cd373ec7a14f");
-        record.setUserId("5acaddea85271af7af884b3a");
-        record.setBatchNo("shch2018040801");
-        record.setDepartment("检验科");
-        record.setFormat("table");
-        record.setDeleted(false);
-        record.setSource("采集入库");
-        record.setStatus("AMD识别完成");
-        record.setRecordType("化验记录");
-        record.setSubRecordType("微生物");
     }
 
     @Override

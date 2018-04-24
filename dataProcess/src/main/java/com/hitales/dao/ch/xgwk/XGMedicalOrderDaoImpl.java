@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-@Repository
+@Repository("xgMedicalOrderDao")
 public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
 
     @Override
@@ -41,7 +41,7 @@ public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records, String collectionName) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, collectionName);
+            super.insert(records, collectionName);
         }
     }
 
@@ -56,6 +56,16 @@ public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
         String sql = "select `类型` AS 'type' , `长/临` AS 'timeType',`内容` AS 'content',`剂量` AS 'dosage',`单位` AS 'unit',`途径` AS 'approach',`频次` AS 'frequency',`开始时间` AS 'startDate',`停止时间` AS 'endDate' from 医嘱 where 病人ID号 =?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper(MedicalOrder.class), params[0]);
+    }
+
+    @Override
+    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
+        return null;
+    }
+
+    @Override
+    public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
+        return null;
     }
 
     class MedicalOrderRowMapper implements RowMapper<Record> {

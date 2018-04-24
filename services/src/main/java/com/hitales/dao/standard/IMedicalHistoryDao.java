@@ -1,6 +1,5 @@
 package com.hitales.dao.standard;
 
-import com.hitales.dao.TextDao;
 import com.hitales.entity.MedicalHistory;
 
 import java.util.List;
