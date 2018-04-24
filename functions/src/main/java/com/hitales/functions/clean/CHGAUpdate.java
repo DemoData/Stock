@@ -20,7 +20,7 @@ import java.util.List;
 
 public class CHGAUpdate {
 
-    static MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
+    /*static MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
     //static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
     static ServerAddress serverAddress = new ServerAddress("192.168.1.153", 27017);
 
@@ -33,7 +33,21 @@ public class CHGAUpdate {
     //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
     static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
     //static MongoClient mongo = new MongoClient("localhost", 27017);
-    static MongoDatabase db = mongo.getDatabase("HRS");
+    static MongoDatabase db = mongo.getDatabase("HRS");*/
+
+    static MongoCredential mongoCredential = MongoCredential.createCredential("yy", "HRS-live", "rf1)Rauwu3dpsGid".toCharArray());
+
+    //static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
+    static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
+
+    static List<MongoCredential> mongoCredentials = new ArrayList<>();
+    static {
+        mongoCredentials.add(mongoCredential);
+    }
+    //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
+    static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
+    //static MongoClient mongo = new MongoClient("localhost", 27017);
+    static MongoDatabase db = mongo.getDatabase("HRS-live");
     static MongoCollection dc = db.getCollection("Record");
 
     private static MongoTemplate hrsMongoTemplate;
@@ -41,10 +55,10 @@ public class CHGAUpdate {
     static {
         MongoProperties mongoProperties = new MongoProperties();
         mongoProperties.setHost("localhost");
-        mongoProperties.setPort(27017);
-        mongoProperties.setDatabase("HRS");
-        mongoProperties.setUsername("aron");
-        mongoProperties.setPassword("aron".toCharArray());
+        mongoProperties.setPort(3718);
+        mongoProperties.setDatabase("HRS-live");
+        mongoProperties.setUsername("yy");
+        mongoProperties.setPassword("rf1)Rauwu3dpsGid".toCharArray());
         hrsMongoTemplate = DBConnection.generateTemplate(mongoProperties);
     }
 
@@ -57,6 +71,7 @@ public class CHGAUpdate {
         anchorsList.add("身份证编号");
         anchorsList.add("体 格 检 查");
         anchorsList.add("体    格    检    查");
+        anchorsList.add("体  格  检  查");
         anchorsList.add("邮编");
     }
 
@@ -76,6 +91,7 @@ public class CHGAUpdate {
         notAnchorList.add("病人ID");
         notAnchorList.add("登记号");
         notAnchorList.add("彩超号");
+        notAnchorList.add("电话");
     }
 
     //前面不是中文的需要打上锚点
@@ -93,6 +109,7 @@ public class CHGAUpdate {
     static {
         prefNotAnchorList.add("住院医师");
         prefNotAnchorList.add("主治医师");
+        prefNotAnchorList.add("建议");
     }
 
     //前面不能为中文，后面跟冒号作为锚点
@@ -101,7 +118,7 @@ public class CHGAUpdate {
     static {
         colonAnchorList.add("主  诉");
         colonAnchorList.add("并发症");
-        colonAnchorList.add("入院时病史、体征及辅助检查主要发现");
+        colonAnchorList.add("医疗院长");
         colonAnchorList.add("抢救措施");
         colonAnchorList.add("查体");
         colonAnchorList.add("住院经过及死亡时情况");
@@ -118,6 +135,8 @@ public class CHGAUpdate {
         colonAnchorList.add("登记号");
         colonAnchorList.add("彩超号");
         colonAnchorList.add("门诊");
+        colonAnchorList.add("出院情况");
+        colonAnchorList.add("专 科 检 查");
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -145,6 +164,8 @@ public class CHGAUpdate {
         colonEndAnchorList.add("病理诊断");
         colonEndAnchorList.add("主治医师");
         colonEndAnchorList.add("住院医师");
+        colonEndAnchorList.add("入院时病史、体征及辅助检查主要发现");
+
     }
 
     public static void main(String[] args) {
@@ -164,14 +185,14 @@ public class CHGAUpdate {
             Document document = itor.next();
             JSONObject jsonObject = JSONObject.parseObject(document.toJson());
             System.out.println(jsonObject.getString("_id"));
-            /*String textARS = jsonObject.getJSONObject("info").getString("text");
+            String textARS = jsonObject.getJSONObject("info").getString("text");
             if (!jsonObject.getJSONObject("info").containsKey("text_back")) {
                 jsonObject.getJSONObject("info").put("text_back", textARS);
             } else {
                 textARS = jsonObject.getJSONObject("info").getString("text_back");
-            }*/
-            String textARS = jsonObject.getJSONObject("info").getString("textARS");
-            textARS = TextFormatter.formatTextByAnchaor(textARS);
+            }
+            /*String textARS = jsonObject.getJSONObject("info").getString("textARS");
+            textARS = TextFormatter.formatTextByAnchaor(textARS);*/
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
             /*for(String anchor : anchorsList){
                 textARS = textARS.replaceAll(anchor, "【【" + anchor + "】】");

@@ -27,7 +27,7 @@ public class TextFormatter {
     public final static String COLUMN_NAME = "columnName";
     public final static String TEXT = "text";
     public final static String TEXT_ARS = "textARS";
-    public final static String ANCHOR_EXCEL_PATH = "/Users/aron/stock/技术用-症状&体征-锚点使用.xlsx";
+    public final static String ANCHOR_EXCEL_PATH = "/Users/liulun/Desktop/上海长海医院/技术用-症状&体征-锚点使用.xlsx";
 
     public static ArrayList<String> anchorList = null;
 
