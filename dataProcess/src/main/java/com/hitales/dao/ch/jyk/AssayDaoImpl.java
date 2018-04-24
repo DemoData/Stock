@@ -64,13 +64,13 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
         return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }
 
-    @Override
+    /*@Override
     public JSONObject findRecordByIdInHRS(String applyId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(applyId));
         JSONObject record = hrsMongoTemplate.findOne(query, JSONObject.class, "Record");
         return record;
-    }
+    }*/
 
     @Override
     public String findPatientIdByGroupRecordName(String dataSource, String groupRecordName) {

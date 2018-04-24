@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author aron
  */
@@ -27,19 +30,43 @@ public class StockController {
     private IDataService patientService;
 
     @Autowired
+    @Qualifier("assayService")
+    private IDataService assayService;
+
+    @Autowired
     private DataToMysql dataToMysql;
 
     @Autowired
     private BlobToContent blobToContent;
 
     /**
-     * 长海医院Patient数据处理
+     * Patient数据处理
      *
      * @return
      */
     @GetMapping("/processPatient")
     public String processPatient() {
+        Map<Object, Object> basicInfo = new HashMap<>();
+        basicInfo.put("hospitalId", "5ad86cb8acc162a73ee74f16");
+        basicInfo.put("batchNo", "shly20180423");
+        basicInfo.put("patientPrefix", "shly_");
+        patientService.setBasicInfo(basicInfo);
+
         if (patientService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processAssay")
+    public String processAssay() {
+        Map<Object, Object> basicInfo = new HashMap<>();
+        basicInfo.put("hospitalId", "5ad86cb8acc162a73ee74f16");
+        basicInfo.put("batchNo", "shly20180423");
+        basicInfo.put("patientPrefix", "shly_");
+        assayService.setBasicInfo(basicInfo);
+
+        if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -65,7 +92,7 @@ public class StockController {
         info.setUserId("aron3");
         //这里指在templates目录下面去找index.html
 
-        ModelAndView modelAndView = new ModelAndView("/index");
+        ModelAndView modelAndView = new ModelAndView("/main");
         modelAndView.addObject("stockInfo", info);
         return modelAndView;
     }

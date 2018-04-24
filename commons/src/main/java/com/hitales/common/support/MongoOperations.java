@@ -43,6 +43,10 @@ public class MongoOperations {
         this.dbCollection = pDbCollection;
     }
 
+    public <T> List<T> findAll(Class<T> entityClass, String collectionName) {
+        return this.getMongoTemplate().findAll(entityClass, collectionName);
+    }
+
     public <T> List<T> find(Query query, Class<T> entityClass, String collectionName) {
         return this.getMongoTemplate().find(query, entityClass, collectionName);
     }
@@ -109,7 +113,7 @@ public class MongoOperations {
      *
      * @return
      */
-    public FindIterable<Document> findAll() {
+    public FindIterable<Document> find() {
         return this.getMongoCollection().find();
     }
 

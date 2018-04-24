@@ -24,10 +24,10 @@ public class Record {
     private String[] odCategories;
     private String[] orgOdCategories;
     private String sourceId;
-    private String format;
+    private String format;//文本text，半结构化half-text，结构化table
     private boolean deleted;
-    private String sourceType;//数据类型 文本text，半结构化half-text，结构化table
-    private String source;
+    private String source;//数据来源，eg:化验，检查，病历文书
+    private Double version = 1.0;//初始为1.0
     private String status;
     private Long createTime;
     private Long updateTime = System.currentTimeMillis();//上次更新时间
@@ -64,13 +64,13 @@ public class Record {
         this.sourceRecordType = "";
     }
 
-    public enum SourceType {
+    public enum FormatType {
         TEXT("text"),
         HALF_TEXT("half-text"),
         TABLE("table");
         private final String value;
 
-        SourceType(String pValue) {
+        FormatType(String pValue) {
             this.value = pValue;
         }
 

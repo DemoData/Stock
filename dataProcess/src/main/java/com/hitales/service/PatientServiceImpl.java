@@ -29,11 +29,11 @@ public class PatientServiceImpl extends BaseService {
 
     private Long currentTimeMillis = TimeUtil.getCurrentTimeMillis();
 
-    private String batchNo = "shch20180416";
+    private String batchNo = null;
     //﻿上海长海
-    private String hospitalId = "57b1e21fd897cd373ec7a14f";
+    private String hospitalId = null;
 
-    private String patientPrefix = "shch_";
+    private String patientPrefix = null;
 
     @Override
     public JSONObject bean2Json(Object entity) {
@@ -61,6 +61,7 @@ public class PatientServiceImpl extends BaseService {
         boolean isFinish = false;
         Long count = 0L;
         Map<String, JSONObject> patientMap = new HashMap<>();
+        initial();
         while (!isFinish) {
             if (pageNum >= endPage) {
                 isFinish = true;
@@ -109,6 +110,19 @@ public class PatientServiceImpl extends BaseService {
             }
         }
         log.info(">>>>>>>>>>>total inserted patients: " + count + " from " + dataSource + ",currentTimeMillis:" + currentTimeMillis);
+    }
+
+    private void initial() {
+        Object basicInfo = super.getBasicInfo();
+        if (basicInfo instanceof Map) {
+            Map info = ((Map) basicInfo);
+            if (info == null || info.isEmpty()) {
+                throw new RuntimeException("No basic info!");
+            }
+            this.hospitalId = info.get("hospitalId").toString();
+            this.batchNo = info.get("batchNo").toString();
+            this.patientPrefix = info.get("patientPrefix").toString();
+        }
     }
 
     @Override

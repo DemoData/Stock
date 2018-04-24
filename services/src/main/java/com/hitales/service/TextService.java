@@ -3,7 +3,7 @@ package com.hitales.service;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
 import com.hitales.common.support.TextFormatter;
-import com.hitales.dao.TextDao;
+import com.hitales.dao.standard.TextDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -144,7 +144,7 @@ public abstract class TextService<T> extends BaseService {
      * @param record
      */
     protected void initRecordBasicColumn(Record record) {
-        Record basicInfo = getBasicInfo();
+        Record basicInfo = (Record) getBasicInfo();
         if (basicInfo == null) {
             return;
         }

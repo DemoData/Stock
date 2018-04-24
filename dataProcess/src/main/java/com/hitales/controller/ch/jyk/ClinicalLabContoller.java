@@ -41,6 +41,14 @@ public class ClinicalLabContoller {
     @Qualifier("chyxMedicalOrderService")
     private IDataService medicalOrderService;
 
+    @Autowired
+    @Qualifier("chyxOperationDetailService")
+    private IDataService operationDetailService;
+
+    @Autowired
+    @Qualifier("chyxOperationMainService")
+    private IDataService operationMainService;
+
     /**
      * 长海医院化验数据处理
      *
@@ -112,7 +120,7 @@ public class ClinicalLabContoller {
 
     @GetMapping("/ga/processAssay")
     public String processGAAssay() {
-        Record basicInfo = assayService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setUserId("5acaddea85271af7af884b3a");
         basicInfo.setBatchNo("shch2018040901");
@@ -123,7 +131,7 @@ public class ClinicalLabContoller {
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("化验记录");
         basicInfo.setSubRecordType("化验");
-
+        operationDetailService.setBasicInfo(basicInfo);
         if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -132,7 +140,7 @@ public class ClinicalLabContoller {
 
     @GetMapping("/ga/processInspection")
     public String processGAInspection() {
-        Record basicInfo = inspectionService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setUserId("5acaddea85271af7af884b3a");
         basicInfo.setBatchNo("shch2018040901");
@@ -143,6 +151,7 @@ public class ClinicalLabContoller {
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("检查记录");
         basicInfo.setSubRecordType("检查");
+        operationDetailService.setBasicInfo(basicInfo);
         if (inspectionService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -151,7 +160,7 @@ public class ClinicalLabContoller {
 
     @GetMapping("/ga/processMedicalHistory")
     public String processGAMedicalHistory() {
-        Record basicInfo = medicalHistoryService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setUserId("5acaddea85271af7af884b3a");
         basicInfo.setBatchNo("shch2018040901");
@@ -160,6 +169,7 @@ public class ClinicalLabContoller {
         basicInfo.setDeleted(false);
         basicInfo.setSource("病历文书");
         basicInfo.setStatus("AMD识别完成");
+        operationDetailService.setBasicInfo(basicInfo);
         if (medicalHistoryService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -168,7 +178,7 @@ public class ClinicalLabContoller {
 
     @GetMapping("/ga/processMicroorganism")
     public String processGAMicroorganism() {
-        Record basicInfo = microorganismService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setUserId("5acaddea85271af7af884b3a");
         basicInfo.setBatchNo("shch2018040901");
@@ -179,6 +189,7 @@ public class ClinicalLabContoller {
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("化验记录");
         basicInfo.setSubRecordType("微生物");
+        operationDetailService.setBasicInfo(basicInfo);
         if (microorganismService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -187,7 +198,7 @@ public class ClinicalLabContoller {
 
     @GetMapping("/ga/processPathology")
     public String processGAPathology() {
-        Record basicInfo = pathologyService.getBasicInfo();
+        Record basicInfo =new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setUserId("5acaddea85271af7af884b3a");
         basicInfo.setBatchNo("shch2018040901");
@@ -198,6 +209,7 @@ public class ClinicalLabContoller {
         basicInfo.setDeleted(false);
         basicInfo.setSource("病理");
         basicInfo.setStatus("AMD识别完成");
+        operationDetailService.setBasicInfo(basicInfo);
         if (pathologyService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -208,19 +220,18 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processAssay")
     public String processZLAssay() {
-        Record basicInfo = assayService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
-        basicInfo.setSourceType(Record.SourceType.TABLE.value());
-        basicInfo.setFormat("table");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("化验");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("化验记录");
         basicInfo.setSubRecordType("化验");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
-
+        operationDetailService.setBasicInfo(basicInfo);
         if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -229,18 +240,18 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processInspection")
     public String processZLInspection() {
-        Record basicInfo = inspectionService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
-        basicInfo.setSourceType(Record.SourceType.HALF_TEXT.value());
-        basicInfo.setFormat("text");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("检查");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("检查记录");
         basicInfo.setSubRecordType("检查");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
         if (inspectionService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -249,16 +260,16 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processMedicalHistory")
     public String processZLMedicalHistory() {
-        Record basicInfo = medicalHistoryService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
-        basicInfo.setSourceType(Record.SourceType.TEXT.value());
-        basicInfo.setFormat("text");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("病历文书");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
         if (medicalHistoryService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -267,18 +278,18 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processMicroorganism")
     public String processZLMicroorganism() {
-        Record basicInfo = microorganismService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
-        basicInfo.setSourceType(Record.SourceType.TABLE.value());
-        basicInfo.setFormat("table");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("微生物");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("化验记录");
         basicInfo.setSubRecordType("微生物");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
         if (microorganismService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -287,18 +298,18 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processPathology")
     public String processZLPathology() {
-        Record basicInfo = pathologyService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
+        basicInfo.setDepartment("肿瘤科");
         basicInfo.setRecordType("病理");
         basicInfo.setSubRecordType("病理");
-        basicInfo.setSourceType(Record.SourceType.HALF_TEXT.value());
-        basicInfo.setFormat("text");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("病理");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
         if (pathologyService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -307,19 +318,59 @@ public class ClinicalLabContoller {
 
     @GetMapping("/zl/processMedicalOrder")
     public String processZLMedicalOrder() {
-        Record basicInfo = medicalOrderService.getBasicInfo();
+        Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
         basicInfo.setBatchNo("shch20180416");
-        basicInfo.setDepartment("检验科");
+        basicInfo.setDepartment("肿瘤科");
         basicInfo.setRecordType("治疗方案");
         basicInfo.setSubRecordType("药品医嘱");
-        basicInfo.setSourceType(Record.SourceType.TABLE.value());
-        basicInfo.setFormat("table");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("药品医嘱");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
         if (medicalOrderService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processOperationMain")
+    public String processZLOperationMain() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setRecordType("手术操作记录");
+        basicInfo.setSubRecordType("手术事件");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("手术事件主记录");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
+        if (operationMainService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/zl/processOperationDetail")
+    public String processZLOperationDetail() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a14f");
+        basicInfo.setBatchNo("shch20180416");
+        basicInfo.setDepartment("肿瘤科");
+        basicInfo.setRecordType("手术操作记录");
+        basicInfo.setSubRecordType("手术明细");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("手术明细");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"胃肠肿瘤"});
+        operationDetailService.setBasicInfo(basicInfo);
+        if (operationDetailService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

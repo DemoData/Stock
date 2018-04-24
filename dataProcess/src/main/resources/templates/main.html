@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js" > <!--<![endif]-->
+<head>
+    <head th:include="/common/common_head :: commonHeader('首页')"/>
+    <link rel="stylesheet" href="../static/css/main/main.css" th:href="@{/css/main/main.css}"/>
+    <script type="text/javascript" src="../static/js/main.js" th:src="@{/js/main.js}"></script>
+</head>
+<body>
+<div id="main" class="easyui-layout" style="width:600px;height:400px;"
+     data-options="fit:true">
+    <!-- 顶部 -->
+    <div data-options="region:'north',border:false" class="sun-top">
+        <div align="left" style="float: left;">
+            <img alt="入库系统" src="../static/img/logo.png" th:src="@{/img/logo_ruku.png}" class="sun-top-img-logo"/>
+        </div>
+        <table class="sun-top-table">
+            <tr>
+                <td width="auto" align="center"><a id="editPwdBtn" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-diy2'">修改密码</a></td>
+                <td width="auto" align="center"><a id="logoutBtn" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-back'">注销</a></td>
+                <td width="auto">
+                    <div style="float: right;">
+                        系统主题:<select id="cb-theme" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',onChange:onChangeTheme" style="display: none;">
+                        <option selected="selected" value="default">默认</option>
+                        <option value="gray">灰色</option>
+                        <option value="black">黑色</option>
+                        <option value="bootstrap">浅灰</option>
+                        <option value="metro">白色</option>
+                        <option value="material">肉色</option>
+                    </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+						<span style="font-size: 14px;">
+				    	<font>当前用户：</font><!--${sessionScope.user_in_session.nickname != null && fn:length(fn:trim(sessionScope.user_in_session.nickname)) > 0 ? sessionScope.user_in_session.nickname : sessionScope.user_in_session.username},-->
+				    	<font>上次登录时间：</font><!--<s:date name="#session.user_in_session.lastLoginTime" format="yyyy-MM-dd HH:mm"/>-->
+				    	</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--  底部 -->
+    <div data-options="region:'south',border:false" style="height:33px;color: #0E2D5F;">
+        <div align="center">版权所有,违版必究<br/>联系电话：13512341234</div>
+    </div>
+    <!-- 左边菜单 -->
+    <div data-options="region:'west'" title="导航菜单" style="width:150px;border-bottom: none;border-top: none;border-right: none;">
+        <div id="menuAccordion" class="easyui-accordion" style="width:300px;height:200px;"
+             data-options="fit:true">
+            <div title="模块导航" data-options="iconCls:'icon-diy8',selected:true" >
+                <ul id="menuTree"></ul>
+            </div>
+            <div title="报表中心" data-options="iconCls:'icon-diy9'" >
+                <h3 style="color:#BECBD7;">正在努力开发中...</h3>
+            </div>
+            <div title="数据分析" data-options="iconCls:'icon-diy3'" >
+                <h3 style="color:#BECBD7;">正在努力开发中...</h3>
+            </div>
+            <div title="关于我们" data-options="iconCls:'icon-tip'" style="padding:10px;">
+                <h3 style="color:#0099FF;">入库系统</h3>
+                <p>入库系统XXXXXXXXXXXx。</p>
+            </div>
+        </div>
+    </div>
+    <!-- 中间 -->
+    <div data-options="region:'center'" style="background:#eee;border-left: none;border-bottom: none;border-top: none;">
+        <div id="centerTabs" class="easyui-tabs" style="width:500px;height:250px;"
+             data-options="fit:true">
+            <div title="欢迎页" >
+                <div align="center" style="margin-top: 100px;">
+                    <font size="16" color="#95B8E7">欢迎登陆<br/>入库系统</font>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 	修改密码的弹出框  -->
+<div id="passwordDlg" class="easyui-dialog" title="My Dialog" align="center" >
+    <form id="passwordForm" method="post">
+        <input type="hidden" name="id"/>
+        <table class="windowTable" align="center">
+            <tr>
+                <td width="70">原密码:</td>
+                <td><input id="oPwd" name="oldPassword" class="easyui-validatebox" required="true" missingMessage="请输入原始密码" /></td>
+            </tr>
+            <tr>
+                <td width="70">新密码:</td>
+                <td><input id="nPwd" name="newPassword" class="easyui-validatebox" required="true" missingMessage="请输入新密码"/></td>
+            </tr>
+            <tr>
+                <td width="70">确认新密码:</td>
+                <td><input id="rPwd" name="confirmPassword" class="easyui-validatebox" required="true" missingMessage="确认新密码" validType="equals['#nPwd']" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

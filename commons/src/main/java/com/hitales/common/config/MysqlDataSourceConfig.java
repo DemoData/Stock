@@ -44,7 +44,7 @@ public class MysqlDataSourceConfig {
     public static final String MYSQL_ZL_TEMPLATE = "wczlJdbcTemplate";
 
     public static final String MYSQL_RK_PREFIX = "mysql.rk";
-    public static final String MYSQL_RK_DATASOURCE = "mysql.rk";
+    public static final String MYSQL_RK_DATASOURCE = "mysql.rkDataSource";
     public static final String MYSQL_RK_TEMPLATE = "rkJdbcTemplate";
 
     @Primary

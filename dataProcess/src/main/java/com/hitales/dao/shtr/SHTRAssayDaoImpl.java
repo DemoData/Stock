@@ -66,11 +66,6 @@ public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public JSONObject findRecordByIdInHRS(String applyId) {
-        return null;
-    }
-
-    @Override
     public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
         return null;
     }

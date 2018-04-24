@@ -1,7 +1,7 @@
 package com.hitales.service.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IMicroorganismDao;
 import com.hitales.entity.Microorganism;
 import com.hitales.entity.Record;

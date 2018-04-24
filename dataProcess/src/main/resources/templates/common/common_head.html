@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--[if IE 8 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js" > <!--<![endif]-->
+<head th:fragment="commonHeader(title)">
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <meta name="keywords" content="" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title th:text="${title}"></title>
+
+    <!-- main JS libs -->
+    <script type="text/javascript" src="../static/jquery-easyui-1.5.4/jquery.min.js" th:src="@{/jquery-easyui-1.5.4/jquery.min.js}"></script>
+    <script type="text/javascript" src="../static/jquery-easyui-1.5.4/jquery.easyui.min.js" th:src="@{/jquery-easyui-1.5.4/jquery.easyui.min.js}"></script>
+    <script type="text/javascript" src="../static/jquery-easyui-1.5.4/locale/easyui-lang-zh_CN.js" th:src="@{/jquery-easyui-1.5.4/locale/easyui-lang-zh_CN.js}"></script>
+
+    <!-- Style CSS -->
+    <script type="text/javascript" src="../static/js/common/common.js" th:src="@{/js/common/common.js}"></script>
+    <script type="text/javascript">
+        var defaultTheme = "default";
+        //打开新的子页面时动态从父窗体获取主题样式
+        //这里获取顶部窗体的一个全局变量config，如果有值就用top的主题样式
+        if(top.config){
+            if(top.config.themeValue){
+                defaultTheme = top.config.themeValue;
+            }
+        }
+        document.write('<link id="themeLink" rel="stylesheet" type="text/css" href="../static/jquery-easyui-1.5.4/themes/'+defaultTheme+'/easyui.css" th:href="@{/jquery-easyui-1.5.4/themes/default/easyui.css}"/>');
+    </script>
+    <!--<link id="themeLink" rel="stylesheet" type="text/css" href="../jquery-easyui-1.5.4/themes/default/easyui.css" th:href="@{/jquery-easyui-1.5.4/themes/default/easyui.css}"/>-->
+    <link rel="stylesheet" type="text/css" href="../static/jquery-easyui-1.5.4/themes/icon.css" th:href="@{/jquery-easyui-1.5.4/themes/icon.css}"/>
+    <style type="text/css">
+        .windowTable{
+            margin-top:5px;
+        }
+        .windowTable tr{
+            display:block;
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+    </style>
+
+</head>
+</html>

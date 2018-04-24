@@ -73,11 +73,6 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public JSONObject findRecordByIdInHRS(String applyId) {
-        return null;
-    }
-
-    @Override
     public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
         log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + applyId);
         String sql = "select PID from Record where groupRecordName=? group by groupRecordName,PID";

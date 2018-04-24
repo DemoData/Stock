@@ -1,6 +1,6 @@
 package com.hitales.service.ch.xgwk;
 
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IMedicalOrderDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;

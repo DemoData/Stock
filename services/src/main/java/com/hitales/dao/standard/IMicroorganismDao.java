@@ -1,6 +1,5 @@
 package com.hitales.dao.standard;
 
-import com.hitales.dao.TableDao;
 import com.hitales.entity.Microorganism;
 
 import java.util.List;

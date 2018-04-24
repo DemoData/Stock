@@ -2,7 +2,7 @@ package com.hitales.service.ch.xgwk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.support.TextFormatter;
-import com.hitales.dao.TextDao;
+import com.hitales.dao.standard.TextDao;
 import com.hitales.dao.standard.IMedicalHistoryDao;
 import com.hitales.entity.MedicalHistory;
 import com.hitales.entity.Record;

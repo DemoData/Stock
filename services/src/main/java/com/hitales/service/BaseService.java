@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +24,7 @@ public abstract class BaseService extends GenericService {
     @Value("${datasource.list}")
     private String dataSourceList;
 
-    private Record basicInfo = new Record();
+    private Object basicInfo;
 
     /**
      * 用于createTime
@@ -149,7 +151,11 @@ public abstract class BaseService extends GenericService {
     }
 
     @Override
-    public Record getBasicInfo() {
+    public void setBasicInfo(Object pBasicInfo) {
+        this.basicInfo = pBasicInfo;
+    }
+
+    public Object getBasicInfo() {
         return basicInfo;
     }
 

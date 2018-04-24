@@ -1,7 +1,7 @@
 package com.hitales.service.ch.xgwk;
 
 import com.hitales.common.util.TimeUtil;
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;

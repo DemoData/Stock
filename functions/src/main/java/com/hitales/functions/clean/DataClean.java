@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -26,7 +25,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class DataClean {
 
-    private static MongoTemplate hrsMongoTemplate;
+    private static MongoOperations mongoOperations;
 
     private static JdbcTemplate jdbcTemplate;
 
@@ -37,7 +36,7 @@ public class DataClean {
         hrsProperties.setDatabase("HRS");
         hrsProperties.setUsername("aron");
         hrsProperties.setPassword("aron".toCharArray());
-        hrsMongoTemplate = DBConnection.generateTemplate(hrsProperties);
+        mongoOperations = new MongoOperations(DBConnection.generateTemplate(hrsProperties));
 
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url("jdbc:mysql://rm-bp1a049g618bz7l2q.mysql.rds.aliyuncs.com:3306/zhongliuxiangguan?autoReconnect=true");
@@ -57,7 +56,7 @@ public class DataClean {
     public void print() {
         Query query = new Query();
 //        query.addCriteria(Criteria.where("_id").is("5ad6dfe4f4c7a2f31e9b93df"));
-        JSONObject jsonObject = hrsMongoTemplate.findOne(query, JSONObject.class, "temp");
+        JSONObject jsonObject = mongoOperations.findOne(query, JSONObject.class, "temp");
         List<String> allGroupRecordName = jsonObject.getObject("groupRecordName", List.class);
         StringBuilder sb = new StringBuilder();
         for (String groupRecordName : allGroupRecordName) {
@@ -106,32 +105,31 @@ public class DataClean {
 //        List<String> allGroupRecordName = hrsMongoTemplate.getCollection("Record").distinct("groupRecordName", dbQuery);
         Query query = new Query();
         query.addCriteria(Criteria.where("batchNo").is("shch20180416"));
-        query.addCriteria(Criteria.where("odCategories").size(2));
-        List<JSONObject> records = hrsMongoTemplate.find(query, JSONObject.class, "Record");
+        query.addCriteria(Criteria.where("odCategories").is("胃肠肿瘤"));
+        List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
 
         for (JSONObject record : records) {
             String rid = record.getString("_id");
-            List<String> odCategories = record.getObject("odCategories", List.class);
+            String groupRecordName = record.getString("groupRecordName");
 
+            List<Map<String, Object>> icdList = jdbcTemplate.queryForList("select ICD编码 from 病案首页诊断 where 一次就诊号=? group by ICD编码", groupRecordName);
 
-            Map<String, String> ods = new HashMap<>();
+            Map<String, String> validOds = new HashMap<>();
+            for (Map<String, Object> icdMap : icdList) {
+                String icd = icdMap.get("ICD编码").toString();
+                List<String> ods = jdbcTemplate.queryForList("select 病种类型 from 病种类型 where ICD编码=?", String.class, icd);
+                if (ods == null || ods.isEmpty()) {
+                    continue;
+                }
+                validOds.put(ods.get(0), null);
+            }
+            Set<String> odCategpries = validOds.keySet();
 
-            for (String odCategory : odCategories) {
-                ods.put(odCategory, null);
-            }
-            if (ods.isEmpty()) {
-                log.error("!!!!!!!!!!找不到病种，rid -> " + rid);
-                continue;
-            }
-            if (ods.size() == 2) {
-                continue;
-            }
-            Set<String> keys = ods.keySet();
-            log.info("old odCategories->" + odCategories.toString() + " ,new odCategories is ->" + keys.toArray()[0]);
+            log.info("rid->" + rid + ",new odCategories is ->" + odCategpries.toArray(new String[]{}));
             BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
             bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid))
                     .addCriteria(Criteria.where("batchNo").is("shch20180416")));
-            bathUpdateOption.setUpdate(Update.update("odCategories", keys.toArray(new String[]{})));
+            bathUpdateOption.setUpdate(Update.update("odCategories", odCategpries.toArray(new String[]{})));
             bathUpdateOption.setMulti(true);
             bathUpdateOption.setUpsert(false);
             options.add(bathUpdateOption);
@@ -166,18 +164,18 @@ public class DataClean {
             log.info(">>>>>>>>> pageNum:" + pageNum);
             query.with(new PageRequest(pageNum, 1000));
             //分页
-            List<JSONObject> jsonObjects = hrsMongoTemplate.find(query, JSONObject.class, "Record");
+            List<JSONObject> jsonObjects = mongoOperations.find(query, JSONObject.class, "Record");
             log.info(">>>>>>>>> found jsonObjects:" + jsonObjects.size());
 
             if (jsonObjects.size() < 1000) {
                 isFinished = true;
             }
 
-            List<Mapping> mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+            List<Mapping> mapping = mongoOperations.findAll(Mapping.class, "Mapping");
 
             if (mapping == null || mapping.isEmpty()) {
-                MappingMatch.addMappingRule(hrsMongoTemplate);
-                mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+                MappingMatch.addMappingRule(mongoOperations.getMongoTemplate());
+                mapping = mongoOperations.findAll(Mapping.class, "Mapping");
             }
 
             for (JSONObject item : jsonObjects) {
@@ -240,7 +238,6 @@ public class DataClean {
     }
 
     private int updateStart(List<BatchUpdateOption> options) {
-        MongoOperations mongoOperations = new MongoOperations(hrsMongoTemplate);
         int effected = mongoOperations.batchUpdate("Record", options);
         log.info(">>>>>>>>>>>受影响的行数," + effected);
         options.clear();

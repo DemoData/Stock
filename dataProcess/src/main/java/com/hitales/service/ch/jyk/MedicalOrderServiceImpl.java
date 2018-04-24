@@ -1,6 +1,6 @@
 package com.hitales.service.ch.jyk;
 
-import com.hitales.dao.TableDao;
+import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IMedicalOrderDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;

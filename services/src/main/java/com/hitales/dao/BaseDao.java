@@ -4,12 +4,14 @@ import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.config.SqlServerDataSourceConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,8 @@ public abstract class BaseDao extends GenericDao {
     @Qualifier(MysqlDataSourceConfig.MYSQL_RK_TEMPLATE)
     protected JdbcTemplate rkJdbcTemplate;
 
+    private String tableName;
+
     protected static Map<String, JdbcTemplate> jdbcTemplatePool = new HashMap<>();
 
     protected JdbcTemplate getJdbcTemplate(String dataSource) {
@@ -97,9 +101,31 @@ public abstract class BaseDao extends GenericDao {
         return results;
     }
 
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
     @Override
     public MongoTemplate getMongoTemplate() {
         return this.hrsMongoTemplate;
     }
 
+    protected <T> T map2Bean(Map<String, Object> map, Class<T> type) {
+        T bean = null;
+        try {
+            bean = type.newInstance();
+            BeanUtils.populate(bean, map);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return bean;
+    }
 }

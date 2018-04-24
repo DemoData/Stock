@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <table name="shly_lab_generic_report_20180423" groupCol="id" displayCol="id">
+        <column name="id" sourceName="id" isRequired="true"/>
+        <column name="sourceId" sourceName="id" isRequired="true"/>
+        <column name="patientId" sourceName="patientNo" isRequired="true"/>
+    </table>
+    <labBasic name="shly_lab_generic_report_20180423" conditionCol="id" multiple="false">
+        <!--<basic name="id" sourceName="id" isRequired="true"/>-->
+        <!--<basic name="sourceId" sourceName="id" isRequired="true"/>-->
+        <!--0-门诊，1-住院，2-急诊，3-体检	EncounterType-->
+        <column name="EncounterID" displayName="就诊ID"/>
+        <column name="EncounterType" displayName="就诊类型"/>
+        <!--如果是化验报告名称需要标记出来，对于是multiple的处理，标记为'@xxx'后，用于后面处理-->
+        <column name="@ExamClassName" displayName="报告分类名称"/>
+        <column name="TSApply" displayName="申请时间"/>
+        <column name="ApplyOperator" displayName="申请人名称"/>
+        <column name="TSDraw" displayName="采样时间"/>
+        <column name="DrawOperator" displayName="采样人名称"/>
+        <column name="TSReceive" displayName="接收时间"/>
+        <column name="RecieveOperator" displayName="接收人名称"/>
+        <column name="TestOperator" displayName="检测人姓名"/>
+        <column name="TSVerify" displayName="审核时间"/>
+        <column name="VerifyOperator" displayName="审核人姓名"/>
+        <column name="ReportStatus" displayName="报告状态"/>
+        <column name="PatID" displayName="门诊号"/>
+        <column name="SpecimenClassName" displayName="标本种类名称"/>
+        <column name="InstrumentName" displayName="仪器名称"/>
+        <column name="ReportName" displayName="报告标题名称"/>
+        <column name="Age" displayName="年龄"/>
+        <column name="PatientName" displayName="姓名"/>
+        <column name="Sex" displayName="性别"/>
+        <column name="Bed" displayName="床号"/>
+        <column name="ApplyDeptName" displayName="申请科室名称"/>
+        <column name="ApplyWardName" displayName="申请病区名称"/>
+        <column name="TSTest" displayName="检测时间"/>
+        <column name="ReportOperator" displayName="报告人"/>
+        <column name="TSReport" displayName="报告时间"/>
+    </labBasic>
+    <labDetail name="shly_lab_generic_result_20180423" conditionCol="LabGenericID">
+        <!--<column name="LabGenericID" displayName="常规检验报告ID"/>-->
+        <column name="TestItemName" displayName="检验项目名称"/>
+        <column name="PrintValue" displayName="文本结果"/>
+        <column name="ResultValue" displayName="数值结果"/>
+        <column name="ResultUnit" displayName="结果单位"/>
+        <column name="ResultStatus" displayName="结果状态"/>
+        <column name="ReferenceLow" displayName="正常低值"/>
+        <column name="ReferenceHigh" displayName="正常高值"/>
+        <column name="ReferenceText" displayName="参考范围"/>
+        <column name="AbnormalFlag" displayName="异常标志"/>
+        <column name="AbnormalFlagName" displayName="异常标志说明"/>
+        <column name="Note" displayName="备注"/>
+    </labDetail>
+    <!--就诊信息表-->
+    <diagnosis name="shly_patient_diagnosis_20180423" displayCol="DiagnoseName" conditionCol="EncounterID"
+               groupCol="EncounterID"/>
+    <!--查询partientId表-->
+    <patient name="shly_in_patient_visit_record_20180423" displayCol="PatientNo,AdmissionNumber" conditionCol="ID"
+             groupCol="PatientNo,AdmissionNumber"/>
+</body>
