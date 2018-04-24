@@ -39,7 +39,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
 
     {
         //TODO:这个路劲可以优化到baseService中去，然后通过basicInfo传入路径过来，再把得到的path传递给dao
-        String path = this.getClass().getClassLoader().getResource("shly/lab.xml").getPath();
+        String path = this.getClass().getClassLoader().getResource("config/shly/lab.xml").getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
@@ -131,7 +131,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
 
     @Override
     public String findRequiredColByCondition(String dataSource, String condition) {
-        log.debug("findRequiredColByCondition(): 查找PatientId by " + condition);
+        log.debug("findRequiredColByCondition(): query by " + condition);
         String tableName = groupRecordName.attribute("name").getValue();
         String displayCol = groupRecordName.attribute("display-column").getValue();
         String conditionCol = groupRecordName.attribute("condition-column").getValue();

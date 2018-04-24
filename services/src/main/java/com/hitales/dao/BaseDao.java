@@ -121,4 +121,8 @@ public abstract class BaseDao extends GenericDao {
     public List findBasicArrayByCondition(String dataSource, String applyId) {
         return null;
     }
+
+    public String findRequiredColByCondition(String dataSource, String condition) {
+        return null;
+    }
 }

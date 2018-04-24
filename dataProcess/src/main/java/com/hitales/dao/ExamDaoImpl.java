@@ -3,15 +3,20 @@ package com.hitales.dao;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.standard.IInspectionDao;
 import lombok.extern.slf4j.Slf4j;
+import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +32,7 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
 
     {
         //TODO:这个路劲可以优化到baseService中去，然后通过basicInfo传入路径过来，再把得到的path传递给dao
-        String path = this.getClass().getClassLoader().getResource("shly/exam-radiology.xml").getPath();
+        String path = this.getClass().getClassLoader().getResource("config/shly/exam-radiology.xml").getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
@@ -62,14 +67,28 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select * from `检查报告`";
+        List<Element> elements = examReport.elements();
+        StringBuffer colNames = new StringBuffer();
+        for (Element element : elements) {
+            colNames.append("t1.").append(element.attribute("column-name").getValue()).append(",");
+        }
+        List<Element> detailElements = examDetail.elements();
+        for (Element element : detailElements) {
+            colNames.append("t2.").append(element.attribute("column-name").getValue()).append(",");
+        }
+        String columns = colNames.substring(0, colNames.length() - 1);
+
+        String examReportId = examReport.attribute("id-column-names").getValue();
+        String examDetailId = examDetail.attribute("id-column-names").getValue();
+        String tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
+        String sql = "select " + columns + " from " + tableName;
         return sql;
     }
 
     @Override
     protected <T> RowMapper<T> generateRowMapper() {
         if (getRowMapper() == null) {
-            setRowMapper(new InspectionRowMapper());
+            setRowMapper(new ExamRowMapper(examReport, examDetail));
         }
         return getRowMapper();
     }
@@ -80,9 +99,36 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
     }
 
     @Override
-    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
-        String sql = "select t.`诊断名称` from `诊断信息` t where t.`一次就诊号`= ? group by t.`诊断名称`";
-        return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
+    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String condition) {
+        String tableName = diagnosis.attribute("name").getValue();
+        String displayCol = diagnosis.attribute("display-column").getValue();
+        String conditionCol = diagnosis.attribute("condition-column").getValue();
+        String groupCol = diagnosis.attribute("group-column").getValue();
+        String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
+        return super.findOrgOdCatByGroupRecordName(sql, dataSource, condition);
+    }
+
+    @Override
+    public String findRequiredColByCondition(String dataSource, String condition) {
+        log.debug("findRequiredColByCondition(): query by " + condition);
+        String tableName = groupRecordName.attribute("name").getValue();
+        String displayCol = groupRecordName.attribute("display-column").getValue();
+        String conditionCol = groupRecordName.attribute("condition-column").getValue();
+        String groupCol = groupRecordName.attribute("group-column").getValue();
+        String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
+        JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
+        List<String> strings = null;
+        try {
+            strings = jdbcTemplate.queryForList(sql, String.class, condition);
+            if (strings == null || strings.isEmpty()) {
+                return null;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.error("Can not found patientId via condition:" + condition);
+            e.printStackTrace();
+            return null;
+        }
+        return strings.get(0);
     }
 
     @Override
@@ -94,16 +140,58 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(id) from `检查报告`", Integer.class);
+        String examReportId = examReport.attribute("id-column-names").getValue();
+        String examDetailId = examDetail.attribute("id-column-names").getValue();
+        String tableName = examReport + "t1," + examDetail + "t2 where t1." + examReportId + "=t2." + examDetailId;
+        return getJdbcTemplate(dataSource).queryForObject("select count(*) from " + tableName, Integer.class);
     }
 
-    class InspectionRowMapper implements RowMapper<Map<String, Object>> {
+    class ExamRowMapper implements RowMapper<Map<String, Object>> {
+        private Element elementMain;
+        private Element elementDetail;
+
+        public ExamRowMapper(Element elementMain, Element elementDetail) {
+            this.elementMain = elementMain;
+            this.elementDetail = elementDetail;
+        }
 
         @Override
         public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Map<String, Object> dataMap = new HashMap<>();
+            generateData(rs, elementMain, dataMap);
+            generateData(rs, elementDetail, dataMap);
+            return dataMap;
+        }
 
+        private void generateData(ResultSet rs, Element element, Map<String, Object> dataMap) throws SQLException {
+            Iterator iterator = element.elementIterator();
+            while (iterator.hasNext()) {
+                Element columnElement = (Element) iterator.next();
+                String colName = columnElement.attribute("column-name").getValue();
+                String displayName = columnElement.attribute("display-name").getValue();
+                Attribute beanNameAttr = columnElement.attribute("bean-name");
 
-            return null;
+                if (colName == null || displayName == null) {
+                    continue;
+                }
+                Object value = rs.getObject(colName) == null ? "" : rs.getObject(colName);
+                if (beanNameAttr != null && "patientId".equals(beanNameAttr.getValue())) {
+                    StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
+                    value = patientPrefix.append(value.toString()).toString();
+                }
+                //处理字段值映射
+                List<Element> options = columnElement.elements("option");
+                if (options != null || !options.isEmpty()) {
+                    for (Element option : options) {
+                        String optionValue = option.attribute("value").getValue();
+                        if (optionValue != null && optionValue.equals(value.toString())) {
+                            value = option.getText();
+                            break;
+                        }
+                    }
+                }
+                dataMap.put(displayName, value == null ? "" : value);
+            }
         }
     }
 

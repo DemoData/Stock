@@ -33,6 +33,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
 
     private Element table = null;
 
+    private String tableName;
     private String groupCol;
     private String displayCol;
 
@@ -43,10 +44,9 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         try {
             Document document = reader.read(xml);
             table = document.getRootElement().element("table");
-            String tableName = table.attribute("name").getValue();
+            tableName = table.attribute("name").getValue();
             groupCol = table.attribute("group-column").getValue();
             displayCol = table.attribute("display-column").getValue();
-            super.setTableName(tableName);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -57,7 +57,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         log.info(">>>>>>>>>>>Searching patients from : " + dataSource + "<<<<<<<<<<<<<<<");
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
-            return super.queryForListInSqlServer(jdbcTemplate, pageNum, pageSize, getTableName(), null, null);
+            return super.queryForListInSqlServer(jdbcTemplate, pageNum, pageSize, tableName, null, null);
         }
         return super.queryForList(jdbcTemplate, pageNum, pageSize);
     }
@@ -91,16 +91,16 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         }
         String sql = null;
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
-            sql = "select count(t.id) from " + getTableName() + " t";
+            sql = "select count(t.id) from " + tableName + " t";
         } else {
-            sql = "select count(*) from (select " + groupCol + " from " + getTableName() + " group by " + groupCol + ") t";
+            sql = "select count(*) from (select " + groupCol + " from " + tableName + " group by " + groupCol + ") t";
         }
         return getJdbcTemplate(dataSource).queryForObject(sql, Integer.class);
     }
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select " + displayCol + " from " + getTableName() + " group by " + groupCol;
+        String sql = "select " + displayCol + " from " + tableName + " group by " + groupCol;
         return sql;
     }
 

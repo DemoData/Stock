@@ -61,12 +61,10 @@ public class TextFormatter {
      * @throws IllegalAccessException
      */
     public static Map<String, String> textFormatter(List<Map<String, String>> properties, Object bean) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
-        List<Map<String, Object>> infoList = new ArrayList<>();
-
+        Map<String, Object> infoMap = new HashMap<>();
         for (Map<String, String> property : properties) {
             String propName = property.get(PROP_NAME);
             String columnName = property.get(COLUMN_NAME);
-            Map<String, Object> row = new HashMap<>();
             PropertyDescriptor pd = new PropertyDescriptor(propName, bean.getClass());
             Object value = pd.getReadMethod().invoke(bean);
             if (value == null) {
@@ -75,19 +73,27 @@ public class TextFormatter {
             if (value instanceof String && StringUtils.isEmpty(((String) value).trim())) {
                 continue;
             }
-            row.put(columnName, value);
-            infoList.add(row);
+            infoMap.put(columnName, value);
         }
+        return TextFormatter.textFormatter(infoMap);
+    }
+
+    public static Map<String, String> textFormatter(Map<String, Object> sourceMap) {
         StringBuffer text = new StringBuffer();
         StringBuffer textARS = new StringBuffer();
         String prefixSymbol = "【【";
         String suffixSymbol = "】】";
         String colonSymbol = "：";
-        for (Map<String, Object> row : infoList) {
-            for (Map.Entry entry : row.entrySet()) {
-                text.append(prefixSymbol).append(entry.getKey()).append(suffixSymbol).append(colonSymbol).append(entry.getValue()).append("\n");
-                textARS.append(entry.getKey()).append(colonSymbol).append(entry.getValue()).append("\n");
+        for (Map.Entry<String, Object> entry : sourceMap.entrySet()) {
+            Object value = entry.getValue();
+            if (value == null) {
+                continue;
             }
+            if (value instanceof String && StringUtils.isEmpty(((String) value).trim())) {
+                continue;
+            }
+            text.append(prefixSymbol).append(entry.getKey()).append(suffixSymbol).append(colonSymbol).append(value).append("\n");
+            textARS.append(entry.getKey()).append(colonSymbol).append(value).append("\n");
         }
         Map<String, String> result = new HashMap<>();
         result.put(TEXT, text.toString());

@@ -8,4 +8,6 @@ import java.util.List;
 public interface IInspectionDao<T> extends TextDao<T> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);
+
+    String findRequiredColByCondition(String dataSource, String condition);
 }
