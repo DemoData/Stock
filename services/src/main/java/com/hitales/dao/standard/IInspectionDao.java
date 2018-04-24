@@ -1,13 +1,11 @@
 package com.hitales.dao.standard;
 
-import com.hitales.entity.Exam;
-
 import java.util.List;
 
 /**
  * @author aron
  */
-public interface IInspectionDao extends TextDao<Exam> {
+public interface IInspectionDao<T> extends TextDao<T> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);
 }

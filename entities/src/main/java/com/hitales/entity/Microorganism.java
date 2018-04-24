@@ -2,6 +2,7 @@ package com.hitales.entity;
 
 import lombok.Data;
 
+@Deprecated
 @Data
 public class Microorganism {
     private Integer id;

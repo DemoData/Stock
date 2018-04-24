@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chyxOperationDetailService")
-public class OperationDetailServiceImpl extends TableService<OperationDetail> {
+public class OperationDetailServiceImpl extends TableService<OperationDetail,OperationDetail> {
 
     @Autowired
     OperationDetailDaoImpl operationDetailDao;
@@ -39,7 +39,7 @@ public class OperationDetailServiceImpl extends TableService<OperationDetail> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = operationDetailDao.findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = operationDetailDao.findRequiredColByCondition(dataSource, groupRecordName);
             patientCaches.put(groupRecordName, patientId);
         }
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
@@ -47,7 +47,7 @@ public class OperationDetailServiceImpl extends TableService<OperationDetail> {
     }
 
     @Override
-    protected TableDao<OperationDetail> currentDao() {
+    protected TableDao<OperationDetail,OperationDetail> currentDao() {
         return operationDetailDao;
     }
 

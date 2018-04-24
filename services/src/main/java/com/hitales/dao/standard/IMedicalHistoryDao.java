@@ -1,13 +1,11 @@
 package com.hitales.dao.standard;
 
-import com.hitales.entity.MedicalHistory;
-
 import java.util.List;
 
 /**
  * @author aron
  */
-public interface IMedicalHistoryDao extends TextDao<MedicalHistory> {
+public interface IMedicalHistoryDao<T> extends TextDao<T> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);
 

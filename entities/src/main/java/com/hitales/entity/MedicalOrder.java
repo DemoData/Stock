@@ -5,6 +5,7 @@ import lombok.Data;
 /**
  * 医嘱
  */
+@Deprecated
 @Data
 public class MedicalOrder {
     private Integer id;

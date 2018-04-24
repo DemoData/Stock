@@ -2,7 +2,6 @@ package com.hitales.service.bdsz.fs.mz;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
-import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.IAssayDao;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +46,7 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
         String groupRecordName = record.getGroupRecordName();
 
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = ((IAssayDao) currentDao()).findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = ((IAssayDao) currentDao()).findRequiredColByCondition(dataSource, groupRecordName);
             if (!StringUtils.isEmpty(patientId)) {
                 patientCaches.put(groupRecordName, "bdsz_" + patientId);
             }

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Repository
-public class PathologyDaoImpl extends BaseDao implements IPathologyDao {
+public class PathologyDaoImpl extends BaseDao implements IPathologyDao<Pathology> {
 
     @Override
     protected String generateQuerySql() {

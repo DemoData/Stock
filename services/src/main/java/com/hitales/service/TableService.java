@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 @Slf4j
-public abstract class TableService<T> extends BaseService {
+public abstract class TableService<Basic, Sub> extends BaseService {
 
     @Override
     protected void runStart(String dataSource, Integer startPage, Integer endPage) {
@@ -69,6 +69,7 @@ public abstract class TableService<T> extends BaseService {
         JSONObject jsonObject = bean2Json(record);
         jsonObject.remove("id");
         jsonObject.remove("reportDate");
+        jsonObject.remove("condition");
         jsonObject.put("_id", new ObjectId().toString());
         jsonList.add(jsonObject);
     }
@@ -80,7 +81,7 @@ public abstract class TableService<T> extends BaseService {
 
         customInitInfo(record);
 
-        initBasicInfo(record, dataSource);
+        initInfoBasic(record, dataSource);
 
         //设置detailArray值
         initInfoArray(record, currentDao().findArrayListByCondition(dataSource, getArrayCondition(record)));
@@ -135,7 +136,7 @@ public abstract class TableService<T> extends BaseService {
      * @param record
      * @param dataSource
      */
-    protected void initBasicInfo(Record record, String dataSource) {
+    protected void initInfoBasic(Record record, String dataSource) {
 
     }
 
@@ -146,7 +147,7 @@ public abstract class TableService<T> extends BaseService {
 
     protected abstract void customProcess(Record record, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource);
 
-    protected abstract TableDao<T> currentDao();
+    protected abstract TableDao<Basic, Sub> currentDao();
 
     @Override
     protected Integer getCount(String dataSource) {
@@ -192,5 +193,5 @@ public abstract class TableService<T> extends BaseService {
 
     protected abstract void customInitInfo(Record record);
 
-    protected abstract void initInfoArray(Record record, List<T> assayList);
+    protected abstract void initInfoArray(Record record, List<Sub> assayList);
 }

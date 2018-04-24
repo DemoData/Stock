@@ -7,6 +7,7 @@ import lombok.Data;
  *
  * @author aron
  */
+@Deprecated
 @Data
 public class LabBasic {
 

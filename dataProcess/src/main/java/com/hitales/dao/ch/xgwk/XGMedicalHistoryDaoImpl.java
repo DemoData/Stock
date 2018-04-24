@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("xgMedicalHistoryDao")
-public class XGMedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao {
+public class XGMedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao<MedicalHistory> {
 
     @Override
     public Integer getCount(String dataSource) {

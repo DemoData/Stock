@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("medicalOrderDao")
-public class MedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
+public class MedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao<MedicalOrder,MedicalOrder> {
 
     @Override
     protected String generateQuerySql() {
@@ -57,8 +57,8 @@ public class MedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String groupRecordName) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + groupRecordName);
+    public String findRequiredColByCondition(String dataSource, String groupRecordName) {
+        log.debug("findRequiredColByCondition(): 查找PatientId通过一次就诊号: " + groupRecordName);
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> patientList = jdbcTemplate.queryForList(sql, String.class, groupRecordName);

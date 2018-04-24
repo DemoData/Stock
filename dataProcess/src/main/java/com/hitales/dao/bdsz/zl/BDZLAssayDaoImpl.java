@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository("bdzlAssayDao")
-public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
+public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
 
     @Override
     protected String generateQuerySql() {
@@ -73,15 +73,15 @@ public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + applyId);
+    public String findRequiredColByCondition(String dataSource, String applyId) {
+        log.debug("findRequiredColByCondition(): 查找PatientId通过一次就诊号: " + applyId);
         String sql = "select PID from Record where groupRecordName=? group by groupRecordName,PID";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         Map<String, Object> result = null;
         try {
             result = jdbcTemplate.queryForMap(sql, applyId);
         } catch (EmptyResultDataAccessException e) {
-            log.info("findPatientIdByGroupRecordName(): can not found PatientId by GroupRecordName");
+            log.info("findRequiredColByCondition(): can not found PatientId by GroupRecordName");
             return null;
         }
         return result.get("PID").toString();

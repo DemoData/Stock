@@ -85,6 +85,7 @@ public abstract class TextService<T> extends BaseService {
         JSONObject jsonObject = bean2Json(record);
         jsonObject.remove("id");
         jsonObject.remove("reportDate");
+        jsonObject.remove("condition");
         jsonObject.put("_id", new ObjectId().toString());
         jsonList.add(jsonObject);
     }

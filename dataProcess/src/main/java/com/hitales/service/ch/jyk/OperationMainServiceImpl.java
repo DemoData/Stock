@@ -43,7 +43,7 @@ public class OperationMainServiceImpl extends TextService<OperationMain> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = operationMainDao.findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = operationMainDao.findRequiredColByCondition(dataSource, groupRecordName);
             patientCaches.put(groupRecordName, patientId);
         }
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));

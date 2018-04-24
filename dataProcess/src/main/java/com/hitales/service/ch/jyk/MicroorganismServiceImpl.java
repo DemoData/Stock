@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chyxMicroorganismService")
-public class MicroorganismServiceImpl extends TableService<Microorganism> {
+public class MicroorganismServiceImpl extends TableService<Microorganism,Microorganism> {
 
     @Autowired
     IMicroorganismDao microorganismDao;
@@ -39,7 +39,7 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = microorganismDao.findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = microorganismDao.findRequiredColByCondition(dataSource, groupRecordName);
             patientCaches.put(groupRecordName, patientId);
         }
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
@@ -47,7 +47,7 @@ public class MicroorganismServiceImpl extends TableService<Microorganism> {
     }
 
     @Override
-    protected TableDao<Microorganism> currentDao() {
+    protected TableDao<Microorganism,Microorganism> currentDao() {
         return microorganismDao;
     }
 

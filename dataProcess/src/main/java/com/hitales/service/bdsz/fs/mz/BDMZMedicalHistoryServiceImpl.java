@@ -57,7 +57,7 @@ public class BDMZMedicalHistoryServiceImpl extends BDFSMedicalHistoryServiceImpl
         String medicalContent = medicalHistory.getMedicalContent();
         if (StringUtils.isEmpty(medicalContent)) {
             medicalContent = CommonConstant.EMPTY_FLAG;
-            log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
+            this.log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
 
         //去除文本中的空白字符

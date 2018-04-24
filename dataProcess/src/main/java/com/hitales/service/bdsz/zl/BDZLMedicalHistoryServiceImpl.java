@@ -93,13 +93,13 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         //调用提供的方法得到锚点文本
         String medicalContent = medicalHistory.getMedicalContent();
         if (StringUtils.isEmpty(medicalContent)) {
-            log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
+            this.log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
         // 只获取元素section的内容
         int xmlIndex = medicalContent.indexOf("<section");
         int endIndex = medicalContent.lastIndexOf("</section>");
         if (xmlIndex < 0 || endIndex < 0) {
-            log.error("putText2Record(): can not found specific character, medicalHistory id:" + medicalHistory.getId());
+            this.log.error("putText2Record(): can not found specific character, medicalHistory id:" + medicalHistory.getId());
         } else {
             medicalContent = medicalContent.substring(xmlIndex, endIndex + 10);
         }
@@ -145,13 +145,13 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         Object testARS = record.getInfo().get(TextFormatter.TEXT_ARS);
         //如果文本字符少于20则不入库
         if (StringUtils.isEmpty(testARS.toString()) || testARS.toString().length() < 20) {
-            log.info("字符少于20,不做入库处理,id:" + record.getSourceId());
+            this.log.info("字符少于20,不做入库处理,id:" + record.getSourceId());
             return false;
         }
         String recordType = record.getRecordType();
         //对于入出院记录，如果字符小于300，则属于其他类型
         if (("入院记录".equals(recordType) || "出院记录".equals(recordType)) && testARS.toString().length() < 300) {
-            log.info("字符过小修改为其他类型,id:" + record.getSourceId());
+            this.log.info("字符过小修改为其他类型,id:" + record.getSourceId());
             record.setRecordType("其他记录");
             record.setSubRecordType("其他");
         }
@@ -194,7 +194,7 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         }
         if ("入院记录".equals(record.getRecordType())) {
             if (inCount < 2) {
-                log.info("匹配锚点个数为：" + inCount + "，修改为出院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
+                this.log.info("匹配锚点个数为：" + inCount + "，修改为出院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
                 record.setRecordType("出院记录");
                 if (anchorContent.contains("死亡时间")) {
                     record.setSubRecordType("死亡记录");
@@ -205,7 +205,7 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
             }
         } else {
             if (inCount >= 2) {
-                log.info("匹配锚点个数为：" + inCount + "，修改为入院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
+                this.log.info("匹配锚点个数为：" + inCount + "，修改为入院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
                 record.setRecordType("入院记录");
                 record.setSubRecordType("入院记录");
             }
@@ -217,7 +217,7 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         String recordType = medicalHistory.getMedicalHistoryName();
 
         if (StringUtils.isEmpty(recordType)) {
-            log.error("!!!!!!!!!!!! mapping is empty , id : " + medicalHistory.getId() + "!!!!!!!!!!");
+            this.log.error("!!!!!!!!!!!! mapping is empty , id : " + medicalHistory.getId() + "!!!!!!!!!!");
             return;
         }
         List<Mapping> mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
@@ -230,7 +230,7 @@ public class BDZLMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         recordType = MappingMatch.getMappedValue(mapping, recordType);
         String[] types = recordType.split("-");
         if (types == null || types.length < 2) {
-            log.error("!!!!!!!!!!!! mapping value is invalid , id : " + medicalHistory.getId() + "!!!!!!!!!!");
+            this.log.error("!!!!!!!!!!!! mapping value is invalid , id : " + medicalHistory.getId() + "!!!!!!!!!!");
             return;
         }
         record.setRecordType(types[0]);

@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Repository
-public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao {
+public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao<Microorganism,Microorganism> {
 
     @Override
     public List<Record> findRecord(String dataSource, int PageNum, int PageSize) {
@@ -52,8 +52,8 @@ public class MicroorganismDaoImpl extends BaseDao implements IMicroorganismDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String groupRecordName) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + groupRecordName);
+    public String findRequiredColByCondition(String dataSource, String groupRecordName) {
+        log.debug("findRequiredColByCondition(): 查找PatientId通过一次就诊号: " + groupRecordName);
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> patientList = jdbcTemplate.queryForList(sql, String.class, groupRecordName);

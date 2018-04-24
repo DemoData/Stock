@@ -40,7 +40,7 @@ public class XGMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
 
         String orgOdCategoriesStr = entity.getOrgOdCategories();
         if (StringUtils.isEmpty(orgOdCategoriesStr)) {
-            log.error("customProcess(): orgOdCategoriesStr is null,id:" + entity.toString());
+            this.log.error("customProcess(): orgOdCategoriesStr is null,id:" + entity.toString());
             return;
         }
         String[] orgOdCategories = orgOdCategoriesStr.split(",");
@@ -86,7 +86,7 @@ public class XGMedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         JSONObject info = record.getInfo();
         String medicalContent = medicalHistory.getMedicalContent();
         if (StringUtils.isEmpty(medicalContent)) {
-            log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
+            this.log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
         info.put(TextFormatter.TEXT, medicalContent);
         info.put(TextFormatter.TEXT_ARS, medicalContent);

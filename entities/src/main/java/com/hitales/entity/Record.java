@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class Record {
     private Long createTime;
     private Long updateTime = System.currentTimeMillis();//上次更新时间
     private String reportDate;//化验报告日期
+    private Map<String, Object> condition;//额外条件的存放
 
     public Record() {
         initial();

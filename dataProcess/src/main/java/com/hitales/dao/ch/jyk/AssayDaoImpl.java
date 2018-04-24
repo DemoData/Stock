@@ -22,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("jyAssayDao")
-public class AssayDaoImpl extends BaseDao implements IAssayDao {
+public class AssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
 
     @Override
     public Integer getCount(String dataSource) {
@@ -73,8 +73,8 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao {
     }*/
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String groupRecordName) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + groupRecordName);
+    public String findRequiredColByCondition(String dataSource, String groupRecordName) {
+        log.debug("findRequiredColByCondition(): 查找PatientId通过一次就诊号: " + groupRecordName);
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         StringBuffer patientId = new StringBuffer("shch_");

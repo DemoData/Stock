@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chyxAssayService")
-public class AssayServiceImpl extends TableService<LabDetail> {
+public class AssayServiceImpl extends TableService<LabBasic,LabDetail> {
 
     @Autowired
     @Qualifier("jyAssayDao")
@@ -34,7 +34,7 @@ public class AssayServiceImpl extends TableService<LabDetail> {
 
     @Override
     protected void customProcess(Record record, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
-        initBasicInfo(record, dataSource);
+        initInfoBasic(record, dataSource);
 
         String groupRecordName = record.getGroupRecordName();
         if (StringUtils.isEmpty(groupRecordName)) {
@@ -46,7 +46,7 @@ public class AssayServiceImpl extends TableService<LabDetail> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = assayDao.findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = assayDao.findRequiredColByCondition(dataSource, groupRecordName);
             patientCaches.put(groupRecordName, patientId);
         }
 
@@ -55,7 +55,7 @@ public class AssayServiceImpl extends TableService<LabDetail> {
     }
 
     @Override
-    protected void initBasicInfo(Record record, String dataSource) {
+    protected void initInfoBasic(Record record, String dataSource) {
         List<LabBasic> applyList = assayDao.findBasicArrayByCondition(dataSource, record.getId());
         if (applyList == null || applyList.isEmpty()) {
             return;
@@ -65,7 +65,7 @@ public class AssayServiceImpl extends TableService<LabDetail> {
         List<String> names = new ArrayList<>();
         for (LabBasic assayApply : applyList) {
             if (StringUtils.isEmpty(assayApply.getAssayName())) {
-                log.info("initBasicInfo(): assay name is empty:" + assayApply.toString());
+                log.info("initInfoBasic(): assay name is empty:" + assayApply.toString());
                 continue;
             }
             names.add(assayApply.getAssayName());
@@ -81,7 +81,7 @@ public class AssayServiceImpl extends TableService<LabDetail> {
     }
 
     @Override
-    protected TableDao<LabDetail> currentDao() {
+    protected TableDao<LabBasic,LabDetail> currentDao() {
         return assayDao;
     }
 

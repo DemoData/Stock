@@ -1,19 +1,14 @@
 package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hitales.common.constant.CommonConstant;
-import com.hitales.dao.standard.INewAssayDao;
-import com.hitales.entity.LabDetail;
+import com.hitales.common.util.BeanUtil;
+import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
-import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -28,38 +23,45 @@ import java.util.Map;
 
 @Slf4j
 @Repository("assayDao")
-public class AssayDaoImpl extends BaseDao implements INewAssayDao {
+public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Object>, Map<String, Object>> {
 
     private Element table = null;
     private Element labBasic = null;
     private Element labDetail = null;
     private Element diagnosis;
-    private Element patient;
+    private Element groupRecordName;
 
+    private String tableName;
     private String groupCol;
     private String displayCol;
     private String labBasicTable;
     private String labDetailTable;
-    private boolean isMultiple;
 
     {
         //TODO:这个路劲可以优化到baseService中去，然后通过basicInfo传入路径过来，再把得到的path传递给dao
-        String path = this.getClass().getClassLoader().getResource("config/shly/Lab.xml").getPath();
+        String path = this.getClass().getClassLoader().getResource("shly/lab.xml").getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
             Element rootElement = reader.read(xml).getRootElement();
-            diagnosis = rootElement.element("diagnosis");
-            patient = rootElement.element("patient");
+            Element descriptor = rootElement.element("item-descriptor");
+            List<Element> queryList = rootElement.element("queryList").elements();
+            for (Element query : queryList) {
+                String id = query.attribute("id").getValue();
+                if ("odCategories".equals(id)) {
+                    diagnosis = query;
+                }
+                if ("condition".equals(id)) {
+                    groupRecordName = query;
+                }
+            }
+            table = descriptor.element("record");
+            tableName = table.attribute("name").getValue();
+            groupCol = table.attribute("group-column").getValue();
+            displayCol = table.attribute("display-column").getValue();
 
-            table = rootElement.element("table");
-            String tableName = table.attribute("name").getValue();
-            groupCol = table.attribute("groupCol").getValue();
-            displayCol = table.attribute("displayCol").getValue();
-            super.setTableName(tableName);
-
-            labBasic = rootElement.element("labBasic");
-            labDetail = rootElement.element("labDetail");
+            labBasic = descriptor.element("labBasic");
+            labDetail = descriptor.element("labDetail");
             labBasicTable = labBasic.attribute("name").getValue();
             labDetailTable = labDetail.attribute("name").getValue();
         } catch (DocumentException e) {
@@ -69,7 +71,7 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
 
     @Override
     public Integer getCount(String dataSource) {
-        return getJdbcTemplate(dataSource).queryForObject("select count(*) from (select " + displayCol + " from " + getTableName() + " GROUP BY " + groupCol + ") t", Integer.class);
+        return getJdbcTemplate(dataSource).queryForObject("select count(*) from (select " + displayCol + " from " + tableName + " GROUP BY " + groupCol + ") t", Integer.class);
     }
 
     @Override
@@ -80,13 +82,13 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
     @Override
     public List<Map<String, Object>> findArrayListByCondition(String dataSource, String... params) {
         log.debug("findArrayListByCondition(): 查找化验报告通过: " + params[0]);
-        String conditionCol = labDetail.attribute("conditionCol").getValue();
+        String conditionCol = labDetail.attribute("condition-column").getValue();
         List<Element> elements = labDetail.elements();
-        StringBuffer displayNames = new StringBuffer();
+        StringBuffer colNames = new StringBuffer();
         for (Element element : elements) {
-            displayNames.append(element.attribute("displayName").getValue()).append(",");
+            colNames.append(element.attribute("column-name").getValue()).append(",");
         }
-        String columns = displayNames.substring(0, displayNames.length() - 1);
+        String columns = colNames.substring(0, colNames.length() - 1);
 
         String sql = "select " + columns + " from " + labDetailTable + " where " + conditionCol + "=?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
@@ -96,15 +98,14 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
 
     @Override
     public List<Map<String, Object>> findBasicArrayByCondition(String dataSource, String applyId) {
-        boolean multiple = Boolean.valueOf(labBasic.attribute("multiple").getValue());
-        this.isMultiple = multiple;
-        String conditionCol = labBasic.attribute("conditionCol").getValue();
+        String conditionCol = labBasic.attribute("condition-column").getValue();
         List<Element> elements = labBasic.elements();
-        StringBuffer displayNames = new StringBuffer();
+        StringBuffer colNames = new StringBuffer();
         for (Element element : elements) {
-            displayNames.append(element.attribute("displayName").getValue()).append(",");
+            String name = element.attribute("column-name").getValue();
+            colNames.append(name).append(",");
         }
-        String columns = displayNames.substring(0, displayNames.length() - 1);
+        String columns = colNames.substring(0, colNames.length() - 1);
         String sql = "select " + columns + " from " + labBasicTable + " where " + conditionCol + "=?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<Map<String, Object>> assays = jdbcTemplate.query(sql, new LabRowMapper(labBasic), applyId);
@@ -121,20 +122,20 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
     @Override
     public List<String> findOrgOdCatByGroupRecordName(String dataSource, String condition) {
         String tableName = diagnosis.attribute("name").getValue();
-        String displayCol = diagnosis.attribute("displayCol").getValue();
-        String conditionCol = diagnosis.attribute("conditionCol").getValue();
-        String groupCol = diagnosis.attribute("groupCol").getValue();
+        String displayCol = diagnosis.attribute("display-column").getValue();
+        String conditionCol = diagnosis.attribute("condition-column").getValue();
+        String groupCol = diagnosis.attribute("group-column").getValue();
         String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
         return super.findOrgOdCatByGroupRecordName(sql, dataSource, condition);
     }
 
     @Override
     public String findRequiredColByCondition(String dataSource, String condition) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId by " + condition);
-        String tableName = patient.attribute("name").getValue();
-        String displayCol = patient.attribute("displayCol").getValue();
-        String conditionCol = patient.attribute("conditionCol").getValue();
-        String groupCol = patient.attribute("groupCol").getValue();
+        log.debug("findRequiredColByCondition(): 查找PatientId by " + condition);
+        String tableName = groupRecordName.attribute("name").getValue();
+        String displayCol = groupRecordName.attribute("display-column").getValue();
+        String conditionCol = groupRecordName.attribute("condition-column").getValue();
+        String groupCol = groupRecordName.attribute("group-column").getValue();
         String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> strings = null;
@@ -153,7 +154,7 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select " + displayCol + " from " + getTableName() + " GROUP BY " + groupCol;
+        String sql = "select " + displayCol + " from " + tableName + " GROUP BY " + groupCol;
         return sql;
     }
 
@@ -163,10 +164,6 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
             setRowMapper(new AssayRowMapper(table));
         }
         return getRowMapper();
-    }
-
-    public boolean isMultiple() {
-        return isMultiple;
     }
 
     class AssayRowMapper implements RowMapper<Record> {
@@ -179,19 +176,46 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
 
         @Override
         public Record mapRow(ResultSet rs, int rowNum) throws SQLException {
-
             Map<String, Object> dataMap = new HashMap<>();
             Iterator iterator = element.elementIterator();
             while (iterator.hasNext()) {
                 Element columnElement = (Element) iterator.next();
-                String beanName = columnElement.attribute("name").getValue();
-                String sourceValue = columnElement.attribute("sourceName").getValue();
-                if (beanName == null || sourceValue == null) {
+                String beanName = columnElement.attribute("bean-name").getValue();
+                String columnName = columnElement.attribute("column-name").getValue();
+                String type = columnElement.attribute("data-type").getValue();
+                Object mapValue = "";
+                if ("string".equals(type)) {
+                    mapValue = rs.getObject(columnName) == null ? "" : rs.getObject(columnName);
+                } else if ("map".equals(type)) {
+                    String[] split = columnName.split(",");
+                    Map<String, Object> condition = new HashMap<>();
+                    for (String sourceCol : split) {
+                        condition.put(sourceCol, rs.getObject(sourceCol));
+                    }
+                    mapValue = condition;
+                }
+
+                if (beanName == null || columnName == null) {
                     continue;
                 }
-                dataMap.put(beanName, rs.getObject(sourceValue) == null ? "" : rs.getObject(sourceValue));
+                if ("patientId".equals(beanName)) {
+                    StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
+                    mapValue = patientPrefix.append(mapValue.toString()).toString();
+                }
+                //处理字段值映射
+                List<Element> options = columnElement.elements("option");
+                if (options != null || !options.isEmpty()) {
+                    for (Element option : options) {
+                        String optionValue = option.attribute("value").getValue();
+                        if (optionValue != null && optionValue.equals(mapValue.toString())) {
+                            mapValue = option.getText();
+                            break;
+                        }
+                    }
+                }
+                dataMap.put(beanName, mapValue == null ? "" : mapValue);
             }
-            return map2Bean(dataMap, Record.class);
+            return BeanUtil.map2Bean(dataMap, Record.class);
         }
     }
 
@@ -210,13 +234,25 @@ public class AssayDaoImpl extends BaseDao implements INewAssayDao {
             Iterator iterator = element.elementIterator();
             while (iterator.hasNext()) {
                 Element columnElement = (Element) iterator.next();
-                String colName = columnElement.attribute("name").getValue();
-                String displayName = columnElement.attribute("displayName").getValue();
+                String colName = columnElement.attribute("column-name").getValue();
+                String displayName = columnElement.attribute("display-name").getValue();
 
                 if (colName == null || displayName == null) {
                     continue;
                 }
-                dataMap.put(displayName, rs.getObject(colName) == null ? "" : rs.getObject(colName));
+                Object value = rs.getObject(colName) == null ? "" : rs.getObject(colName);
+                //处理字段值映射
+                List<Element> options = columnElement.elements("option");
+                if (options != null || !options.isEmpty()) {
+                    for (Element option : options) {
+                        String optionValue = option.attribute("value").getValue();
+                        if (optionValue != null && optionValue.equals(value.toString())) {
+                            value = option.getText();
+                            break;
+                        }
+                    }
+                }
+                dataMap.put(displayName, value == null ? "" : value);
             }
             return dataMap;
         }

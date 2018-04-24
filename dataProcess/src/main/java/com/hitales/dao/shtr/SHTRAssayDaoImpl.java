@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("shtrAssayDao")
-public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao {
+public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
 
     @Override
     protected String generateQuerySql() {
@@ -66,7 +66,7 @@ public class SHTRAssayDaoImpl extends BaseDao implements IAssayDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
+    public String findRequiredColByCondition(String dataSource, String applyId) {
         return null;
     }
 

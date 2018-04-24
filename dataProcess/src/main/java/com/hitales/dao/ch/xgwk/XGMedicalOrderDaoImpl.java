@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("xgMedicalOrderDao")
-public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
+public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao<MedicalOrder,MedicalOrder> {
 
     @Override
     protected String generateQuerySql() {
@@ -64,7 +64,7 @@ public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String applyId) {
+    public String findRequiredColByCondition(String dataSource, String applyId) {
         return null;
     }
 

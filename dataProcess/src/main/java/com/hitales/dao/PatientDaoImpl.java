@@ -2,10 +2,10 @@ package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.SqlServerDataSourceConfig;
+import com.hitales.common.util.BeanUtil;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -38,15 +37,15 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     private String displayCol;
 
     {
-        String path = this.getClass().getClassLoader().getResource("config/shly/Patient.xml").getPath();
+        String path = this.getClass().getClassLoader().getResource("config/shly/patient.xml").getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
             Document document = reader.read(xml);
             table = document.getRootElement().element("table");
             String tableName = table.attribute("name").getValue();
-            groupCol = table.attribute("groupCol").getValue();
-            displayCol = table.attribute("displayCol").getValue();
+            groupCol = table.attribute("group-column").getValue();
+            displayCol = table.attribute("display-column").getValue();
             super.setTableName(tableName);
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -126,14 +125,14 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
             Iterator iterator = element.elementIterator();
             while (iterator.hasNext()) {
                 Element columnElement = (Element) iterator.next();
-                String beanName = columnElement.attribute("name").getValue();
-                String sourceValue = columnElement.attribute("sourceName").getValue();
+                String beanName = columnElement.attribute("bean-name").getValue();
+                String sourceValue = columnElement.attribute("column-name").getValue();
                 if (beanName == null || sourceValue == null) {
                     continue;
                 }
                 dataMap.put(beanName, rs.getObject(sourceValue));
             }
-            Patient patient = map2Bean(dataMap, Patient.class);
+            Patient patient = BeanUtil.map2Bean(dataMap, Patient.class);
             return patient;
         }
 

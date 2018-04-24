@@ -1,5 +1,6 @@
 package com.hitales.controller;
 
+import com.hitales.entity.Record;
 import com.hitales.entity.StockInfo;
 import com.hitales.other.BlobToContent;
 import com.hitales.other.DataToMysql;
@@ -30,10 +31,6 @@ public class StockController {
     private IDataService patientService;
 
     @Autowired
-    @Qualifier("assayService")
-    private IDataService assayService;
-
-    @Autowired
     private DataToMysql dataToMysql;
 
     @Autowired
@@ -53,20 +50,6 @@ public class StockController {
         patientService.setBasicInfo(basicInfo);
 
         if (patientService.processData()) {
-            return SUCCESS_FLAG;
-        }
-        return FAIL_FLAG;
-    }
-
-    @GetMapping("/processAssay")
-    public String processAssay() {
-        Map<Object, Object> basicInfo = new HashMap<>();
-        basicInfo.put("hospitalId", "5ad86cb8acc162a73ee74f16");
-        basicInfo.put("batchNo", "shly20180423");
-        basicInfo.put("patientPrefix", "shly_");
-        assayService.setBasicInfo(basicInfo);
-
-        if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chxgMedicalOrderService")
-public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder> {
+public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder,MedicalOrder> {
 
     @Autowired
     @Qualifier("xgMedicalOrderDao")
@@ -33,7 +33,7 @@ public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder> {
     }
 
     @Override
-    protected TableDao<MedicalOrder> currentDao() {
+    protected TableDao<MedicalOrder,MedicalOrder> currentDao() {
         return medicalOrderDao;
     }
 

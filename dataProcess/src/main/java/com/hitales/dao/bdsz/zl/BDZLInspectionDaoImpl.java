@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("bdzlInspectionDao")
-public class BDZLInspectionDaoImpl extends BaseDao implements IInspectionDao {
+public class BDZLInspectionDaoImpl extends BaseDao implements IInspectionDao<Exam> {
 
     @Override
     protected String generateQuerySql() {

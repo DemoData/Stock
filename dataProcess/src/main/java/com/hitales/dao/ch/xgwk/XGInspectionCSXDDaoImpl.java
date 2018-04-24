@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("xgInspectionCSXDDao")
-public class XGInspectionCSXDDaoImpl extends BaseDao implements IInspectionDao {
+public class XGInspectionCSXDDaoImpl extends BaseDao implements IInspectionDao<Exam> {
 
     @Override
     protected String generateQuerySql() {

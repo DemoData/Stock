@@ -5,6 +5,7 @@ import lombok.Data;
 /**
  * 检查
  */
+@Deprecated
 @Data
 public class Exam {
     private Integer id;

@@ -5,6 +5,7 @@ import lombok.Data;
 /**
  * 化验/检验 报告明细
  */
+@Deprecated
 @Data
 public class LabDetail {
 

@@ -3,6 +3,7 @@ package com.hitales.service.ch.xgwk;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.TableDao;
 import com.hitales.dao.standard.IAssayDao;
+import com.hitales.entity.LabBasic;
 import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chxgAssayService")
-public class XGAssayServiceImpl extends TableService<LabDetail> {
+public class XGAssayServiceImpl extends TableService<LabBasic, LabDetail> {
 
     @Autowired
     @Qualifier("xgAssayDao")
@@ -43,7 +44,7 @@ public class XGAssayServiceImpl extends TableService<LabDetail> {
     }
 
     @Override
-    protected TableDao<LabDetail> currentDao() {
+    protected TableDao<LabBasic,LabDetail> currentDao() {
         return assayDao;
     }
 

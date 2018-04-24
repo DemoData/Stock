@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("bdzlMedicalHistoryDao")
-public class BDZLMedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao {
+public class BDZLMedicalHistoryDaoImpl extends BaseDao implements IMedicalHistoryDao<MedicalHistory> {
 
     @Override
     public Integer getCount(String dataSource) {

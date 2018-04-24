@@ -3,6 +3,7 @@ package com.hitales.dao;
 import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.config.SqlServerDataSourceConfig;
+import com.hitales.entity.LabBasic;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,31 +102,23 @@ public abstract class BaseDao extends GenericDao {
         return results;
     }
 
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
     @Override
     public MongoTemplate getMongoTemplate() {
         return this.hrsMongoTemplate;
     }
 
-    protected <T> T map2Bean(Map<String, Object> map, Class<T> type) {
-        T bean = null;
-        try {
-            bean = type.newInstance();
-            BeanUtils.populate(bean, map);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return bean;
+    /**
+     * 兼容以前的代码
+     *
+     * @param dataSource
+     * @param params
+     * @return
+     */
+    public List findArrayListByCondition(String dataSource, String... params) {
+        return null;
+    }
+
+    public List findBasicArrayByCondition(String dataSource, String applyId) {
+        return null;
     }
 }

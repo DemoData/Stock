@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 @Service("chyxMedicalOrderService")
-public class MedicalOrderServiceImpl extends TableService<MedicalOrder> {
+public class MedicalOrderServiceImpl extends TableService<MedicalOrder,MedicalOrder> {
 
     @Autowired
     @Qualifier("medicalOrderDao")
@@ -40,7 +40,7 @@ public class MedicalOrderServiceImpl extends TableService<MedicalOrder> {
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = medicalOrderDao.findPatientIdByGroupRecordName(dataSource, groupRecordName);
+            String patientId = medicalOrderDao.findRequiredColByCondition(dataSource, groupRecordName);
             patientCaches.put(groupRecordName, patientId);
         }
         record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
@@ -48,7 +48,7 @@ public class MedicalOrderServiceImpl extends TableService<MedicalOrder> {
     }
 
     @Override
-    protected TableDao<MedicalOrder> currentDao() {
+    protected TableDao<MedicalOrder,MedicalOrder> currentDao() {
         return medicalOrderDao;
     }
 

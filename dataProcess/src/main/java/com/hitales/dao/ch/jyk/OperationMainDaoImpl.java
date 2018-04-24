@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository
-public class OperationMainDaoImpl extends BaseDao implements IOperationMainDao {
+public class OperationMainDaoImpl extends BaseDao implements IOperationMainDao<OperationMain> {
 
     @Override
     protected String generateQuerySql() {
@@ -50,8 +50,8 @@ public class OperationMainDaoImpl extends BaseDao implements IOperationMainDao {
     }
 
     @Override
-    public String findPatientIdByGroupRecordName(String dataSource, String groupRecordName) {
-        log.debug("findPatientIdByGroupRecordName(): 查找PatientId通过一次就诊号: " + groupRecordName);
+    public String findRequiredColByCondition(String dataSource, String groupRecordName) {
+        log.debug("findRequiredColByCondition(): 查找PatientId通过一次就诊号: " + groupRecordName);
         String sql = "select t.`病人ID号` from `患者基本信息` t where t.`一次就诊号`= ? group by t.`一次就诊号`";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> patientList = jdbcTemplate.queryForList(sql, String.class, groupRecordName);
