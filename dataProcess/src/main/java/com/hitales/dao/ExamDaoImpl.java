@@ -3,7 +3,6 @@ package com.hitales.dao;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.standard.IInspectionDao;
 import lombok.extern.slf4j.Slf4j;
-import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Repository("inspectionDao")
+@Repository("examDao")
 public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, Object>> {
     private Element examReport = null;
     private Element examDetail = null;
@@ -32,7 +31,7 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
 
     {
         //TODO:这个路劲可以优化到baseService中去，然后通过basicInfo传入路径过来，再把得到的path传递给dao
-        String path = this.getClass().getClassLoader().getResource("config/shly/exam-radiology.xml").getPath();
+        String path = this.getClass().getClassLoader().getResource("config/shly/exam-ultrasound.xml").getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
@@ -57,8 +56,8 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
                     examDetail = tableElement;
                 }
             }
-            examReportTable = examReport.attribute("name").getValue();
-            examDetailTable = examDetail.attribute("name").getValue();
+            examReportTable = examReport == null ? "" : examReport.attribute("name").getValue();
+            examDetailTable = examDetail == null ? "" : examDetail.attribute("name").getValue();
 
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -142,7 +141,7 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
     public Integer getCount(String dataSource) {
         String examReportId = examReport.attribute("id-column-names").getValue();
         String examDetailId = examDetail.attribute("id-column-names").getValue();
-        String tableName = examReport + "t1," + examDetail + "t2 where t1." + examReportId + "=t2." + examDetailId;
+        String tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
         return getJdbcTemplate(dataSource).queryForObject("select count(*) from " + tableName, Integer.class);
     }
 
@@ -169,13 +168,12 @@ public class ExamDaoImpl extends BaseDao implements IInspectionDao<Map<String, O
                 Element columnElement = (Element) iterator.next();
                 String colName = columnElement.attribute("column-name").getValue();
                 String displayName = columnElement.attribute("display-name").getValue();
-                Attribute beanNameAttr = columnElement.attribute("bean-name");
 
                 if (colName == null || displayName == null) {
                     continue;
                 }
                 Object value = rs.getObject(colName) == null ? "" : rs.getObject(colName);
-                if (beanNameAttr != null && "patientId".equals(beanNameAttr.getValue())) {
+                if ("patientId".equals(displayName)) {
                     StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
                     value = patientPrefix.append(value.toString()).toString();
                 }

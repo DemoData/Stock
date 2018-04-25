@@ -17,22 +17,22 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Service("inspectionService")
+@Service("examService")
 public class ExamServiceImpl extends TextService<Map<String, Object>> {
 
     @Autowired
-    @Qualifier("inspectionDao")
-    private IInspectionDao inspectionDao;
+    @Qualifier("examDao")
+    private IInspectionDao examDao;
 
     @Override
     protected TextDao<Map<String, Object>> currentDao() {
-        return inspectionDao;
+        return examDao;
     }
 
     @Override
     protected void customProcess(Record record, Map<String, Object> inspection, Map<String, List<String>> orgOdCatCaches, Map<String, String> groupRecordCaches, String dataSource) {
-        Object encounterID = inspection.get("EncounterID");//就诊id
-        Object encounterType = inspection.get("EncounterType");
+        Object encounterID = inspection.get("就诊ID");//就诊id
+        Object encounterType = inspection.get("就诊类型");
         if (StringUtils.isEmpty(encounterID) || StringUtils.isEmpty(encounterType)) {
             return;
         }
@@ -40,7 +40,7 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
         String encounterTypeStr = encounterType.toString();
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(encounterIDStr))) {
-            List<String> orgOdCategories = inspectionDao.findOrgOdCatByGroupRecordName(dataSource, encounterIDStr);
+            List<String> orgOdCategories = examDao.findOrgOdCatByGroupRecordName(dataSource, encounterIDStr);
             if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
                 orgOdCatCaches.put(encounterIDStr, orgOdCategories);
             }
@@ -50,8 +50,8 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
             record.setOrgOdCategories(ods.toArray(new String[0]));
         }
         //0-门诊，1-住院，2-急诊，3-体检
-        if ("1".equals(encounterTypeStr) && (groupRecordCaches.isEmpty() || StringUtils.isEmpty(groupRecordCaches.get(encounterIDStr)))) {
-            String groupRecordName = inspectionDao.findRequiredColByCondition(dataSource, encounterIDStr);
+        if ("住院".equals(encounterTypeStr) && (groupRecordCaches.isEmpty() || StringUtils.isEmpty(groupRecordCaches.get(encounterIDStr)))) {
+            String groupRecordName = examDao.findRequiredColByCondition(dataSource, encounterIDStr);
             if (!StringUtils.isEmpty(groupRecordName)) {
                 groupRecordCaches.put(encounterIDStr, groupRecordName);
             }
@@ -60,7 +60,7 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
             //一次就诊号
             record.setGroupRecordName(groupRecordCaches.get(encounterIDStr));
         }
-        if (!"1".equals(encounterTypeStr)) {
+        if (!"住院".equals(encounterTypeStr)) {
             record.setGroupRecordName(encounterIDStr);
         }
     }
@@ -74,6 +74,8 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
     protected void customInitInfo(Record record, Map<String, Object> inspection) {
         record.setPatientId(inspection.get("patientId").toString());
         record.setSourceId(inspection.get("id").toString());
+        inspection.remove("id");
+        inspection.remove("patientId");
     }
 
     @Override

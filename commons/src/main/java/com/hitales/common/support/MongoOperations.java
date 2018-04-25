@@ -68,25 +68,33 @@ public class MongoOperations {
     }
 
     public void save(JSONObject objectToSave) {
-        objectToSave.put("updateTime", System.currentTimeMillis());
+        if (!objectToSave.containsKey("updateTime")) {
+            objectToSave.put("updateTime", System.currentTimeMillis());
+        }
         this.getMongoTemplate().save(objectToSave);
     }
 
     public void save(JSONObject objectToSave, String collectionName) {
-        objectToSave.put("updateTime", System.currentTimeMillis());
+        if (!objectToSave.containsKey("updateTime")) {
+            objectToSave.put("updateTime", System.currentTimeMillis());
+        }
         this.getMongoTemplate().save(objectToSave, collectionName);
     }
 
     public void insert(Collection<JSONObject> batchToSave, Class<?> entityClass) {
         for (JSONObject objectToSave : batchToSave) {
-            objectToSave.put("updateTime", System.currentTimeMillis());
+            if (!objectToSave.containsKey("updateTime")) {
+                objectToSave.put("updateTime", System.currentTimeMillis());
+            }
         }
         this.getMongoTemplate().insert(batchToSave, entityClass);
     }
 
     public void insert(Collection<JSONObject> batchToSave, String collectionName) {
         for (JSONObject objectToSave : batchToSave) {
-            objectToSave.put("updateTime", System.currentTimeMillis());
+            if (!objectToSave.containsKey("updateTime")) {
+                objectToSave.put("updateTime", System.currentTimeMillis());
+            }
         }
         this.getMongoTemplate().insert(batchToSave, collectionName);
     }
@@ -125,8 +133,18 @@ public class MongoOperations {
         return this.getMongoCollection().aggregate(pipeline);
     }
 
-    public <TResult> DistinctIterable<TResult> distinct(String fieldName, Bson filter, Class<TResult> resultClass) {
+    public <TResult> DistinctIterable<TResult> distinctForMongoCollection(String fieldName, Bson filter, Class<TResult> resultClass) {
+        if (this.getMongoCollection() == null) {
+            return null;
+        }
         return this.getMongoCollection().distinct(fieldName, filter, resultClass);
+    }
+
+    public List<Object> distinctForDbCollection(String collectionName, final String fieldName, final DBObject query) {
+        if (this.getMongoTemplate() == null) {
+            return null;
+        }
+        return this.getMongoTemplate().getCollection(collectionName).distinct(fieldName, query);
     }
 
     public int batchUpdate(String collectionName,

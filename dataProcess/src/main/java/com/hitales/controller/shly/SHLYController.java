@@ -1,9 +1,6 @@
 package com.hitales.controller.shly;
 
 import com.hitales.entity.Record;
-import com.hitales.entity.StockInfo;
-import com.hitales.other.BlobToContent;
-import com.hitales.other.DataToMysql;
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author aron
@@ -31,8 +24,8 @@ public class SHLYController {
     private IDataService assayService;
 
     @Autowired
-    @Qualifier("inspectionService")
-    private IDataService inspectionService;
+    @Qualifier("examService")
+    private IDataService examService;
 
     @GetMapping("/processAssay")
     public String processAssay() {
@@ -55,21 +48,61 @@ public class SHLYController {
         return FAIL_FLAG;
     }
 
-    @GetMapping("/processInspection")
-    public String processInspection() {
+    @GetMapping("/processFSExam")
+    public String processFSExam() {
         Record basicInfo = new Record();
         basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
         basicInfo.setBatchNo("shly20180423");
         basicInfo.setDepartment("内分泌科");
         basicInfo.setFormat(Record.FormatType.TEXT.value());
         basicInfo.setDeleted(false);
-        basicInfo.setSource("检查");
+        basicInfo.setSource("放射");
         basicInfo.setStatus("AMD识别完成");
         basicInfo.setRecordType("检查记录");
-        basicInfo.setSubRecordType("检查");
+        basicInfo.setSubRecordType("放射");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        inspectionService.setBasicInfo(basicInfo);
-        if (inspectionService.processData()) {
+        examService.setBasicInfo(basicInfo);
+        if (examService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processCSExam")
+    public String processCSExam() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("超声");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("检查记录");
+        basicInfo.setSubRecordType("超声");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        examService.setBasicInfo(basicInfo);
+        if (examService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processPathology")
+    public String processPathology() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病理");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("病理");
+        basicInfo.setSubRecordType("病理");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        examService.setBasicInfo(basicInfo);
+        if (examService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

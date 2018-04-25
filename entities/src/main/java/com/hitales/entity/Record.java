@@ -23,7 +23,7 @@ public class Record {
     private String subRecordType;
     private String sourceRecordType;
     private String[] odCategories;
-    private String[] orgOdCategories;
+    private String[] orgOdCategories = new String[0];
     private String sourceId;
     private String format;//文本text，半结构化half-text，结构化table
     private boolean deleted;

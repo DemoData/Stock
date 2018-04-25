@@ -37,7 +37,6 @@
             <property column-name="InstrumentName" display-name="仪器名称"/>
             <property column-name="ReportName" display-name="报告标题名称"/>
             <property column-name="Age" display-name="年龄"/>
-            <property column-name="PatientName" display-name="姓名" hide="true"/>
             <property column-name="Sex" display-name="性别"/>
             <property column-name="Bed" display-name="床号"/>
             <property column-name="ApplyDeptName" display-name="申请科室名称"/>

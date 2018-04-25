@@ -8,19 +8,21 @@ public class Patient {
 
     private String patientId;
 
-    private String sex;
+    private String sex = "";
 
-    private String age;
+    private String age = "";
 
-    private String birthDay;//生日
+    private String birthDay = "";//生日
 
-    private String name;
+    private String name = "";
 
-    private String origin;//籍贯
+    private String origin = "";//籍贯
 
-    private String marriage;//婚姻状况
+    private String marriage = "";//婚姻状况
 
-    private String address;//住址
+    private String address = "";//住址
+
+    private boolean isForged = false;//是否伪造的patient
 
     private Long updateTime = System.currentTimeMillis();//上次更新时间
 

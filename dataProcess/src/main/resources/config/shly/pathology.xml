@@ -2,7 +2,7 @@
 <body>
     <item-descriptor>
         <!--type="primary" 表示主表-->
-        <table type="primary" name="shly_exam_radiology_report_20180423" id-column-names="id" group-column="" display-column="">
+        <table type="primary" name="shly_pathology_report_20180423" id-column-names="id" group-column="" display-column="">
             <property column-name="id" display-name="id"/>
             <property column-name="PatientNo" patient-prefix="shly_" display-name="patientId"/>
             <property column-name="EncounterID"     display-name="就诊ID"/>
@@ -38,15 +38,14 @@
             <property column-name="ReportStatusName" display-name="报告状态名称"/>
         </table>
         <!--从表，id-column-name 表示与主表关联的外键名,type:auxiliary 一对一，multi多对多-->
-        <table type="auxiliary" name="shly_exam_radiology_result_20180423" id-column-names="ReportID">
-            <property column-name="ReportID"        display-name="放射报告ID"/>
+        <table type="auxiliary" name="shly_pathology_result_20180423" id-column-names="ReportID">
+            <property column-name="ReportID"        display-name="病理报告ID"/>
             <property column-name="BodySite"        display-name="检查部位"/>
             <property column-name="ExamMethod"      display-name="检查方法"/>
             <property column-name="ExamTech"        display-name="检查技术"/>
             <property column-name="ExamName"        display-name="检查名称"/>
             <property column-name="ExamFind"        display-name="检查所见"/>
             <property column-name="ExamConclusion"  display-name="检查结论"/>
-            <property column-name="RadiologyNote"   display-name="放射学表现"/>
             <property column-name="SummaryNote"     display-name="总体描述"/>
             <property column-name="VerifyNote"      display-name="审核意见"/>
             <property column-name="IsClassicCase"   display-name="典型病例"/>

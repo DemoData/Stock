@@ -5,6 +5,8 @@ import com.hitales.common.support.BatchUpdateOption;
 import com.hitales.common.support.Mapping;
 import com.hitales.common.support.MappingMatch;
 import com.hitales.common.support.MongoOperations;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -39,18 +41,17 @@ public class DataClean {
         mongoOperations = new MongoOperations(DBConnection.generateTemplate(hrsProperties));
 
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url("jdbc:mysql://rm-bp1a049g618bz7l2q.mysql.rds.aliyuncs.com:3306/zhongliuxiangguan?autoReconnect=true");
-        dataSourceBuilder.username("health");
-        dataSourceBuilder.password("Yiy1health_2017");
+        dataSourceBuilder.url("jdbc:mysql://localhost:3306/local?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useSSL=false");
+        dataSourceBuilder.username("root");
+        dataSourceBuilder.password("woshixuhu1217");
         dataSourceBuilder.driverClassName("com.mysql.jdbc.Driver");
         DataSource dataSource = dataSourceBuilder.build();
         jdbcTemplate = new JdbcTemplate(dataSource);
-
     }
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.cleanOdCategories();
+        dataClean.checkPatient();
     }
 
     public void print() {
@@ -142,6 +143,57 @@ public class DataClean {
         }
         if (!options.isEmpty()) {
             result += updateStart(options);
+        }
+        log.info(">>>>>>>>>>>Done," + count);
+    }
+
+    /**
+     * 检查不存在的patientID并创建
+     */
+    public void checkPatient() {
+        int count = 0;
+        List<JSONObject> options = new ArrayList<>();
+        DBObject dbQuery = new BasicDBObject();
+        dbQuery.put("batchNo", "shly20180423");
+        List<Object> patientIds = mongoOperations.distinctForDbCollection("Record", "patientId", dbQuery);
+        long createTime = System.currentTimeMillis();
+        List<Object[]> jdbcPids = new ArrayList<>();
+        for (Object patient : patientIds) {
+            String pid = patient.toString();
+
+            JSONObject patientInDB = mongoOperations.findById(pid, JSONObject.class, "Patient");
+            if (patientInDB != null) {
+                continue;
+            }
+//            log.info("pid->" + pid);
+            JSONObject newPatient = new JSONObject();
+            newPatient.put("_id", pid);
+            newPatient.put("姓名", "");
+            newPatient.put("batchNo", "shly20180423");
+            newPatient.put("婚姻状况", "");
+            newPatient.put("hospitalId", "5ad86cb8acc162a73ee74f16");
+            newPatient.put("createTime", createTime);
+            newPatient.put("出生日期", "");
+            newPatient.put("updateTime", System.currentTimeMillis());
+            newPatient.put("年龄", "");
+            newPatient.put("现住址", "");
+            newPatient.put("籍贯", "");
+            newPatient.put("性别", "");
+            newPatient.put("isForged", true);
+            options.add(newPatient);
+            jdbcPids.add(new Object[]{Integer.valueOf(pid.substring(pid.indexOf("_") + 1))});
+            count++;
+            //超过1000个执行一次更新
+            if (options.size() >= 1000) {
+                log.info(">>>>>>>>>>>inserting " + options.size() + " count in mongo");
+                mongoOperations.insert(options, "Patient");
+                options.clear();
+            }
+        }
+        if (!options.isEmpty()) {
+            log.info(">>>>>>>>>>>inserting " + options.size() + " count in mongo");
+            mongoOperations.insert(options, "Patient");
+            options.clear();
         }
         log.info(">>>>>>>>>>>Done," + count);
     }

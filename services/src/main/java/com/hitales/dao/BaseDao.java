@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +71,6 @@ public abstract class BaseDao extends GenericDao {
     @Qualifier(MysqlDataSourceConfig.MYSQL_RK_TEMPLATE)
     protected JdbcTemplate rkJdbcTemplate;
 
-    private String tableName;
-
     protected static Map<String, JdbcTemplate> jdbcTemplatePool = new HashMap<>();
 
     protected JdbcTemplate getJdbcTemplate(String dataSource) {
@@ -95,11 +95,20 @@ public abstract class BaseDao extends GenericDao {
     }
 
     protected List<String> findOrgOdCatByGroupRecordName(String sql, String dataSource, String groupRecordName) {
-        log.debug("findOrgOdCatByGroupRecordName(): 查找诊断名称通过一次就诊号: " + groupRecordName);
-//        String sql = "select t.`诊断名称` from `诊断信息` t where t.`一次就诊号`= ? group by t.`诊断名称`";
+        log.debug("findOrgOdCatByGroupRecordName(): " + groupRecordName);
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> results = jdbcTemplate.queryForList(sql, String.class, groupRecordName);
-        return results;
+        if (results == null || results.isEmpty()) {
+            return null;
+        }
+        List<String> validResult = new ArrayList<>();
+        for (String orgOd : results) {
+            if (StringUtils.isEmpty(orgOd)) {
+                continue;
+            }
+            validResult.add(orgOd);
+        }
+        return validResult;
     }
 
     @Override
