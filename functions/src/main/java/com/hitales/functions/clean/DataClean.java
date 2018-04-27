@@ -51,7 +51,7 @@ public class DataClean {
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.checkPatient();
+        dataClean.cleanType();
     }
 
     public void print() {
@@ -147,6 +147,48 @@ public class DataClean {
         log.info(">>>>>>>>>>>Done," + count);
     }
 
+    public void spiltShly() {
+        int count = 0;
+        int result = 0;
+        List<BatchUpdateOption> options = new ArrayList<>();
+
+        DBObject dbQuery = new BasicDBObject();
+        dbQuery.put("batchNo", "shly20180424");
+        List<Object> patientIds = mongoOperations.distinctForDbCollection("Record", "patientId", dbQuery);
+
+        for (Object patient : patientIds) {
+            String pid = patient.toString();
+            Query query = new Query();
+            query.addCriteria(Criteria.where("batchNo").is("shly20180423"));
+            query.addCriteria(Criteria.where("patientId").is(pid));
+            List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
+            if (records == null || records.isEmpty()) {
+                continue;
+            }
+//            log.info("pid->" + pid);
+            for (JSONObject record : records) {
+                String rid = record.getString("_id");
+
+                BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+                bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
+                bathUpdateOption.setUpdate(Update.update("batchNo", "shly20180424"));
+                bathUpdateOption.setMulti(true);
+                bathUpdateOption.setUpsert(false);
+                options.add(bathUpdateOption);
+                count++;
+                //超过1000个执行一次更新
+                if (options.size() >= 1000) {
+                    result += updateStart(options);
+                    options.clear();
+                }
+            }
+        }
+        if (!options.isEmpty()) {
+            result += updateStart(options);
+        }
+        log.info(">>>>>>>>>>>Done," + count + ",effected " + result);
+    }
+
     /**
      * 检查不存在的patientID并创建
      */
@@ -179,6 +221,9 @@ public class DataClean {
             newPatient.put("现住址", "");
             newPatient.put("籍贯", "");
             newPatient.put("性别", "");
+            newPatient.put("血型", "");
+            newPatient.put("名族", "");
+            newPatient.put("职业", "");
             newPatient.put("isForged", true);
             options.add(newPatient);
             jdbcPids.add(new Object[]{Integer.valueOf(pid.substring(pid.indexOf("_") + 1))});
@@ -208,10 +253,10 @@ public class DataClean {
         List<BatchUpdateOption> options = new ArrayList<>();
         while (!isFinished) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("batchNo").is("shch20180416"));
-            query.addCriteria(Criteria.where("sourceType").is("text"));
+            query.addCriteria(Criteria.where("batchNo").is("shly20180424"));
+            query.addCriteria(Criteria.where("source").is("病历文书"));
 //            query.addCriteria(Criteria.where("odCategories").is("肝癌相关"));
-            query.addCriteria(Criteria.where("recordType").is("治疗方案"));
+            query.addCriteria(Criteria.where("recordType").is("手术操作记录"));
 //            query.addCriteria(Criteria.where("sourceId").is("32127"));
             log.info(">>>>>>>>> pageNum:" + pageNum);
             query.with(new PageRequest(pageNum, 1000));
@@ -255,14 +300,14 @@ public class DataClean {
 
                 anchorMatch(anchorContent, dbRecordType, dbSubRecordType, item.getString("_id"), types);
 
-                if (!dbSubRecordType.equals(types[1])
-                        && ("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
-                    if ("入院记录".equals(types[0])) {
+                if (!dbSubRecordType.equals(types[1])){
+//                        && ("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
+                    /*if ("入院记录".equals(types[0])) {
                         inCount++;
                     }
                     if ("出院记录".equals(types[0])) {
                         outCount++;
-                    }
+                    }*/
                     item.put("recordType", types[0]);
                     item.put("subRecordType", types[1]);
                     log.info(">>>>>>>>>>>原类型：" + dbRecordType + "-" + dbSubRecordType + ", 新类型：" + types[0] + "-" + types[1] + "->" + item.getString("_id"));
@@ -278,12 +323,12 @@ public class DataClean {
             }
             //超过1000个执行一次更新
             if (options.size() >= 1000) {
-//                result += updateStart(options);
+                result += updateStart(options);
             }
             pageNum++;
         }
         if (!options.isEmpty()) {
-//            result += updateStart(options);
+            result += updateStart(options);
         }
         log.info(">>>>>>>>>>>Done," + count + ",all effected:" + result);
         log.info(">>>>>>>>>>>Done,incCunt:" + inCount + ",outCount:" + outCount);

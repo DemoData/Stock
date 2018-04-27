@@ -20,6 +20,12 @@ public class Patient {
 
     private String marriage = "";//婚姻状况
 
+    private String bloodType = "";//血型
+
+    private String nation = "";//名族
+
+    private String job = "";//职业
+
     private String address = "";//住址
 
     private boolean isForged = false;//是否伪造的patient
@@ -40,7 +46,10 @@ public class Patient {
         ORIGIN("籍贯"),
         MARRIAGE("婚姻状况"),
         ADDRESS("现住址"),
-        NAME("姓名");
+        NAME("姓名"),
+        BLOOD_TYPE("血型"),
+        NATION("名族"),
+        JOB("职业");
 
         private final String value;
 

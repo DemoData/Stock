@@ -2,7 +2,7 @@ package com.hitales.dao.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IMedicalOrderDao;
+import com.hitales.dao.standard.IAdviceDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-@Repository("medicalOrderDao")
-public class MedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao<MedicalOrder,MedicalOrder> {
+@Repository("jyMedicalOrderDao")
+public class MedicalOrderDaoImpl extends BaseDao implements IAdviceDao<MedicalOrder,MedicalOrder> {
 
     @Override
     protected String generateQuerySql() {

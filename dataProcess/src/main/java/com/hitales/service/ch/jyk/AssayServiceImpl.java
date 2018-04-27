@@ -1,10 +1,10 @@
 package com.hitales.service.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.dao.standard.TableDao;
-import com.hitales.dao.standard.IAssayDao;
-import com.hitales.entity.LabDetail;
 import com.hitales.entity.LabBasic;
+import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ public class AssayServiceImpl extends TableService<LabBasic,LabDetail> {
 
     @Autowired
     @Qualifier("jyAssayDao")
-    private IAssayDao assayDao;
+    private ILabDao assayDao;
 
     @Override
     protected String[] getArrayCondition(Record record) {

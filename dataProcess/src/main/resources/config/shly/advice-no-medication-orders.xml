@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--住院非药医嘱-->
+<body>
+    <item-descriptor>
+        <record type="record" name="shly_advice_no_medication_orders_20180423" group-column="MasterOrdersID,PatientNo,InpatientVisitID"
+                display-column="MasterOrdersID,PatientNo,InpatientVisitID">
+            <property bean-name="id" column-name="MasterOrdersID" data-type="string"/>
+            <property bean-name="sourceId" column-name="MasterOrdersID" data-type="string"/>
+            <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_" data-type="string"/>
+            <property bean-name="condition" key-name="EncounterID,EncounterType" column-name="InpatientVisitID,{1}" data-type="map"/>
+        </record>
+        <table type="multi" name="shly_advice_no_medication_orders_20180423" id-column-names="MasterOrdersID">
+            <property column-name="GroupNo" display-name="组序号"/>
+            <property column-name="OrdersAttributeName" display-name="医嘱属性名称"/>
+            <property column-name="OrdersTypeCode" display-name="医嘱类别code"/>
+            <property column-name="OrdersTypeName" display-name="医嘱类别名称"/>
+            <property column-name="ProjectTypeName" display-name="收费项目类别名称"/>
+            <property column-name="OrdersName" display-name="医嘱名称"/>
+            <property column-name="Specifications" display-name="规格"/>
+            <property column-name="Dosage" display-name="用量"/>
+            <property column-name="DosageUnit" display-name="用量单位"/>
+            <property column-name="Frequency" display-name="频次"/>
+            <property column-name="Pathway" display-name="途径"/>
+            <property column-name="RoutineTime" display-name="常规时间"/>
+            <property column-name="OrdersStartTime" display-name="医嘱开始时间"/>
+            <property column-name="WriteRecipeDoctorWorkNo" display-name="下嘱医生工号"/>
+            <property column-name="WriteRecipeDoctorName" display-name="下嘱医生姓名"/>
+            <property column-name="WriteRecipeTime" display-name="下嘱时间"/>
+            <property column-name="ConfirmNurseName" display-name="确认护士姓名"/>
+            <property column-name="ConfirmTime" display-name="确认时间"/>
+            <property column-name="StopNurseName" display-name="停止护士姓名"/>
+            <property column-name="StopTime" display-name="停止时间"/>
+            <property column-name="ExecuteNurseName" display-name="执行护士姓名"/>
+            <property column-name="ExecuteTime" display-name="执行时间"/>
+            <property column-name="DeptName" display-name="科室名称"/>
+            <property column-name="WardName" display-name="病区名称"/>
+            <property column-name="OrdersStateID" display-name="医嘱状态"/>
+            <property column-name="OrdersStateName" display-name="医嘱状态名称"/>
+            <property column-name="PatID" display-name="门诊号"/>
+            <property column-name="UrgentFlag" display-name="加急标志"/>
+            <property column-name="Remark" display-name="备注"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="shly_patient_diagnosis_20180423" display-column="DiagnoseName"
+               condition-column="EncounterID"
+               group-column="DiagnoseName"/>
+        <!--查询groupRecordName表-->
+        <table id="condition" name="shly_in_patient_visit_record_20180423" display-column="AdmissionNumber"
+               condition-column="ID"
+               group-column="AdmissionNumber"/>
+    </queryList>
+
+</body>

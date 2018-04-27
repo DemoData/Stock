@@ -2,7 +2,7 @@ package com.hitales.dao.ch.jyk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IInspectionDao;
+import com.hitales.dao.standard.IExamDao;
 import com.hitales.entity.Exam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("jyInspectionDao")
-public class InspectionDaoImpl extends BaseDao implements IInspectionDao<Exam> {
+public class InspectionDaoImpl extends BaseDao implements IExamDao<Exam> {
 
     @Override
     protected String generateQuerySql() {

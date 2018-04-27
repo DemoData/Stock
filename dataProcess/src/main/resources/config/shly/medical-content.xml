@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--病历文书-->
+<body>
+    <item-descriptor>
+        <record type="record" name="shly_medical_content_20180423" display-column="id,住院号,文档名称,更新内容" where-column="status" where-value="0" where-type="int">
+            <property bean-name="id" column-name="id" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="住院号" data-type="string"/>
+            <property bean-name="medicalHistoryName" column-name="文档名称" data-type="string"/>
+            <property bean-name="medicalContent" column-name="更新内容" data-type="string"/>
+        </record>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="shly_patient_diagnosis_20180423" display-column="DiagnoseName" condition-column="EncounterID"
+               group-column="DiagnoseName"/>
+        <table id="condition" name="shly_in_patient_visit_record_20180423" display-column="PatientNo"
+               condition-column="AdmissionNumber"
+               group-column="PatientNo" prefix="shly_"/>
+    </queryList>
+</body>

@@ -3,14 +3,12 @@ package com.hitales.dao.ch.jyk;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IAssayDao;
-import com.hitales.entity.LabDetail;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.entity.LabBasic;
+import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("jyAssayDao")
-public class AssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
+public class AssayDaoImpl extends BaseDao implements ILabDao<LabBasic,LabDetail> {
 
     @Override
     public Integer getCount(String dataSource) {

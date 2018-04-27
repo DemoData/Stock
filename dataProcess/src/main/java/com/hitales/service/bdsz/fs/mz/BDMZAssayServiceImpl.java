@@ -2,7 +2,7 @@ package com.hitales.service.bdsz.fs.mz;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
-import com.hitales.dao.standard.IAssayDao;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
 import com.hitales.entity.Record;
@@ -46,7 +46,7 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
         String groupRecordName = record.getGroupRecordName();
 
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
-            String patientId = ((IAssayDao) currentDao()).findRequiredColByCondition(dataSource, groupRecordName);
+            String patientId = ((ILabDao) currentDao()).findRequiredColByCondition(dataSource, groupRecordName);
             if (!StringUtils.isEmpty(patientId)) {
                 patientCaches.put(groupRecordName, "bdsz_" + patientId);
             }

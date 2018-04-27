@@ -6,7 +6,7 @@
             <property bean-name="id" column-name="id" data-type="string"/>
             <property bean-name="sourceId" column-name="id" data-type="string"/>
             <property bean-name="patientId" column-name="patientNo" patient-prefix="shly_" data-type="string"/>
-            <property bean-name="condition" column-name="EncounterID,EncounterType" data-type="map"/>
+            <property bean-name="condition" key-name="EncounterID,EncounterType" column-name="EncounterID,EncounterType" data-type="map"/>
         </record>
         <!--labBasic-->
         <labBasic name="shly_lab_generic_report_20180423" condition-column="id">

@@ -71,6 +71,8 @@ public abstract class BaseDao extends GenericDao {
     @Qualifier(MysqlDataSourceConfig.MYSQL_RK_TEMPLATE)
     protected JdbcTemplate rkJdbcTemplate;
 
+    private String xmlPath;
+
     protected static Map<String, JdbcTemplate> jdbcTemplatePool = new HashMap<>();
 
     protected JdbcTemplate getJdbcTemplate(String dataSource) {
@@ -116,6 +118,10 @@ public abstract class BaseDao extends GenericDao {
         return this.hrsMongoTemplate;
     }
 
+    public void initXmlPath(String path) {
+        this.xmlPath = path;
+    }
+
     /**
      * 兼容以前的代码
      *
@@ -133,5 +139,13 @@ public abstract class BaseDao extends GenericDao {
 
     public String findRequiredColByCondition(String dataSource, String condition) {
         return null;
+    }
+
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    public void setXmlPath(String xmlPath) {
+        this.xmlPath = xmlPath;
     }
 }

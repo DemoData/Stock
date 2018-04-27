@@ -1,7 +1,7 @@
 package com.hitales.service.ch.xgwk;
 
 import com.hitales.dao.standard.TableDao;
-import com.hitales.dao.standard.IMedicalOrderDao;
+import com.hitales.dao.standard.IAdviceDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
@@ -20,7 +20,7 @@ public class XGMedicalOrderServiceImpl extends TableService<MedicalOrder,Medical
 
     @Autowired
     @Qualifier("xgMedicalOrderDao")
-    private IMedicalOrderDao medicalOrderDao;
+    private IAdviceDao medicalOrderDao;
 
     @Override
     protected String[] getArrayCondition(Record record) {

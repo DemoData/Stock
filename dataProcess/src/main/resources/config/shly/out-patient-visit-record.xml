@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--门诊就诊记录-->
+<body>
+    <item-descriptor>
+        <record type="record" name="shly_out_patient_visit_record_20180423" group-column="ID,PatientNo"
+                display-column="ID,PatientNo">
+            <property bean-name="id" column-name="ID" data-type="string"/>
+            <property bean-name="sourceId" column-name="ID" data-type="string"/>
+            <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="ID" data-type="string"/>
+        </record>
+        <table type="primary" name="shly_out_patient_visit_record_20180423" id-column-names="ID">
+            <property column-name="CardNo" display-name="卡号"/>
+            <property column-name="Age" display-name="年龄"/>
+            <property column-name="BillingName" display-name="记帐名称 （医保类型）"/>
+            <property column-name="OutpatientName" display-name="门诊名称"/>
+            <property column-name="CategoryName" display-name="门诊类别名称"/>
+            <property column-name="RegistrationDeptName" display-name="挂号科室名称"/>
+            <property column-name="RegistrationDoctorName" display-name="挂号医生姓名"/>
+            <property column-name="VisitStateName" display-name="就诊状态名称"/>
+            <property column-name="VisitDeptName" display-name="就诊科室名称"/>
+            <property column-name="VisitDoctorName" display-name="就诊医生姓名"/>
+            <property column-name="PatID" display-name="门诊号"/>
+            <property column-name="VisitStateMapID" display-name="就诊状态映射ID"/>
+            <property column-name="OutpatientClassName" display-name="门诊类型名称"/>
+            <property column-name="RegistrationDateTime" display-name="挂号日期时间"/>
+            <property column-name="VisitDateTime" display-name="就诊日期时间"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="shly_patient_diagnosis_20180423" display-column="DiagnoseName"
+               condition-column="EncounterID"
+               group-column="DiagnoseName"/>
+    </queryList>
+
+</body>

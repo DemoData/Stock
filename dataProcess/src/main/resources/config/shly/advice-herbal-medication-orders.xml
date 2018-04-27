@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--草药医嘱-->
+<body>
+    <item-descriptor>
+        <record type="record" name="shly_advice_herbal_medication_orders_20180423" group-column="ID,PatientNo,EncounterID,EncounterType"
+                display-column="ID,PatientNo,EncounterID,EncounterType">
+            <property bean-name="id" column-name="ID" data-type="string"/>
+            <property bean-name="sourceId" column-name="ID" data-type="string"/>
+            <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_" data-type="string"/>
+            <property bean-name="condition" key-name="EncounterID,EncounterType" column-name="EncounterID,EncounterType" data-type="map"/>
+        </record>
+        <!--adviceBasic-->
+        <table type="primary" name="shly_advice_herbal_medication_orders_20180423" id-column-names="ID">
+            <property column-name="MedicationOrdersID" display-name="主医嘱ID"/>
+            <property column-name="EncounterType" display-name="就诊类型">
+                <!--0-门诊，1-住院，2-急诊，3-体检EncounterType-->
+                <option value="0">门诊</option>
+                <option value="1">住院</option>
+                <option value="2">急诊</option>
+                <option value="3">体检</option>
+            </property>
+            <property column-name="EncounterID" display-name="就诊ID"/>
+            <!--<property column-name="OrdersAttributeID"       display-name="医嘱属性：0：长期1：临时 2：出院带药"/>-->
+            <property column-name="OrdersAttributeName" display-name="医嘱属性名称"/>
+            <property column-name="OrdersName" display-name="医嘱名称" default-value="草药"/>
+            <property column-name="Specifications" display-name="规格"/>
+            <property column-name="Dosage" display-name="用量"/>
+            <property column-name="DosageUnit" display-name="用量单位"/>
+            <property column-name="Frequency" display-name="频次"/>
+            <property column-name="Pathway" display-name="途径"/>
+            <property column-name="Method" display-name="用法"/>
+            <property column-name="MedicationNum" display-name="贴数"/>
+            <property column-name="RoutineTime" display-name="常规时间"/>
+            <property column-name="OrdersStartTime" display-name="起服时间"/>
+            <property column-name="OrdersStopTime" display-name="结束时间"/>
+            <property column-name="WriteRecipeDoctorWorkNo" display-name="下嘱医生工号"/>
+            <property column-name="WriteRecipeDoctorName" display-name="下嘱医生姓名"/>
+            <property column-name="WriteRecipeTime" display-name="下嘱时间"/>
+            <property column-name="PrescribeDoctorName" display-name="开方医师姓名"/>
+            <property column-name="PrescribeTime" display-name="开方时间"/>
+            <property column-name="ConfirmName" display-name="确认医师姓名"/>
+            <property column-name="ConfirmTime" display-name="确认时间"/>
+            <property column-name="DispenseName" display-name="配药医师姓名"/>
+            <property column-name="DispenseTime" display-name="配药时间"/>
+            <property column-name="StopName" display-name="停止医师姓名"/>
+            <property column-name="StopTime" display-name="停止时间"/>
+            <property column-name="ExecuteName" display-name="执行医师姓名"/>
+            <property column-name="ExecuteTime" display-name="执行时间"/>
+            <property column-name="DeptCode" display-name="科室Code"/>
+            <property column-name="DeptName" display-name="科室名称"/>
+            <property column-name="WardCode" display-name="病区Code"/>
+            <property column-name="WardName" display-name="病区名称"/>
+            <property column-name="OrdersStateID" display-name="医嘱状态"/>
+            <property column-name="OrdersStateName" display-name="医嘱状态名称"/>
+            <property column-name="PatID" display-name="门诊号"/>
+            <property column-name="UrgentFlag" display-name="加急标志"/>
+            <property column-name="Remark" display-name="备注"/>
+            <property column-name="OrdersStateMapID" display-name="医嘱状态映射ID"/>
+        </table>
+        <table type="multi" name="shly_advice_herbal_medication_orders_detail_20180423" id-column-names="HerbalMedicationOrdersID">
+            <property column-name="OrdersDetailCode" display-name="草药明细代码"/>
+            <property column-name="OrdersDetailName" display-name="草药明细名称"/>
+            <property column-name="Specifications" display-name="规格"/>
+            <property column-name="UnitPrice" display-name="单价"/>
+            <property column-name="ProjectNumber" display-name="数量"/>
+            <property column-name="ProjectMoney" display-name="金额"/>
+            <property column-name="Dosage" display-name="用量"/>
+            <property column-name="DosageUnit" display-name="用量单位"/>
+            <property column-name="Method" display-name="用法"/>
+            <property column-name="StateID" display-name="状态ID"/>
+            <property column-name="StateName" display-name="状态名称"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="shly_patient_diagnosis_20180423" display-column="DiagnoseName"
+               condition-column="EncounterID"
+               group-column="DiagnoseName"/>
+        <!--查询groupRecordName表-->
+        <table id="condition" name="shly_in_patient_visit_record_20180423" display-column="AdmissionNumber"
+               condition-column="ID"
+               group-column="AdmissionNumber"/>
+    </queryList>
+
+</body>

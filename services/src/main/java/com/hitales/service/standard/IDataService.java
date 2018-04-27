@@ -8,4 +8,6 @@ public interface IDataService {
     boolean processData();
 
     void setBasicInfo(Object pBasicInfo);
+
+    void setXmlPath(String xmlPath);
 }

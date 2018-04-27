@@ -2,7 +2,7 @@ package com.hitales.dao.ch.xgwk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IAssayDao;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.entity.LabDetail;
 import com.hitales.entity.LabBasic;
 import com.hitales.entity.Record;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("xgAssayDao")
-public class XGAssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
+public class XGAssayDaoImpl extends BaseDao implements ILabDao<LabBasic,LabDetail> {
 
     @Override
     protected String generateQuerySql() {

@@ -38,10 +38,10 @@ public class CHOperationAnchorUpdate {
     //static MongoClient mongo = new MongoClient("localhost", 27017);
     static MongoDatabase db = mongo.getDatabase("HRS");*/
 
-    static MongoCredential mongoCredential = MongoCredential.createCredential("yy", "HRS-live", "rf1)Rauwu3dpsGid".toCharArray());
+    static MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
 
     //static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
-    static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
+    static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
 
     static List<MongoCredential> mongoCredentials = new ArrayList<>();
     static {
@@ -50,7 +50,7 @@ public class CHOperationAnchorUpdate {
     //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
     static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
     //static MongoClient mongo = new MongoClient("localhost", 27017);
-    static MongoDatabase db = mongo.getDatabase("HRS-live");
+    static MongoDatabase db = mongo.getDatabase("HRS");
     static MongoCollection dc = db.getCollection("Record");
 
     private static MongoTemplate hrsMongoTemplate;
@@ -58,12 +58,10 @@ public class CHOperationAnchorUpdate {
     static {
         MongoProperties mongoProperties = new MongoProperties();
         mongoProperties.setHost("localhost");
-        mongoProperties.setPort(3718);
-        mongoProperties.setDatabase("HRS-live");
-        mongoProperties.setUsername("yy");
-        mongoProperties.setPassword("rf1)Rauwu3dpsGid".toCharArray());
-        mongoProperties.setUsername("xh");
-        mongoProperties.setPassword("rt0hizu{j9lzJNqi".toCharArray());
+        mongoProperties.setPort(27017);
+        mongoProperties.setDatabase("HRS");
+        mongoProperties.setUsername("aron");
+        mongoProperties.setPassword("aron".toCharArray());
         hrsMongoTemplate = DBConnection.generateTemplate(mongoProperties);
     }
 
@@ -82,6 +80,8 @@ public class CHOperationAnchorUpdate {
         /*anchorsList.add("手术日期");
         anchorsList.add("手术人员");
         anchorsList.add("麻醉人员");*/
+        /*anchorsList.add("签署日期");
+        anchorsList.add("主治医师签名");*/
     }
 
     //禁用的锚点
@@ -93,7 +93,6 @@ public class CHOperationAnchorUpdate {
         notAnchorList.add("影像号");
         notAnchorList.add("疼痛评分");
         notAnchorList.add("门诊");
-<<<<<<< HEAD:functions/src/main/java/com/hitales/functions/clean/CHGAUpdate.java
         notAnchorList.add("健康指导");
         notAnchorList.add("MRI号");
         notAnchorList.add("住院号");
@@ -102,8 +101,6 @@ public class CHOperationAnchorUpdate {
         notAnchorList.add("登记号");
         notAnchorList.add("彩超号");
         notAnchorList.add("电话");
-=======
-        notAnchorList.add("健康指导");*/
 
         /*notAnchorList.add("手术过程");
         notAnchorList.add("手术经过");
@@ -119,6 +116,11 @@ public class CHOperationAnchorUpdate {
         notAnchorList.add("术后向患者交代的注意事项");
         notAnchorList.add("穿刺过程");
         notAnchorList.add("内镜诊断");*/
+        /*notAnchorList.add("体格检查");
+        notAnchorList.add("神经系统");
+        notAnchorList.add("手术外伤史");
+        notAnchorList.add("输血史");
+        notAnchorList.add("过敏史");*/
     }
 
     //前面不是中文的需要打上锚点
@@ -134,9 +136,9 @@ public class CHOperationAnchorUpdate {
     static List<String> prefNotAnchorList = new ArrayList<>();
 
     static {
-        prefNotAnchorList.add("住院医师");
+        /*prefNotAnchorList.add("住院医师");
         prefNotAnchorList.add("主治医师");
-        prefNotAnchorList.add("建议");
+        prefNotAnchorList.add("建议");*/
         /*prefNotAnchorList.add("住院医师");
         prefNotAnchorList.add("主治医师");*/
     }
@@ -173,6 +175,8 @@ public class CHOperationAnchorUpdate {
         colonAnchorList.add("术者");
         colonAnchorList.add("操作者");
         colonAnchorList.add("DSA");*/
+        /*colonAnchorList.add("时间");
+        colonAnchorList.add("手机");*/
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -222,17 +226,67 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("操作经过");
         colonEndAnchorList.add("操作人员");
         colonEndAnchorList.add("住院医师");
-<<<<<<< HEAD:functions/src/main/java/com/hitales/functions/clean/CHGAUpdate.java
-        colonEndAnchorList.add("入院时病史、体征及辅助检查主要发现");
-
-=======
         colonEndAnchorList.add("操作过程如下");*/
+        /*colonEndAnchorList.add("床位号");
+        colonEndAnchorList.add("记录医生");
+        colonEndAnchorList.add("家族史");
+        colonEndAnchorList.add("联系方式");
+        colonEndAnchorList.add("住院期间特殊检查结果（注明日期与检查号）");
+        colonEndAnchorList.add("住院期间病程与治疗结果（注明手术日期、手术名称、输血量及抢救结果）");
+        colonEndAnchorList.add("门(急)诊诊断");
+        colonEndAnchorList.add("慢性呼吸衰竭II型呼衰");
+        colonEndAnchorList.add("初步诊断");
+        colonEndAnchorList.add("体 格 检 查");
+        colonEndAnchorList.add("实 验 室 检 查");
+        colonEndAnchorList.add("辅 助 检 查");
+        colonEndAnchorList.add("本 科 检 查");
+        //=====
+        colonEndAnchorList.add("入院情况");
+        colonEndAnchorList.add("入院诊断");
+        colonEndAnchorList.add("诊疗经过");
+        colonEndAnchorList.add("死亡原因");
+        colonEndAnchorList.add("死亡诊断");
+        colonEndAnchorList.add("死亡时间");
+
+        colonEndAnchorList.add("主  诉");
+        colonEndAnchorList.add("现病史");
+        colonEndAnchorList.add("既往史");
+        colonEndAnchorList.add("个人史");
+        colonEndAnchorList.add("婚育史");
+        colonEndAnchorList.add("主  诉");
+        colonEndAnchorList.add("副主任");*/
+
+        colonEndAnchorList.add("手术医师");
+        colonEndAnchorList.add("麻醉医师");
+        colonEndAnchorList.add("手术名称");
+        colonEndAnchorList.add("手术日期");
+        colonEndAnchorList.add("术前诊断");
+        colonEndAnchorList.add("术中诊断");
+        colonEndAnchorList.add("手术护士");
+        colonEndAnchorList.add("麻醉方式");
+        colonEndAnchorList.add("手术时间");
+        colonEndAnchorList.add("手术经过");
+        colonEndAnchorList.add("医生签名");
+
+        colonEndAnchorList.add("操作记录");
+        colonEndAnchorList.add("操作时间");
+        colonEndAnchorList.add("操作过程");
+
+        colonEndAnchorList.add("主持人");
+        colonEndAnchorList.add("参加人员");
+        colonEndAnchorList.add("手术指征");
+        colonEndAnchorList.add("手术方案");
+        colonEndAnchorList.add("术前准备");
+        colonEndAnchorList.add("记录者签名");
+
     }
 
     public static void main(String[] args) {
         BasicDBObject docQuery = new BasicDBObject();
-        docQuery.append("batchNo", "shch20180309");
+        docQuery.append("batchNo", "shly20180424");
+        docQuery.append("source", "病历文书");
         BasicDBList recordTypeList = new BasicDBList();
+//        recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
         recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
 //        recordTypeList.add(new BasicDBObject("recordType", "出院记录"));
         docQuery.put("$or", recordTypeList);
@@ -246,15 +300,12 @@ public class CHOperationAnchorUpdate {
             Document document = itor.next();
             JSONObject jsonObject = JSONObject.parseObject(document.toJson());
             System.out.println(jsonObject.getString("_id"));
-            String textARS = jsonObject.getJSONObject("info").getString("text");
-            if (!jsonObject.getJSONObject("info").containsKey("text_back")) {
-                jsonObject.getJSONObject("info").put("text_back", textARS);
-            } else {
-                textARS = jsonObject.getJSONObject("info").getString("text_back");
-            }
-            /*String textARS = jsonObject.getJSONObject("info").getString("textARS");
-            textARS = TextFormatter.formatTextByAnchaor(textARS);*/
-            String text_back = textARS;
+//            String textARS = jsonObject.getJSONObject("info").getString("text");
+
+            String textARS = jsonObject.getJSONObject("info").getString("textARS");
+            textARS = TextFormatter.formatTextByAnchaor(textARS);
+            String text_back = jsonObject.getJSONObject("info").getString("text");
+//            textARS = text_back;
             /*if (!jsonObject.getJSONObject("info").containsKey("text_back")) {
                 jsonObject.getJSONObject("info").put("text_back", text_back);
             } else {
@@ -363,7 +414,14 @@ public class CHOperationAnchorUpdate {
             textARS = textARS.replaceAll("【【手术经过】】时间】】", "【【手术经过时间】】");
             textARS = textARS.replaceAll("患者【【术前诊断】】", "【【患者术前诊断】】");*/
 
-            textARS = textARS.replaceAll("手术经过时间】】", "【【手术经过时间】】");
+//            textARS = textARS.replaceAll("主治【【医师签名】】", "【【主治医师签名】】");
+//            textARS = textARS.replaceAll("现居【【地址】】", "【【现居地址】】");
+//            textARS = textARS.replaceAll("主任\n【【医师】】", "【【主任医师】】");
+//            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
+//            textARS = textARS.replaceAll("住院【【医师】】", "【【住院医师】】");
+            textARS = textARS.replaceAll("手术【【医师】】", "【【手术医师】】");
+            textARS = textARS.replaceAll("麻醉【【医师】】", "【【麻醉医师】】");
+            textARS = textARS.replaceAll("讨论【【日期】】", "【【讨论日期】】");
 
             /*if (textARS.lastIndexOf("【【术中诊断】】") > 0) {
                 String temp = textARS.substring(0, textARS.lastIndexOf("【【术中诊断】】"));

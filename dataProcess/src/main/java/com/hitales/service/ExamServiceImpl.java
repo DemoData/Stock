@@ -2,7 +2,7 @@ package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.support.TextFormatter;
-import com.hitales.dao.standard.IInspectionDao;
+import com.hitales.dao.standard.IExamDao;
 import com.hitales.dao.standard.TextDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +22,19 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
 
     @Autowired
     @Qualifier("examDao")
-    private IInspectionDao examDao;
+    private IExamDao examDao;
 
     @Override
     protected TextDao<Map<String, Object>> currentDao() {
         return examDao;
+    }
+
+    @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        examDao.initXmlPath(super.getXmlPath());
     }
 
     @Override
@@ -74,6 +82,7 @@ public class ExamServiceImpl extends TextService<Map<String, Object>> {
     protected void customInitInfo(Record record, Map<String, Object> inspection) {
         record.setPatientId(inspection.get("patientId").toString());
         record.setSourceId(inspection.get("id").toString());
+        //移除不需要的字段
         inspection.remove("id");
         inspection.remove("patientId");
     }

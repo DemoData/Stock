@@ -1,7 +1,7 @@
 package com.hitales.service.ch.jyk;
 
 import com.hitales.dao.standard.TableDao;
-import com.hitales.dao.standard.IMedicalOrderDao;
+import com.hitales.dao.standard.IAdviceDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;
 import com.hitales.service.TableService;
@@ -20,8 +20,8 @@ import java.util.Map;
 public class MedicalOrderServiceImpl extends TableService<MedicalOrder,MedicalOrder> {
 
     @Autowired
-    @Qualifier("medicalOrderDao")
-    private IMedicalOrderDao medicalOrderDao;
+    @Qualifier("jyMedicalOrderDao")
+    private IAdviceDao medicalOrderDao;
 
     @Override
     protected String[] getArrayCondition(Record record) {

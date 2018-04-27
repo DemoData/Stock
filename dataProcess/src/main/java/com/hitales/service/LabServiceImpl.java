@@ -1,7 +1,7 @@
 package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hitales.dao.standard.IAssayDao;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.dao.standard.TableDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +17,19 @@ import java.util.Set;
 
 @Slf4j
 @Service("assayService")
-public class AssayServiceImpl extends TableService<Map<String, Object>, Map<String, Object>> {
+public class LabServiceImpl extends TableService<Map<String, Object>, Map<String, Object>> {
 
     @Autowired
     @Qualifier("assayDao")
-    private IAssayDao assayDao;
+    private ILabDao assayDao;
+
+    @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        assayDao.initXmlPath(super.getXmlPath());
+    }
 
     @Override
     protected String[] getArrayCondition(Record record) {

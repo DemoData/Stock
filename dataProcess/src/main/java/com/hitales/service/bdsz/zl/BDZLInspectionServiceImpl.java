@@ -2,7 +2,7 @@ package com.hitales.service.bdsz.zl;
 
 import com.hitales.common.support.TextFormatter;
 import com.hitales.dao.standard.TextDao;
-import com.hitales.dao.standard.IInspectionDao;
+import com.hitales.dao.standard.IExamDao;
 import com.hitales.entity.Exam;
 import com.hitales.entity.Record;
 import com.hitales.service.TextService;
@@ -25,7 +25,7 @@ public class BDZLInspectionServiceImpl extends TextService<Exam> {
 
     @Autowired
     @Qualifier("bdzlInspectionDao")
-    private IInspectionDao inspectionDao;
+    private IExamDao inspectionDao;
 
     @Override
     protected TextDao<Exam> currentDao() {

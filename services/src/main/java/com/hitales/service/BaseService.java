@@ -25,6 +25,7 @@ public abstract class BaseService extends GenericService {
     private String dataSourceList;
 
     private Object basicInfo;
+    private String xmlPath;
 
     /**
      * 用于createTime
@@ -35,6 +36,7 @@ public abstract class BaseService extends GenericService {
 
     @Override
     public boolean processData() {
+        initProcess();
         try {
             /*
              * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
@@ -60,6 +62,10 @@ public abstract class BaseService extends GenericService {
             return false;
         }
         return true;
+    }
+
+    protected void initProcess(){
+
     }
 
     /**
@@ -161,6 +167,14 @@ public abstract class BaseService extends GenericService {
 
     public void setDataSourceList(String dataSourceList) {
         this.dataSourceList = dataSourceList;
+    }
+
+    public String getXmlPath() {
+        return xmlPath;
+    }
+
+    public void setXmlPath(String xmlPath) {
+        this.xmlPath = xmlPath;
     }
 
     class storageRunnable implements Runnable {

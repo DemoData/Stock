@@ -48,7 +48,7 @@ public class StockController {
         basicInfo.put("batchNo", "shly20180423");
         basicInfo.put("patientPrefix", "shly_");
         patientService.setBasicInfo(basicInfo);
-
+        patientService.setXmlPath("config/shly/patient.xml");
         if (patientService.processData()) {
             return SUCCESS_FLAG;
         }

@@ -1,15 +1,14 @@
-package com.hitales.service.ch.jyk;
+package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.support.Mapping;
 import com.hitales.common.support.MappingMatch;
 import com.hitales.common.support.TextFormatter;
-import com.hitales.dao.standard.TextDao;
 import com.hitales.dao.standard.IMedicalHistoryDao;
+import com.hitales.dao.standard.TextDao;
 import com.hitales.entity.MedicalHistory;
 import com.hitales.entity.Record;
-import com.hitales.service.TextService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,12 +25,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
-@Service("chyxMedicalHistoryService")
-public class MedicalHistoryServiceImpl extends TextService<MedicalHistory> {
+@Service("medicalContentService")
+public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
 
     @Autowired
-    @Qualifier("jyMedicalHistoryDao")
-    IMedicalHistoryDao medicalContentDao;
+    @Qualifier("medicalContentDao")
+    IMedicalHistoryDao medicalHistoryDao;
 
     @Autowired
     @Qualifier(MongoDataSourceConfig.HRS_MONGO_TEMPLATE)
@@ -39,7 +38,15 @@ public class MedicalHistoryServiceImpl extends TextService<MedicalHistory> {
 
     @Override
     protected TextDao<MedicalHistory> currentDao() {
-        return medicalContentDao;
+        return medicalHistoryDao;
+    }
+
+    @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        medicalHistoryDao.initXmlPath(super.getXmlPath());
     }
 
     @Override
@@ -50,12 +57,22 @@ public class MedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         String groupRecordName = entity.getGroupRecordName();
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
-            List<String> orgOdCategories = medicalContentDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
+            List<String> orgOdCategories = medicalHistoryDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
             if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
                 orgOdCatCaches.put(groupRecordName, orgOdCategories);
             }
         }
-        record.setOrgOdCategories(orgOdCatCaches.get(groupRecordName).toArray(new String[0]));
+        List<String> orgOds = orgOdCatCaches.get(groupRecordName);
+        if (orgOds != null && !orgOds.isEmpty()) {
+            record.setOrgOdCategories(orgOds.toArray(new String[0]));
+        }
+        if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
+            String patientId = medicalHistoryDao.findRequiredColByCondition(dataSource, groupRecordName);
+            if (!StringUtils.isEmpty(patientId)) {
+                patientCaches.put(groupRecordName, patientId);
+            }
+        }
+        record.setPatientId(patientCaches.get(groupRecordName) == null ? "" : patientCaches.get(groupRecordName));
     }
 
     @Override
@@ -83,11 +100,14 @@ public class MedicalHistoryServiceImpl extends TextService<MedicalHistory> {
         if (StringUtils.isEmpty(medicalContent)) {
             log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
-        String text = TextFormatter.formatTextByAnchaor(medicalContent);
-        info.put(TextFormatter.TEXT, text);
-        info.put(TextFormatter.TEXT_ARS, medicalContent);
+//        String text = TextFormatter.formatTextByAnchaor(medicalContent);
+        info.put(TextFormatter.TEXT, medicalContent);
 
-        anchorMatch(medicalContent, record);
+        String temp = medicalContent.replaceAll("【【", "");
+        String textARS = temp.replaceAll("】】", "");
+        info.put(TextFormatter.TEXT_ARS, textARS);
+
+//        anchorMatch(medicalContent, record);
     }
 
     private void setRecordType(Record record, MedicalHistory medicalHistory) {
@@ -96,10 +116,13 @@ public class MedicalHistoryServiceImpl extends TextService<MedicalHistory> {
             log.error("!!!!!!!!!!!! mapping is empty , id : " + medicalHistory.getId() + "!!!!!!!!!!");
             return;
         }
-        List<Mapping> mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
-        if (mapping == null || mapping.isEmpty()) {
-            MappingMatch.addMappingRule(hrsMongoTemplate);
+        List<Mapping> mapping = null;
+        synchronized (this) {
             mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+            if (mapping == null || mapping.isEmpty()) {
+                MappingMatch.addMappingRule(hrsMongoTemplate);
+                mapping = hrsMongoTemplate.findAll(Mapping.class, "Mapping");
+            }
         }
 
         String mappedValue = MappingMatch.getMappedValue(mapping, medicalHistoryName);

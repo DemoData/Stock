@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--门诊就诊记录-->
+<body>
+    <item-descriptor>
+        <record type="record" name="shly_patient_allergy_adverse_reaction_20180423" group-column="ID,PatientNo,EncounterID,EncounterType"
+                display-column="ID,PatientNo,EncounterID,EncounterType">
+            <property bean-name="id" column-name="ID" data-type="string"/>
+            <property bean-name="sourceId" column-name="ID" data-type="string"/>
+            <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_" data-type="string"/>
+            <property bean-name="condition" key-name="EncounterID,EncounterType" column-name="EncounterID,EncounterType" data-type="map"/>
+        </record>
+        <table type="primary" name="shly_patient_allergy_adverse_reaction_20180423" id-column-names="ID">
+            <property column-name="EncounterID" display-name="就诊ID"/>
+            <property column-name="EncounterType" display-name="就诊类型">
+                <option value="0">门诊</option>
+                <option value="1">住院</option>
+                <option value="2">急诊</option>
+                <option value="3">体检</option>
+            </property>
+            <property column-name="PatientNo" display-name="患者ID"/>
+            <property column-name="AllergySymptomName" display-name="过敏症状名称"/>
+            <property column-name="AllergenName" display-name="过敏原名称"/>
+            <property column-name="AllergyTypeName" display-name="过敏类型名称"/>
+            <property column-name="IsFamilyHistory" display-name="是否家族史">
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </property>
+            <property column-name="SeriousDegree" display-name="严重程度"/>
+            <property column-name="CreateName" display-name="创建者姓名"/>
+            <property column-name="CreateTime" display-name="创建时间"/>
+            <property column-name="PatID" display-name="门诊号"/>
+            <property column-name="SymptomStartDateTime" display-name="症状开始日期时间"/>
+            <property column-name="SymptomStopDateTime" display-name="症状结束日期时间"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="shly_patient_diagnosis_20180423" display-column="DiagnoseName"
+               condition-column="EncounterID"
+               group-column="DiagnoseName"/>
+    </queryList>
+
+</body>

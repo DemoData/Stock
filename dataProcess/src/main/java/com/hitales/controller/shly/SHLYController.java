@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * 上海六院Controller
+ *
  * @author aron
  */
 @RestController
@@ -27,6 +29,14 @@ public class SHLYController {
     @Qualifier("examService")
     private IDataService examService;
 
+    @Autowired
+    @Qualifier("adviceService")
+    private IDataService adviceService;
+
+    @Autowired
+    @Qualifier("medicalContentService")
+    private IDataService medicalContentService;
+
     @GetMapping("/processAssay")
     public String processAssay() {
         Record basicInfo = new Record();
@@ -41,7 +51,7 @@ public class SHLYController {
         basicInfo.setSubRecordType("化验");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
         assayService.setBasicInfo(basicInfo);
-
+        assayService.setXmlPath("config/shly/lab.xml");
         if (assayService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -62,6 +72,7 @@ public class SHLYController {
         basicInfo.setSubRecordType("放射");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
         examService.setBasicInfo(basicInfo);
+        examService.setXmlPath("config/shly/exam-radiology.xml");
         if (examService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -82,6 +93,7 @@ public class SHLYController {
         basicInfo.setSubRecordType("超声");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
         examService.setBasicInfo(basicInfo);
+        examService.setXmlPath("config/shly/exam-ultrasound.xml");
         if (examService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -102,7 +114,153 @@ public class SHLYController {
         basicInfo.setSubRecordType("病理");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
         examService.setBasicInfo(basicInfo);
+        examService.setXmlPath("config/shly/pathology.xml");
         if (examService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processAdviceHerbal")
+    public String processAdviceHerbal() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("草药医嘱");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("治疗方案");
+        basicInfo.setSubRecordType("草药医嘱");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/advice-herbal-medication-orders.xml");
+        if (adviceService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processAdviceMedication")
+    public String processAdviceMedication() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("住院用药医嘱");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("治疗方案");
+        basicInfo.setSubRecordType("住院用药医嘱");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/advice-medication-orders.xml");
+        if (adviceService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processAdviceNoMedication")
+    public String processAdviceNoMedication() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("住院非药医嘱");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("治疗方案");
+        basicInfo.setSubRecordType("住院非药医嘱");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/advice-no-medication-orders.xml");
+        if (adviceService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processOutPatientRecipe")
+    public String processOutPatientRecipe() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("门诊-处方");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("门诊记录");
+        basicInfo.setSubRecordType("门诊处方");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/out-patient-recipe.xml");
+        if (adviceService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processMedicalContent")
+    public String processMedicalContent() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病历文书");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        medicalContentService.setBasicInfo(basicInfo);
+        medicalContentService.setXmlPath("config/shly/medical-content.xml");
+        if (medicalContentService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processOutPatientVisit")
+    public String processOutPatientVisit() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("门诊-就诊记录");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("门诊记录");
+        basicInfo.setSubRecordType("就诊记录");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/out-patient-visit-record.xml");
+        if (adviceService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processReaction")
+    public String processReaction() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("shly20180423");
+        basicInfo.setDepartment("内分泌科");
+        basicInfo.setFormat(Record.FormatType.TABLE.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("过敏不良反应");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("其他记录");
+        basicInfo.setSubRecordType("过敏不良反应");
+        basicInfo.setOdCategories(new String[]{"糖尿病"});
+        adviceService.setBasicInfo(basicInfo);
+        adviceService.setXmlPath("config/shly/patient-allergy-adverse-reaction.xml");
+        if (adviceService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

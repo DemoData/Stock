@@ -2,7 +2,7 @@ package com.hitales.dao.bdsz.zl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IInspectionDao;
+import com.hitales.dao.standard.IExamDao;
 import com.hitales.entity.Exam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("bdzlInspectionDao")
-public class BDZLInspectionDaoImpl extends BaseDao implements IInspectionDao<Exam> {
+public class BDZLInspectionDaoImpl extends BaseDao implements IExamDao<Exam> {
 
     @Override
     protected String generateQuerySql() {

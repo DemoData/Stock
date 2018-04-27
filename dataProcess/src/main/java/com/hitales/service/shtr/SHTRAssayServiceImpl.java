@@ -2,8 +2,8 @@ package com.hitales.service.shtr;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.dao.standard.TableDao;
-import com.hitales.dao.standard.IAssayDao;
 import com.hitales.entity.LabBasic;
 import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
@@ -24,7 +24,7 @@ public class SHTRAssayServiceImpl extends TableService<LabBasic,LabDetail> {
 
     @Autowired
     @Qualifier("shtrAssayDao")
-    private IAssayDao assayDao;
+    private ILabDao assayDao;
 
     @Override
     protected String[] getArrayCondition(Record record) {

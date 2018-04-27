@@ -2,7 +2,7 @@ package com.hitales.dao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.util.BeanUtil;
-import com.hitales.dao.standard.IAssayDao;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.DocumentException;
@@ -21,9 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 化验Dao
+ */
 @Slf4j
 @Repository("assayDao")
-public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Object>, Map<String, Object>> {
+public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, Map<String, Object>> {
 
     private Element table = null;
     private Element labBasic = null;
@@ -36,10 +39,10 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
     private String displayCol;
     private String labBasicTable;
     private String labDetailTable;
+    private boolean loadedXml = false;
 
-    {
-        //TODO:这个路劲可以优化到baseService中去，然后通过basicInfo传入路径过来，再把得到的path传递给dao
-        String path = this.getClass().getClassLoader().getResource("config/shly/lab.xml").getPath();
+    private void loadXml() {
+        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
@@ -71,6 +74,9 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
 
     @Override
     public Integer getCount(String dataSource) {
+        if (!loadedXml) {
+            loadXml();
+        }
         return getJdbcTemplate(dataSource).queryForObject("select count(*) from (select " + displayCol + " from " + tableName + " GROUP BY " + groupCol + ") t", Integer.class);
     }
 
@@ -185,7 +191,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
                 String type = columnElement.attribute("data-type").getValue();
                 Object mapValue = "";
                 if ("string".equals(type)) {
-                    mapValue = rs.getObject(columnName) == null ? "" : rs.getObject(columnName);
+                    mapValue = rs.getObject(columnName) == null ? "" : rs.getObject(columnName).toString();
                 } else if ("map".equals(type)) {
                     String[] split = columnName.split(",");
                     Map<String, Object> condition = new HashMap<>();
@@ -204,7 +210,7 @@ public class AssayDaoImpl extends BaseDao implements IAssayDao<Map<String, Objec
                 }
                 //处理字段值映射
                 List<Element> options = columnElement.elements("option");
-                if (options != null || !options.isEmpty()) {
+                if (options != null && !options.isEmpty()) {
                     for (Element option : options) {
                         String optionValue = option.attribute("value").getValue();
                         if (optionValue != null && optionValue.equals(mapValue.toString())) {

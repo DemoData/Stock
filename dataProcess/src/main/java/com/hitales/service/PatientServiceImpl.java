@@ -36,7 +36,16 @@ public class PatientServiceImpl extends BaseService {
     private String patientPrefix = null;
 
     @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        patientDao.initXmlPath(super.getXmlPath());
+    }
+
+    @Override
     public JSONObject bean2Json(Object entity) {
+        //TODO：优化为读取bean属性
         Patient patient = (Patient) entity;
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Patient.ColumnMapping.ID.value(), patientPrefix + patient.getPatientId());
@@ -51,6 +60,10 @@ public class PatientServiceImpl extends BaseService {
         jsonObj.put(Patient.ColumnMapping.ADDRESS.value(), StringUtils.isEmpty(patient.getAddress()) ? EMPTY_FLAG : patient.getAddress());
         jsonObj.put(Patient.ColumnMapping.ORIGIN.value(), StringUtils.isEmpty(patient.getOrigin()) ? EMPTY_FLAG : patient.getOrigin());
         jsonObj.put(Patient.ColumnMapping.MARRIAGE.value(), StringUtils.isEmpty(patient.getMarriage()) ? EMPTY_FLAG : patient.getMarriage());
+        jsonObj.put(Patient.ColumnMapping.BLOOD_TYPE.value(), StringUtils.isEmpty(patient.getBloodType()) ? EMPTY_FLAG : patient.getBloodType());
+        jsonObj.put(Patient.ColumnMapping.NATION.value(), StringUtils.isEmpty(patient.getNation()) ? EMPTY_FLAG : patient.getNation());
+        jsonObj.put(Patient.ColumnMapping.JOB.value(), StringUtils.isEmpty(patient.getJob()) ? EMPTY_FLAG : patient.getJob());
+        jsonObj.put("isForged", patient.isForged());
         return jsonObj;
     }
 

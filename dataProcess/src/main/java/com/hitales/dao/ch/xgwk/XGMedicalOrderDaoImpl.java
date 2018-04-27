@@ -2,7 +2,7 @@ package com.hitales.dao.ch.xgwk;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IMedicalOrderDao;
+import com.hitales.dao.standard.IAdviceDao;
 import com.hitales.entity.MedicalOrder;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @Repository("xgMedicalOrderDao")
-public class XGMedicalOrderDaoImpl extends BaseDao implements IMedicalOrderDao<MedicalOrder,MedicalOrder> {
+public class XGMedicalOrderDaoImpl extends BaseDao implements IAdviceDao<MedicalOrder,MedicalOrder> {
 
     @Override
     protected String generateQuerySql() {

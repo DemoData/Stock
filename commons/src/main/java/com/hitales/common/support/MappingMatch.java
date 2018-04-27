@@ -18,6 +18,10 @@ public class MappingMatch {
             "申请单", "审批表", "评估单", "评估表", "登记表", "报告单", "观察表", "监控表", "指肠切除术", "胰腺癌化疗", "胰腺肿瘤手术", "输血", "镇痛记录", "高危患者", "冠脉造影", "病史摘要",
             "专用单", "评价表", "调查表", "拒绝书", "讨论记录", "术前小结", "输血前评估", "谈话记录", "死亡", "死亡小结", "出院小结", "出院小节", "住院小结", "经超声胃镜超声造影记录", "病案首页", "小时内入出院", "24小时", "入出院", "甲状腺腺癌"};
 
+    private static String[] otherArray ={"宣教", "清单", "报告卡", "计划", "告知", "计划", "通知书", "评分", "健康教育", "全院通用", "责任书", "心电图、TCD、脑电图", "病历名称",
+            "输血反应报告", "体检封面", "检测表", "自费", "饮食-低脂普食", "入院介绍表", "同意书", "承诺书", "记录单", "志愿书",
+            "申请单", "审批表", "评估单", "评估表", "登记表", "报告单", "观察表", "监控表", "输血", "高危患者", "病史摘要",
+            "专用单", "评价表", "调查表", "拒绝书", "讨论记录", "术前小结", "输血前评估", "谈话记录"};
     public static void addMappingRule(MongoTemplate mongoTemplate) {
         List<JSONObject> mapping = new ArrayList<>();
         JSONObject other = new JSONObject();
@@ -27,20 +31,41 @@ public class MappingMatch {
         other.put("rank", 1);
         other.put("subType", subList);
         //其他记录
-        String[] containArray = new String[]{"宣教", "清单", "报告卡", "计划", "告知", "计划", "通知书", "评分", "健康教育", "全院通用", "责任书", "心电图、TCD、脑电图", "病历名称",
-                "输血反应报告", "体检封面", "检测表", "自费", "饮食-低脂普食", "入院介绍表", "同意书", "承诺书", "记录单", "志愿书",
-                "申请单", "审批表", "评估单", "评估表", "登记表", "报告单", "观察表", "监控表", "指肠切除术", "胰腺癌化疗", "胰腺肿瘤手术", "输血", "镇痛记录", "高危患者", "冠脉造影", "病史摘要",
-                "专用单", "评价表", "调查表", "拒绝书", "讨论记录", "输血前评估", "谈话记录"};
+        String[] containArray = new String[]{"宣教", "清单", "报告卡", "计划", "计划", "评分", "健康教育", "全院通用", "心电图、TCD、脑电图", "病历名称",
+                "输血反应报告", "自费", "饮食-低脂普食", "输血", "镇痛记录", "高危患者", "病史摘要", "输血前评估"};
         //TODO:改进成Object类型 然后通过哦按段类型做不同的处理方式
         subList.add(generateItem(containArray, new String[]{"查房", "病程"}, "其他", null, 2, 1));
         subList.add(generateItem(new String[]{"会诊单", "会诊记录"}, null, "会诊单", null, 2, 2));
         subList.add(generateItem(new String[]{"体温单"}, null, "体温单", null, 2, 3));
-        subList.add(generateItem(new String[]{"告知书"}, null, "告知书", null, 2, 4));
+        subList.add(generateItem(new String[]{"告知", "告知书"}, null, "告知书", null, 2, 4));
         subList.add(generateItem(new String[]{"知情", "知情书", "知情同意书"}, null, "知情文件", null, 2, 5));
         subList.add(generateItem(new String[]{"护理记录", "入院护理评估"}, null, "护理文书", null, 2, 6));
         subList.add(generateItem(new String[]{"临时"}, null, "临时文件", null, 2, 7));
         subList.add(generateItem(new String[]{"协议书"}, null, "协议书", null, 2, 8));
         subList.add(generateItem(new String[]{"术前小结"}, null, "术前小结", null, 2, 8));
+        subList.add(generateItem(new String[]{"通知书"}, null, "通知书", null, 2, 9));
+        subList.add(generateItem(new String[]{"责任书"}, null, "责任书", null, 2, 10));
+        subList.add(generateItem(new String[]{"体检封面"}, null, "体检封面", null, 2, 11));
+        subList.add(generateItem(new String[]{"检测表"}, null, "检测表", null, 2, 12));
+        subList.add(generateItem(new String[]{"入院介绍表"}, null, "入院介绍表", null, 2, 13));
+        subList.add(generateItem(new String[]{"同意书"}, null, "同意书", null, 2, 14));
+        subList.add(generateItem(new String[]{"承诺书"}, null, "承诺书", null, 2, 15));
+        subList.add(generateItem(new String[]{"记录单"}, null, "记录单", null, 2, 16));
+        subList.add(generateItem(new String[]{"志愿书"}, null, "志愿书", null, 2, 17));
+        subList.add(generateItem(new String[]{"申请单"}, null, "申请单", null, 2, 18));
+        subList.add(generateItem(new String[]{"审批表"}, null, "审批表", null, 2, 19));
+        subList.add(generateItem(new String[]{"评估单"}, null, "评估单", null, 2, 20));
+        subList.add(generateItem(new String[]{"评估表"}, null, "评估表", null, 2, 21));
+        subList.add(generateItem(new String[]{"登记表"}, null, "登记表", null, 2, 22));
+        subList.add(generateItem(new String[]{"报告单"}, null, "报告单", null, 2, 23));
+        subList.add(generateItem(new String[]{"观察表"}, null, "观察表", null, 2, 24));
+        subList.add(generateItem(new String[]{"监控表"}, null, "监控表", null, 2, 25));
+        subList.add(generateItem(new String[]{"专用单"}, null, "专用单", null, 2, 26));
+        subList.add(generateItem(new String[]{"评价表"}, null, "评价表", null, 2, 27));
+        subList.add(generateItem(new String[]{"调查表"}, null, "调查表", null, 2, 28));
+        subList.add(generateItem(new String[]{"拒绝书"}, null, "拒绝书", null, 2, 29));
+        subList.add(generateItem(new String[]{"讨论记录"}, null, "讨论记录", null, 2, 30));
+        subList.add(generateItem(new String[]{"谈话记录"}, null, "谈话记录", null, 2, 31));
         //治疗方案
         JSONObject bingcheng = new JSONObject();
         subList = new ArrayList<>();
@@ -48,10 +73,11 @@ public class MappingMatch {
         bingcheng.put("level", 1);
         bingcheng.put("rank", 2);
         bingcheng.put("subType", subList);
-        subList.add(generateItem(new String[]{"ICU出室记录"}, excludeArray, "ICU出室记录", null, 2, 1));
-        subList.add(generateItem(new String[]{"ICU入室记录"}, excludeArray, "ICU入室记录", null, 2, 2));
-        subList.add(generateItem(new String[]{"病程", "查房", "转出", "转入", "危急值记录", "危急值报告", "拔管记录", "术后记录", "术后第"}, excludeArray, "病程", null, 2, 3));
-        subList.add(generateItem(new String[]{"医嘱单"}, excludeArray, "医嘱单", null, 2, 4));
+        subList.add(generateItem(new String[]{"ICU出室记录"}, otherArray, "ICU出室记录", null, 2, 1));
+        subList.add(generateItem(new String[]{"ICU入室记录"}, otherArray, "ICU入室记录", null, 2, 2));
+//        "转出", "转入"
+        subList.add(generateItem(new String[]{"病程", "查房", "危急值记录", "危急值报告", "拔管记录", "术后记录", "术后第"}, excludeArray, "病程", null, 2, 3));
+        subList.add(generateItem(new String[]{"医嘱单"}, otherArray, "医嘱单", null, 2, 4));
         //化验记录
         /*JSONObject assay = new JSONObject();
         subList = new ArrayList<>();
@@ -76,9 +102,9 @@ public class MappingMatch {
         chuyuan.put("level", 1);
         chuyuan.put("rank", 4);
         chuyuan.put("subType", subList);
-        subList.add(generateItem(new String[]{"死亡小结"}, containArray, "死亡小结", null, 2, 1));
+        subList.add(generateItem(new String[]{"死亡小结"}, otherArray, "死亡小结", null, 2, 1));
         subList.add(generateItem(new String[]{"死亡"}, new String[]{"讨论"}, "死亡记录", null, 2, 2));
-        subList.add(generateItem(new String[]{"出院小结", "出院小节", "住院小结"}, containArray, "出院小结", null, 2, 3));
+        subList.add(generateItem(new String[]{"出院小结", "出院小节", "住院小结"}, otherArray, "出院小结", null, 2, 3));
         subList.add(generateItem(new String[]{"出院", "经超声胃镜超声造影记录"}, new String[]{"EUS+FNA", "EUS引导下FNA术", "穿刺置管记录", "穿刺记录", "引流术", "超声内镜+穿刺术", "超声胃镜+FNA术", "切除术", "操作记录", "消融术记录", "检查记录", "胃镜诊疗记录", "胃镜检查", "胃镜下介入治疗记录", "病程", "查房", "入出院", "出院指导"}, "出院记录", null, 2, 4));
         //入院
         JSONObject ruyuan = new JSONObject();
@@ -87,8 +113,8 @@ public class MappingMatch {
         ruyuan.put("level", 1);
         ruyuan.put("rank", 5);
         ruyuan.put("subType", subList);
-        subList.add(generateItem(new String[]{"病案首页"}, containArray, "病案首页", null, 2, 1));
-        subList.add(generateItem(new String[]{"小时内入出院", "24小时"}, containArray, "24小时内入出院", null, 2, 2));
+        subList.add(generateItem(new String[]{"病案首页"}, otherArray, "病案首页", null, 2, 1));
+        subList.add(generateItem(new String[]{"小时内入出院", "24小时"}, otherArray, "24小时内入出院", null, 2, 2));
         subList.add(generateItem(new String[]{"入院", "入出院", "甲状腺腺癌"}, new String[]{"EUS+FNA", "EUS引导下FNA术", "穿刺置管记录", "穿刺记录", "引流术", "超声内镜+穿刺术", "超声胃镜+FNA术", "切除术", "操作记录", "消融术记录", "检查记录", "胃镜诊疗记录", "胃镜检查", "胃镜下介入治疗记录", "护理评估", "介绍表", "入院模板", "病情告知", "死亡"}, "入院记录", null, 2, 3));
         //手术操作记录
         JSONObject operate = new JSONObject();
@@ -97,9 +123,9 @@ public class MappingMatch {
         operate.put("level", 1);
         operate.put("rank", 6);
         operate.put("subType", subList);
-        subList.add(generateItem(new String[]{"术前讨论"}, containArray, "术前讨论", null, 2, 1));
+        subList.add(generateItem(new String[]{"术前讨论"}, otherArray, "术前讨论", null, 2, 1));
         subList.add(generateItem(new String[]{"引导下&&术记录", "EUS+FNA", "EUS引导下FNA术", "穿刺置管", "穿刺记录", "引流术", "超声内镜+穿刺术", "超声胃镜+FNA术", "切除术", "操作记录", "消融术记录"}, containArray, "操作记录", null, 2, 2));
-        subList.add(generateItem(new String[]{"手术记录", "手术过程", "股静脉置管", "透析记录"}, containArray, "手术记录", null, 2, 3));
+        subList.add(generateItem(new String[]{"手术记录", "手术过程", "股静脉置管", "透析记录"}, otherArray, "手术记录", null, 2, 3));
         //病理
         JSONObject bingli = new JSONObject();
         subList = new ArrayList<>();

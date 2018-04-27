@@ -5,10 +5,9 @@ import java.util.List;
 /**
  * @author aron
  */
-public interface IAssayDao<Basic,Sub> extends TableDao<Basic,Sub> {
+public interface IExamDao<T> extends TextDao<T> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);
 
     String findRequiredColByCondition(String dataSource, String condition);
-
 }

@@ -2,7 +2,7 @@ package com.hitales.service.ch.xgwk;
 
 import com.hitales.common.support.TextFormatter;
 import com.hitales.dao.standard.TextDao;
-import com.hitales.dao.standard.IInspectionDao;
+import com.hitales.dao.standard.IExamDao;
 import com.hitales.entity.Exam;
 import com.hitales.entity.Record;
 import com.hitales.service.TextService;
@@ -24,7 +24,7 @@ public class XGInspectionFSServiceImpl extends TextService<Exam> {
 
     @Autowired
     @Qualifier("xgInspectionFSDao")
-    private IInspectionDao inspectionFSDao;
+    private IExamDao inspectionFSDao;
 
     @Override
     protected TextDao<Exam> currentDao() {

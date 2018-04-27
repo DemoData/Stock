@@ -3,9 +3,9 @@ package com.hitales.dao.bdsz.zl;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.BaseDao;
-import com.hitales.dao.standard.IAssayDao;
-import com.hitales.entity.LabDetail;
+import com.hitales.dao.standard.ILabDao;
 import com.hitales.entity.LabBasic;
+import com.hitales.entity.LabDetail;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository("bdzlAssayDao")
-public class BDZLAssayDaoImpl extends BaseDao implements IAssayDao<LabBasic,LabDetail> {
+public class BDZLAssayDaoImpl extends BaseDao implements ILabDao<LabBasic,LabDetail> {
 
     @Override
     protected String generateQuerySql() {

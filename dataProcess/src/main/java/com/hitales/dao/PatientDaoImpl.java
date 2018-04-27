@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 患者基本信息Dao
  * @author aron
  */
 @Slf4j
@@ -36,9 +37,10 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     private String tableName;
     private String groupCol;
     private String displayCol;
+    private boolean loadedXml = false;
 
-    {
-        String path = this.getClass().getClassLoader().getResource("config/shly/patient.xml").getPath();
+    private void loadXml() {
+        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
         try {
@@ -86,6 +88,9 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
 
     @Override
     public Integer getCount(String dataSource) {
+        if (!loadedXml) {
+            loadXml();
+        }
         if (dataSource == null) {
             return 0;
         }
