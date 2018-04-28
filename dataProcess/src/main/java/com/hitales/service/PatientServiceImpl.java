@@ -43,9 +43,8 @@ public class PatientServiceImpl extends BaseService {
         patientDao.initXmlPath(super.getXmlPath());
     }
 
-    @Override
+    /*@Override
     public JSONObject bean2Json(Object entity) {
-        //TODO：优化为读取bean属性
         Patient patient = (Patient) entity;
         JSONObject jsonObj = new JSONObject();
         jsonObj.put(Patient.ColumnMapping.ID.value(), patientPrefix + patient.getPatientId());
@@ -65,6 +64,13 @@ public class PatientServiceImpl extends BaseService {
         jsonObj.put(Patient.ColumnMapping.JOB.value(), StringUtils.isEmpty(patient.getJob()) ? EMPTY_FLAG : patient.getJob());
         jsonObj.put("isForged", patient.isForged());
         return jsonObj;
+    }*/
+
+    @Override
+    public JSONObject bean2Json(Object entity) {
+        Patient patient = (Patient) entity;
+        patient.setPatientId(patientPrefix + patient.getPatientId());
+        return super.bean2Json(patient);
     }
 
     @Override

@@ -255,8 +255,9 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("婚育史");
         colonEndAnchorList.add("主  诉");
         colonEndAnchorList.add("副主任");*/
+//        colonEndAnchorList.add("中医诊断");
 
-        colonEndAnchorList.add("手术医师");
+        /*colonEndAnchorList.add("手术医师");
         colonEndAnchorList.add("麻醉医师");
         colonEndAnchorList.add("手术名称");
         colonEndAnchorList.add("手术日期");
@@ -277,7 +278,7 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("手术指征");
         colonEndAnchorList.add("手术方案");
         colonEndAnchorList.add("术前准备");
-        colonEndAnchorList.add("记录者签名");
+        colonEndAnchorList.add("记录者签名");*/
 
     }
 
@@ -287,8 +288,8 @@ public class CHOperationAnchorUpdate {
         docQuery.append("source", "病历文书");
         BasicDBList recordTypeList = new BasicDBList();
 //        recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
-        recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
-//        recordTypeList.add(new BasicDBObject("recordType", "出院记录"));
+        recordTypeList.add(new BasicDBObject("recordType", "入院记录"));
+        recordTypeList.add(new BasicDBObject("recordType", "出院记录"));
         docQuery.put("$or", recordTypeList);
         long sum = dc.count(docQuery);
         System.out.println(sum);
@@ -300,11 +301,11 @@ public class CHOperationAnchorUpdate {
             Document document = itor.next();
             JSONObject jsonObject = JSONObject.parseObject(document.toJson());
             System.out.println(jsonObject.getString("_id"));
-//            String textARS = jsonObject.getJSONObject("info").getString("text");
+            String textARS = jsonObject.getJSONObject("info").getString("text");
 
-            String textARS = jsonObject.getJSONObject("info").getString("textARS");
-            textARS = TextFormatter.formatTextByAnchaor(textARS);
-            String text_back = jsonObject.getJSONObject("info").getString("text");
+           /* String textARS = jsonObject.getJSONObject("info").getString("textARS");
+            textARS = TextFormatter.formatTextByAnchaor(textARS);*/
+//            String text_back = jsonObject.getJSONObject("info").getString("text_back");
 //            textARS = text_back;
             /*if (!jsonObject.getJSONObject("info").containsKey("text_back")) {
                 jsonObject.getJSONObject("info").put("text_back", text_back);
@@ -419,9 +420,14 @@ public class CHOperationAnchorUpdate {
 //            textARS = textARS.replaceAll("主任\n【【医师】】", "【【主任医师】】");
 //            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
 //            textARS = textARS.replaceAll("住院【【医师】】", "【【住院医师】】");
-            textARS = textARS.replaceAll("手术【【医师】】", "【【手术医师】】");
-            textARS = textARS.replaceAll("麻醉【【医师】】", "【【麻醉医师】】");
-            textARS = textARS.replaceAll("讨论【【日期】】", "【【讨论日期】】");
+//            textARS = textARS.replaceAll("手术【【医师】】", "【【手术医师】】");
+//            textARS = textARS.replaceAll("麻醉【【医师】】", "【【麻醉医师】】");
+//            textARS = textARS.replaceAll("讨论【【日期】】", "【【讨论日期】】");
+//            textARS = textARS.replaceAll("\n体温T", "\n【【体格检查】】体温T");
+//            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
+//            textARS = textARS.replaceAll("心肌炎【【个人史】】", "心肌炎个人史");
+//            textARS = textARS.replaceAll("肿瘤【【个人史】】", "肿瘤个人史");
+//            textARS = textARS.replaceAll("\n主任\n", "\n【【主任】】：");
 
             /*if (textARS.lastIndexOf("【【术中诊断】】") > 0) {
                 String temp = textARS.substring(0, textARS.lastIndexOf("【【术中诊断】】"));
@@ -432,10 +438,27 @@ public class CHOperationAnchorUpdate {
                 }
             }*/
 
+            int start = textARS.indexOf("诊诊断】】：");
+            if(start > 0){
+                String temp = textARS.substring(start+6, textARS.indexOf("\n【【", start));
+                String[] split = temp.split("\n");
+                if (split == null || split.length < 2) {
+                    continue;
+                }
+                String newStr = null;
+                if (split[0].equals(split[1])) {
+                    newStr = split[0];
+                    textARS = textARS.replaceAll(temp, newStr);
+                    System.out.println("》》》》》》》》》》"+jsonObject.get("_id"));
+                }
+            }
+
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
             BathUpdateOptions bathUpdateOption = BathUpdateOptions.getInstance();
             bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(jsonObject.get("_id"))));
-            bathUpdateOption.setUpdate(Update.update("info.text", textARS).set("info.text_back", text_back).set("updateTime",System.currentTimeMillis()));
+            bathUpdateOption.setUpdate(Update.update("info.text", textARS)
+//                    .set("info.text_back", text_back)
+                    .set("updateTime",System.currentTimeMillis()));
             bathUpdateOption.setMulti(true);
             bathUpdateOption.setUpsert(false);
             options.add(bathUpdateOption);

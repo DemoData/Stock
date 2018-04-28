@@ -5,6 +5,8 @@ import com.hitales.common.support.BatchUpdateOption;
 import com.hitales.common.support.Mapping;
 import com.hitales.common.support.MappingMatch;
 import com.hitales.common.support.MongoOperations;
+import com.hitales.entity.Patient;
+import com.hitales.entity.Record;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +53,15 @@ public class DataClean {
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.cleanType();
+        dataClean.test();
+    }
+
+    public void test() {
+        List<JSONObject> records = new ArrayList<>();
+        Record record = new Record();
+        JSONObject json = (JSONObject) JSONObject.toJSON(record);
+        records.add(json);
+        mongoOperations.insert(records, Record.class);
     }
 
     public void print() {
@@ -138,11 +148,11 @@ public class DataClean {
             count++;
             //超过1000个执行一次更新
             if (options.size() >= 1000) {
-                result += updateStart(options);
+                result += updateStart(options, "Record");
             }
         }
         if (!options.isEmpty()) {
-            result += updateStart(options);
+            result += updateStart(options, "Record");
         }
         log.info(">>>>>>>>>>>Done," + count);
     }
@@ -158,33 +168,21 @@ public class DataClean {
 
         for (Object patient : patientIds) {
             String pid = patient.toString();
-            Query query = new Query();
-            query.addCriteria(Criteria.where("batchNo").is("shly20180423"));
-            query.addCriteria(Criteria.where("patientId").is(pid));
-            List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
-            if (records == null || records.isEmpty()) {
-                continue;
-            }
 //            log.info("pid->" + pid);
-            for (JSONObject record : records) {
-                String rid = record.getString("_id");
-
-                BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
-                bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
-                bathUpdateOption.setUpdate(Update.update("batchNo", "shly20180424"));
-                bathUpdateOption.setMulti(true);
-                bathUpdateOption.setUpsert(false);
-                options.add(bathUpdateOption);
-                count++;
-                //超过1000个执行一次更新
-                if (options.size() >= 1000) {
-                    result += updateStart(options);
-                    options.clear();
-                }
+            BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+            bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(pid)));
+            bathUpdateOption.setUpdate(Update.update("batchNo", "shly20180424"));
+            bathUpdateOption.setMulti(true);
+            bathUpdateOption.setUpsert(false);
+            options.add(bathUpdateOption);
+            count++;
+            //超过1000个执行一次更新
+            if (options.size() >= 1000) {
+                result += updateStart(options, "Patient");
             }
         }
         if (!options.isEmpty()) {
-            result += updateStart(options);
+            result += updateStart(options, "Patient");
         }
         log.info(">>>>>>>>>>>Done," + count + ",effected " + result);
     }
@@ -208,8 +206,13 @@ public class DataClean {
                 continue;
             }
 //            log.info("pid->" + pid);
-            JSONObject newPatient = new JSONObject();
-            newPatient.put("_id", pid);
+//            JSONObject newPatient = new JSONObject();
+            Patient forgedPatient = new Patient();
+            forgedPatient.setPatientId(pid);
+            forgedPatient.setCreateTime(createTime);
+            forgedPatient.setForged(true);
+            JSONObject json = (JSONObject) JSONObject.toJSON(forgedPatient);
+            /*newPatient.put("_id", pid);
             newPatient.put("姓名", "");
             newPatient.put("batchNo", "shly20180423");
             newPatient.put("婚姻状况", "");
@@ -224,8 +227,8 @@ public class DataClean {
             newPatient.put("血型", "");
             newPatient.put("名族", "");
             newPatient.put("职业", "");
-            newPatient.put("isForged", true);
-            options.add(newPatient);
+            newPatient.put("isForged", true);*/
+            options.add(json);
             jdbcPids.add(new Object[]{Integer.valueOf(pid.substring(pid.indexOf("_") + 1))});
             count++;
             //超过1000个执行一次更新
@@ -300,7 +303,7 @@ public class DataClean {
 
                 anchorMatch(anchorContent, dbRecordType, dbSubRecordType, item.getString("_id"), types);
 
-                if (!dbSubRecordType.equals(types[1])){
+                if (!dbSubRecordType.equals(types[1])) {
 //                        && ("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
                     /*if ("入院记录".equals(types[0])) {
                         inCount++;
@@ -323,19 +326,19 @@ public class DataClean {
             }
             //超过1000个执行一次更新
             if (options.size() >= 1000) {
-                result += updateStart(options);
+                result += updateStart(options, "Record");
             }
             pageNum++;
         }
         if (!options.isEmpty()) {
-            result += updateStart(options);
+            result += updateStart(options, "Record");
         }
         log.info(">>>>>>>>>>>Done," + count + ",all effected:" + result);
         log.info(">>>>>>>>>>>Done,incCunt:" + inCount + ",outCount:" + outCount);
     }
 
-    private int updateStart(List<BatchUpdateOption> options) {
-        int effected = mongoOperations.batchUpdate("Record", options);
+    private int updateStart(List<BatchUpdateOption> options, String collectionName) {
+        int effected = mongoOperations.batchUpdate(collectionName, options);
         log.info(">>>>>>>>>>>受影响的行数," + effected);
         options.clear();
         return effected;

@@ -1,5 +1,6 @@
 dependencies {
     compile project(':commons')
+    compile project(':entities')
     runtime "mysql:mysql-connector-java"
     compile 'org.projectlombok:lombok'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'

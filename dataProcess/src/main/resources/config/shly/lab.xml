@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
     <item-descriptor>
-        <record name="shly_lab_generic_report_20180423" group-column="id,patientNo,EncounterID,EncounterType"
+        <record type="record" name="shly_lab_generic_report_20180423" group-column="id,patientNo,EncounterID,EncounterType"
                display-column="id,patientNo,EncounterID,EncounterType">
             <property bean-name="id" column-name="id" data-type="string"/>
             <property bean-name="sourceId" column-name="id" data-type="string"/>
@@ -9,7 +9,7 @@
             <property bean-name="condition" key-name="EncounterID,EncounterType" column-name="EncounterID,EncounterType" data-type="map"/>
         </record>
         <!--labBasic-->
-        <labBasic name="shly_lab_generic_report_20180423" condition-column="id">
+        <table type="primary" name="shly_lab_generic_report_20180423" id-column-names="id">
             <!--<basic column-name="id" column-name="id" />-->
             <!--<basic column-name="sourceId" column-name="id" />-->
             <property column-name="EncounterID" display-name="就诊ID"/>
@@ -44,8 +44,8 @@
             <property column-name="TSTest" display-name="检测时间"/>
             <property column-name="ReportOperator" display-name="报告人"/>
             <property column-name="TSReport" display-name="报告时间"/>
-        </labBasic>
-        <labDetail name="shly_lab_generic_result_20180423" condition-column="LabGenericID">
+        </table>
+        <table type="multi" name="shly_lab_generic_result_20180423" id-column-names="LabGenericID">
             <!--<column column-name="LabGenericID" display-name="常规检验报告ID"/>-->
             <property column-name="TestItemName" display-name="检验项目名称"/>
             <property column-name="PrintValue" display-name="文本结果"/>
@@ -58,7 +58,7 @@
             <property column-name="AbnormalFlag" display-name="异常标志"/>
             <property column-name="AbnormalFlagName" display-name="异常标志说明"/>
             <property column-name="Note" display-name="备注"/>
-        </labDetail>
+        </table>
     </item-descriptor>
     <queryList>
         <!--就诊信息表-->

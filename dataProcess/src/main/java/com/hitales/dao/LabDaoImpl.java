@@ -28,7 +28,7 @@ import java.util.Map;
 @Repository("assayDao")
 public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, Map<String, Object>> {
 
-    private Element table = null;
+    private Element record = null;
     private Element labBasic = null;
     private Element labDetail = null;
     private Element diagnosis;
@@ -58,15 +58,22 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
                     groupRecordName = query;
                 }
             }
-            table = descriptor.element("record");
-            tableName = table.attribute("name").getValue();
-            groupCol = table.attribute("group-column").getValue();
-            displayCol = table.attribute("display-column").getValue();
+            List<Element> tables = descriptor.elements("record");
+            for (Element tableElement : tables) {
+                String tableType = tableElement.attribute("type").getValue();
+                if ("primary".equals(tableType)) {
+                    labBasic = tableElement;
+                } else {
+                    labDetail = tableElement;
+                }
+            }
+            record = descriptor.element("record");
+            labBasicTable = labBasic == null ? "" : labBasic.attribute("name").getValue();
+            labDetailTable = labDetail == null ? "" : labDetail.attribute("name").getValue();
 
-            labBasic = descriptor.element("labBasic");
-            labDetail = descriptor.element("labDetail");
-            labBasicTable = labBasic.attribute("name").getValue();
-            labDetailTable = labDetail.attribute("name").getValue();
+            tableName = record.attribute("name").getValue();
+            groupCol = record.attribute("group-column").getValue();
+            displayCol = record.attribute("display-column").getValue();
         } catch (DocumentException e) {
             e.printStackTrace();
         }
@@ -167,12 +174,12 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
     @Override
     protected RowMapper<Record> generateRowMapper() {
         if (getRowMapper() == null) {
-            setRowMapper(new AssayRowMapper(table));
+            setRowMapper(new AssayRowMapper(record));
         }
         return getRowMapper();
     }
 
-    class AssayRowMapper implements RowMapper<Record> {
+    class AssayRowMapper extends GenericRowMapper<Record> {
 
         private Element element;
 
@@ -183,49 +190,12 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
         @Override
         public Record mapRow(ResultSet rs, int rowNum) throws SQLException {
             Map<String, Object> dataMap = new HashMap<>();
-            Iterator iterator = element.elementIterator();
-            while (iterator.hasNext()) {
-                Element columnElement = (Element) iterator.next();
-                String beanName = columnElement.attribute("bean-name").getValue();
-                String columnName = columnElement.attribute("column-name").getValue();
-                String type = columnElement.attribute("data-type").getValue();
-                Object mapValue = "";
-                if ("string".equals(type)) {
-                    mapValue = rs.getObject(columnName) == null ? "" : rs.getObject(columnName).toString();
-                } else if ("map".equals(type)) {
-                    String[] split = columnName.split(",");
-                    Map<String, Object> condition = new HashMap<>();
-                    for (String sourceCol : split) {
-                        condition.put(sourceCol, rs.getObject(sourceCol));
-                    }
-                    mapValue = condition;
-                }
-
-                if (beanName == null || columnName == null) {
-                    continue;
-                }
-                if ("patientId".equals(beanName)) {
-                    StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
-                    mapValue = patientPrefix.append(mapValue.toString()).toString();
-                }
-                //处理字段值映射
-                List<Element> options = columnElement.elements("option");
-                if (options != null && !options.isEmpty()) {
-                    for (Element option : options) {
-                        String optionValue = option.attribute("value").getValue();
-                        if (optionValue != null && optionValue.equals(mapValue.toString())) {
-                            mapValue = option.getText();
-                            break;
-                        }
-                    }
-                }
-                dataMap.put(beanName, mapValue == null ? "" : mapValue);
-            }
+            generateData(rs, element, dataMap);
             return BeanUtil.map2Bean(dataMap, Record.class);
         }
     }
 
-    class LabRowMapper implements RowMapper<Map<String, Object>> {
+    class LabRowMapper extends GenericRowMapper<Map<String, Object>> {
 
         private Element element;
 
@@ -235,31 +205,8 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
 
         @Override
         public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
-
             Map<String, Object> dataMap = new HashMap<>();
-            Iterator iterator = element.elementIterator();
-            while (iterator.hasNext()) {
-                Element columnElement = (Element) iterator.next();
-                String colName = columnElement.attribute("column-name").getValue();
-                String displayName = columnElement.attribute("display-name").getValue();
-
-                if (colName == null || displayName == null) {
-                    continue;
-                }
-                Object value = rs.getObject(colName) == null ? "" : rs.getObject(colName);
-                //处理字段值映射
-                List<Element> options = columnElement.elements("option");
-                if (options != null || !options.isEmpty()) {
-                    for (Element option : options) {
-                        String optionValue = option.attribute("value").getValue();
-                        if (optionValue != null && optionValue.equals(value.toString())) {
-                            value = option.getText();
-                            break;
-                        }
-                    }
-                }
-                dataMap.put(displayName, value == null ? "" : value);
-            }
+            generateData(rs, element, dataMap);
             return dataMap;
         }
     }

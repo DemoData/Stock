@@ -1,8 +1,10 @@
 package com.hitales.entity;
 
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
+@Document(collection = "Record")
 public class MedicalHistory {
 
     private Integer id;//id

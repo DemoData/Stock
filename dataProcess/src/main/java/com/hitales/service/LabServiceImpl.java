@@ -128,11 +128,6 @@ public class LabServiceImpl extends TableService<Map<String, Object>, Map<String
         return assayDao;
     }
 
-    @Override
-    protected JSONObject bean2Json(Object entity) {
-        return (JSONObject) JSONObject.toJSON(entity);
-    }
-
     /**
      * Set Record basic info
      *

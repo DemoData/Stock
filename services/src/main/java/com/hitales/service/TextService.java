@@ -79,13 +79,7 @@ public abstract class TextService<T> extends BaseService {
     }
 
     protected void postProcess(T entity, Record record, List<JSONObject> jsonList) {
-        //移除id,添加string类型_id
-        JSONObject jsonObject = bean2Json(record);
-        jsonObject.remove("id");
-        jsonObject.remove("reportDate");
-        jsonObject.remove("condition");
-        jsonObject.put("_id", new ObjectId().toString());
-        jsonList.add(jsonObject);
+        jsonList.add(bean2Json(record));
     }
 
     /**

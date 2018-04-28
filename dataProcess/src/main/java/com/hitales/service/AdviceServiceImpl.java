@@ -130,11 +130,6 @@ public class AdviceServiceImpl extends TableService<Map<String, Object>, Map<Str
         return adviceDao;
     }
 
-    @Override
-    protected JSONObject bean2Json(Object entity) {
-        return (JSONObject) JSONObject.toJSON(entity);
-    }
-
     /**
      * Set Record basic info
      *
