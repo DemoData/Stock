@@ -25,11 +25,19 @@ public abstract class GenericRowMapper<T> implements RowMapper<T> {
         while (iterator.hasNext()) {
             Element columnElement = (Element) iterator.next();
             String columnName = columnElement.attribute("column-name").getValue();
-            String keyName = "";
+            String keyName = columnElement.attribute("bean-name") == null ? columnElement.attribute("display-name").getValue()
+                    : columnElement.attribute("bean-name").getValue();
             String type = "";
             Object value = "";
+            if ("".equals(keyName)) {
+                continue;
+            }
+            if ("".equals(columnName)) {
+                value = columnElement.attribute("default-value") == null ? "" : columnElement.attribute("default-value").getValue();
+                dataMap.put(keyName, value == null ? "" : value);
+                continue;
+            }
             if (RECORD.equals(tableType)) {
-                keyName = columnElement.attribute("bean-name").getValue();
                 type = columnElement.attribute("data-type").getValue();
                 if ("string".equals(type)) {
                     value = rs.getObject(columnName) == null ? "" : rs.getObject(columnName).toString();
@@ -51,13 +59,12 @@ public abstract class GenericRowMapper<T> implements RowMapper<T> {
                     continue;
                 }
             } else {
-                keyName = columnElement.attribute("display-name").getValue();
                 if (columnName == null || keyName == null) {
                     continue;
                 }
                 value = rs.getObject(columnName) == null ? "" : rs.getObject(columnName);
             }
-            if ("patientId".equals(keyName)) {
+            if (keyName.contains("patientId")) {
                 StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
                 value = patientPrefix.append(value.toString()).toString();
             }

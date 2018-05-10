@@ -3,6 +3,7 @@ package com.hitales.dao;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.dao.standard.IExamDao;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -23,17 +24,16 @@ import java.util.Map;
  * 检查Dao
  */
 @Slf4j
-@Repository("examDao")
-public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>> {
+@Repository("textDao")
+public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Object>> {
     private Element examReport = null;
     private Element examDetail = null;
     private Element diagnosis;
     private Element groupRecordName;
     private String examReportTable;
     private String examDetailTable;
-    private boolean loadedXml = false;
 
-    private void loadXml() {
+    protected void loadXml() {
         String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
@@ -69,20 +69,29 @@ public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>
 
     @Override
     protected String generateQuerySql() {
+        if (examReport == null) {
+            return null;
+        }
         List<Element> elements = examReport.elements();
         StringBuffer colNames = new StringBuffer();
         for (Element element : elements) {
+            if (element.attribute("ignore-column") != null) {
+                continue;
+            }
             colNames.append("t1.").append(element.attribute("column-name").getValue()).append(",");
         }
-        List<Element> detailElements = examDetail.elements();
-        for (Element element : detailElements) {
-            colNames.append("t2.").append(element.attribute("column-name").getValue()).append(",");
+        String tableName = examReportTable + " t1 ";
+        if (examDetail != null) {
+            String examReportId = examReport.attribute("id-column-names").getValue();
+            List<Element> detailElements = examDetail.elements();
+            for (Element element : detailElements) {
+                colNames.append("t2.").append(element.attribute("column-name").getValue()).append(",");
+            }
+            String examDetailId = examDetail.attribute("id-column-names").getValue();
+            tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
         }
         String columns = colNames.substring(0, colNames.length() - 1);
 
-        String examReportId = examReport.attribute("id-column-names").getValue();
-        String examDetailId = examDetail.attribute("id-column-names").getValue();
-        String tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
         String sql = "select " + columns + " from " + tableName;
         return sql;
     }
@@ -101,27 +110,48 @@ public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>
     }
 
     @Override
-    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String condition) {
+    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String conditionCol, String condition) {
+        if (StringUtils.isBlank(condition)) {
+            return null;
+        }
         String tableName = diagnosis.attribute("name").getValue();
         String displayCol = diagnosis.attribute("display-column").getValue();
-        String conditionCol = diagnosis.attribute("condition-column").getValue();
+        String conditionColumn = conditionCol;
+        if (StringUtils.isEmpty(conditionColumn)) {
+            conditionColumn = diagnosis.attribute("condition-column").getValue();
+        }
         String groupCol = diagnosis.attribute("group-column").getValue();
-        String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
-        return super.findOrgOdCatByGroupRecordName(sql, dataSource, condition);
+        StringBuffer sql = new StringBuffer("select " + displayCol + " from " + tableName);
+        if (StringUtils.isNotBlank(conditionColumn)) {
+            sql.append(" where " + conditionColumn + "= ? ");
+        }
+        if (StringUtils.isNotBlank(groupCol)) {
+            sql.append(" group by " + groupCol);
+        }
+        return super.findOrgOdCatByGroupRecordName(sql.toString(), dataSource, condition);
     }
 
     @Override
     public String findRequiredColByCondition(String dataSource, String condition) {
+        if (StringUtils.isBlank(condition)) {
+            return null;
+        }
         log.debug("findRequiredColByCondition(): query by " + condition);
         String tableName = groupRecordName.attribute("name").getValue();
         String displayCol = groupRecordName.attribute("display-column").getValue();
         String conditionCol = groupRecordName.attribute("condition-column").getValue();
         String groupCol = groupRecordName.attribute("group-column").getValue();
-        String sql = "select " + displayCol + " from " + tableName + " where " + conditionCol + "= ? group by " + groupCol;
+        StringBuffer sql = new StringBuffer("select " + displayCol + " from " + tableName);
+        if (StringUtils.isNotBlank(conditionCol)) {
+            sql.append(" where " + conditionCol + "= ? ");
+        }
+        if (StringUtils.isNotBlank(groupCol)) {
+            sql.append(" group by " + groupCol);
+        }
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<String> strings = null;
         try {
-            strings = jdbcTemplate.queryForList(sql, String.class, condition);
+            strings = jdbcTemplate.queryForList(sql.toString(), String.class, condition);
             if (strings == null || strings.isEmpty()) {
                 return null;
             }
@@ -142,12 +172,13 @@ public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>
 
     @Override
     public Integer getCount(String dataSource) {
-        if (!loadedXml) {
-            loadXml();
+        super.getCount(dataSource);
+        String tableName = examReportTable;
+        if (examDetail != null) {
+            String examReportId = examReport.attribute("id-column-names").getValue();
+            String examDetailId = examDetail.attribute("id-column-names").getValue();
+            tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
         }
-        String examReportId = examReport.attribute("id-column-names").getValue();
-        String examDetailId = examDetail.attribute("id-column-names").getValue();
-        String tableName = examReportTable + " t1," + examDetailTable + " t2 where t1." + examReportId + "=t2." + examDetailId;
         return getJdbcTemplate(dataSource).queryForObject("select count(*) from " + tableName, Integer.class);
     }
 
@@ -163,8 +194,12 @@ public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>
         @Override
         public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
             Map<String, Object> dataMap = new HashMap<>();
-            generateData(rs, elementMain, dataMap);
-            generateData(rs, elementDetail, dataMap);
+            if (elementMain != null) {
+                generateData(rs, elementMain, dataMap);
+            }
+            if (elementDetail != null) {
+                generateData(rs, elementDetail, dataMap);
+            }
             return dataMap;
         }
 
@@ -179,7 +214,7 @@ public class ExamDaoImpl extends BaseDao implements IExamDao<Map<String, Object>
                     continue;
                 }
                 Object value = rs.getObject(colName) == null ? "" : rs.getObject(colName);
-                if ("patientId".equals(displayName)) {
+                if (displayName.contains("patientId")) {
                     StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
                     value = patientPrefix.append(value.toString()).toString();
                 }

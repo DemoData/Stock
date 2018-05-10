@@ -33,9 +33,8 @@ public class MedicalContentDaoImpl extends BaseDao implements IMedicalHistoryDao
     private Element diagnosis;
     private Element conditionElement;
     private String recordTable;
-    private boolean loadedXml = false;
 
-    private void loadXml() {
+    protected void loadXml() {
         String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
@@ -145,9 +144,7 @@ public class MedicalContentDaoImpl extends BaseDao implements IMedicalHistoryDao
 
     @Override
     public Integer getCount(String dataSource) {
-        if (!loadedXml) {
-            loadXml();
-        }
+        super.getCount(dataSource);
         String tableName = record.attribute("name").getValue();
         StringBuffer condition = new StringBuffer(" ");
         if (record.attribute("where-column") != null) {

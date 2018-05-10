@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <!--化验-->
+    <item-descriptor>
+        <record type="record" name="仁济_lab_detail" group-column="publishDate,groupRecordName">
+            <!--id作为化验主表和明细表关联字段-->
+            <property bean-name="id" column-name="publishDate" data-type="string"/>
+            <property bean-name="sourceId" column-name="groupRecordName" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="groupRecordName" data-type="string"/>
+        </record>
+        <table type="multi" name="仁济_lab_detail" id-column-names="publishDate">
+            <property column-name="itemValue" display-name="文本结果"/>
+            <property column-name="" display-name="数值结果"/>
+            <property column-name="itemUnit" display-name="结果单位"/>
+            <property column-name="" display-name="结果状态"/>
+            <property column-name="" display-name="正常低值"/>
+            <property column-name="" display-name="正常高值"/>
+            <property column-name="bandRange" display-name="参考范围"/>
+            <property column-name="" display-name="异常标识"/>
+            <property column-name="" display-name="备注"/>
+            <property column-name="itemName" display-name="化验项名称"/>
+            <property column-name="itemId" display-name="化验项代码"/>
+            <property column-name="publishDate" display-name="检测时间"/>
+            <property column-name="" display-name="标本名称"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--获取patientId-->
+        <table id="condition" name="仁济_patient" display-column="patientId" condition-column="groupRecordName"
+               group-column="patientId" patient-prefix="shrj_"/>
+    </queryList>
+</body>

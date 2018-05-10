@@ -1,9 +1,13 @@
 //页面加载完毕后运行
 $(function() {
 	$("#menuTree").tree({
-		url : "/systemMenu_getTreeData.action",
+		url : "/stock/menu/initTree",
 		method : "get",
 		animate : true,
+        loadFilter: function(data){
+		    // console.log(data);
+		    return data;
+        },
 		onClick:function(node){
 			var centerTabs = $("#centerTabs");
 			var text = node.text;
@@ -59,16 +63,16 @@ $(function() {
 		passwordDlg.dialog("center");
 	});
 	logoutBtn.click(function(){
-		$.messager.confirm('确认','确认注销？',function(r){    
-		    if (r){    
+		$.messager.confirm('确认','确认注销？',function(r){
+		    if (r){
 				$.get("/login_logout.action", function(data){
 					$.messager.alert("提示",data.msg,"info",function(){
 							//注销成功就跳转到登录界面
 							location.href = "/login.action";
 						});
 					});
-		    }    
-		}); 
+		    }
+		});
 	});
 	function submitPwd(){
 		passwordForm.form("submit",{

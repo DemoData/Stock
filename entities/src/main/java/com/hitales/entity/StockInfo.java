@@ -17,4 +17,6 @@ public class StockInfo {
     private List<String> odCategories;//病种
     private String department;//科室
     private String status;
+    private String prefix;
+    private Double version;
 }

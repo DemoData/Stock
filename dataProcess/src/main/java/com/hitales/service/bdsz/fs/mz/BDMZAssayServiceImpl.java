@@ -58,7 +58,7 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
                 JSONObject result = patientDao.findPatientByIdInHRS(pid);
                 if (result == null) {
                     JSONObject jsonObj = new JSONObject();
-                    jsonObj.put(Patient.ColumnMapping.ID.value(), pid);
+                    /*jsonObj.put(Patient.ColumnMapping.ID.value(), pid);
                     jsonObj.put(Patient.ColumnMapping.BATCH_NO.value(), "bdsz2018032801");
                     jsonObj.put(Patient.ColumnMapping.HOSPITAL_ID.value(), "57b1e211d897cd373ec76dc6");
                     jsonObj.put(Patient.ColumnMapping.CREATE_TIME.value(), currentTimeMillis);
@@ -68,7 +68,7 @@ public class BDMZAssayServiceImpl extends BDFSAssayServiceImpl {
                     jsonObj.put(Patient.ColumnMapping.NAME.value(), EMPTY_FLAG);
                     jsonObj.put(Patient.ColumnMapping.ADDRESS.value(), EMPTY_FLAG);
                     jsonObj.put(Patient.ColumnMapping.ORIGIN.value(), EMPTY_FLAG);
-                    jsonObj.put(Patient.ColumnMapping.MARRIAGE.value(), EMPTY_FLAG);
+                    jsonObj.put(Patient.ColumnMapping.MARRIAGE.value(), EMPTY_FLAG);*/
 
                     try {
                         patientDao.save2HRS(jsonObj);

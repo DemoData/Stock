@@ -17,6 +17,14 @@ import java.util.*;
 public abstract class TableService<Basic, Sub> extends BaseService {
 
     @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        currentDao().initXmlPath(super.getXmlPath());
+    }
+
+    @Override
     protected void runStart(String dataSource, Integer startPage, Integer endPage) {
         log.info(">>>>>>>>>Starting process from dataSource: " + dataSource);
         int pageNum = startPage;
@@ -52,7 +60,7 @@ public abstract class TableService<Basic, Sub> extends BaseService {
                 }
                 postProcess(record, jsonList);
             }
-            if (orgOdCatCaches.size() > 50000) {
+            if (orgOdCatCaches.size() > 5000) {
                 orgOdCatCaches.clear();
             }
             finalProcess(jsonList, orgOdCatCaches, patientCaches, dataSource);
@@ -65,7 +73,9 @@ public abstract class TableService<Basic, Sub> extends BaseService {
     }
 
     private void postProcess(Record record, List<JSONObject> jsonList) {
-        jsonList.add(bean2Json(record));
+        JSONObject jsonObject = bean2Json(record);
+        jsonObject.put("_id", ObjectId.get().toString());
+        jsonList.add(jsonObject);
     }
 
     private void initial(Record record, String dataSource) {

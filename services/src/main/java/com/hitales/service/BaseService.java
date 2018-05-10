@@ -3,14 +3,10 @@ package com.hitales.service;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.util.TimeUtil;
-import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;

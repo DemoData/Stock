@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <item-descriptor>
+        <!--type="primary" 表示主表-->
+        <table type="primary" name="急诊绩效_radiologyview_ris" id-column-names="id" group-column="" display-column="">
+            <!--#代表不在text内容中的字段-->
+            <property column-name="id" display-name="#sourceId"/>
+            <property column-name="PatientID" patient-prefix="shsy_" display-name="#patientId"/>
+            <property column-name="VisitNumber" display-name="#groupRecordName"/>
+            <property column-name="OrderingTime" display-name="申请时间"/>
+            <property column-name="ObservationTime" display-name="检查时间"/>
+            <property column-name="OrderingProviderName" display-name="申请医生"/>
+            <property column-name="UniversalServiceName" display-name="检查项目"/>
+            <property column-name="Observation" display-name="影像所见"/>
+            <property column-name="Conclusion" display-name="影像所得"/>
+            <property column-name="ClassId" display-name="类型代码"/>
+            <property column-name="ClassDescription" display-name="类型名称"/>
+            <property column-name="IssueBy" display-name="报告医生"/>
+            <property column-name="IssueTime" display-name="报告发布时间"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="急诊绩效_op_diagnosis" display-column="DiagName" condition-column="VisitNumber"
+               group-column="DiagName"/>
+    </queryList>
+</body>

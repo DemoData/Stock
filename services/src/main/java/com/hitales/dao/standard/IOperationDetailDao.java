@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * @author aron
  */
+@Deprecated
 public interface IOperationDetailDao<Basic,Sub> extends TableDao<Basic,Sub> {
 
     List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName);

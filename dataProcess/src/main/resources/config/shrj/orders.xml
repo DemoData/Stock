@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <!--医嘱单-->
+    <item-descriptor>
+        <record type="record" name="仁济_医嘱单" group-column="groupRecordName">
+            <property bean-name="id" column-name="groupRecordName" data-type="string"/>
+            <property bean-name="sourceId" column-name="groupRecordName" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="groupRecordName" data-type="string"/>
+        </record>
+        <table type="multi" name="仁济_医嘱单" id-column-names="groupRecordName">
+            <property column-name="orderType" display-name="医嘱类型"/>
+            <property column-name="orderContent" display-name="医嘱内容"/>
+            <property column-name="beginDate" display-name="医嘱开始时间"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--获取patientId-->
+        <table id="condition" name="仁济_patient" display-column="patientId" condition-column="groupRecordName"
+               group-column="patientId" patient-prefix="shrj_"/>
+    </queryList>
+</body>

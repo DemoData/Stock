@@ -48,7 +48,7 @@ public class BDZLInspectionDaoImpl extends BaseDao implements IExamDao<Exam> {
     }
 
     @Override
-    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
+    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String column, String groupRecordName) {
         String sql = "select t.Diagnosis from Diagnosis t where t.groupRecordName= ? group by t.Diagnosis";
         return super.findOrgOdCatByGroupRecordName(sql, dataSource, groupRecordName);
     }

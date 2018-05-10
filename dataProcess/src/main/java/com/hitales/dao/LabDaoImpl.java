@@ -24,6 +24,7 @@ import java.util.Map;
 /**
  * 化验Dao
  */
+@Deprecated
 @Slf4j
 @Repository("assayDao")
 public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, Map<String, Object>> {
@@ -39,9 +40,8 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
     private String displayCol;
     private String labBasicTable;
     private String labDetailTable;
-    private boolean loadedXml = false;
 
-    private void loadXml() {
+    protected void loadXml() {
         String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
@@ -81,9 +81,7 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
 
     @Override
     public Integer getCount(String dataSource) {
-        if (!loadedXml) {
-            loadXml();
-        }
+        super.getCount(dataSource);
         return getJdbcTemplate(dataSource).queryForObject("select count(*) from (select " + displayCol + " from " + tableName + " GROUP BY " + groupCol + ") t", Integer.class);
     }
 

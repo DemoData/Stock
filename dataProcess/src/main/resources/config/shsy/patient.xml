@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <table name="急诊绩效_op_encounter" id-column-names="PatientID" display-column="PatientID,SexID,Age,RegisterDtTm">
+        <property bean-name="id" column-name="PatientID" />
+        <property bean-name="patientId" column-name="PatientID" patient-prefix="shsy_"/>
+        <property bean-name="sex" column-name="SexID" >
+            <option value="0">女</option>
+            <option value="1">男</option>
+            <option value="2">女</option>
+        </property>
+        <property bean-name="age" column-name="Age" />
+        <property bean-name="birthDay" column-name="RegisterDtTm" type="birthDay" in-hospital-date="RegisterDtTm" age="Age" />
+    </table>
+</body>

@@ -20,6 +20,14 @@ import java.util.*;
 public abstract class TextService<T> extends BaseService {
 
     @Override
+    protected void initProcess() {
+        if (StringUtils.isEmpty(super.getXmlPath())) {
+            throw new RuntimeException("no xml path!");
+        }
+        currentDao().initXmlPath(super.getXmlPath());
+    }
+
+    @Override
     protected void runStart(String dataSource, Integer startPage, Integer endPage) {
         log.info(">>>>>>>>>Starting process from dataSource: " + dataSource);
         int pageNum = startPage;
@@ -79,7 +87,9 @@ public abstract class TextService<T> extends BaseService {
     }
 
     protected void postProcess(T entity, Record record, List<JSONObject> jsonList) {
-        jsonList.add(bean2Json(record));
+        JSONObject jsonObject = bean2Json(record);
+        jsonObject.put("_id", ObjectId.get().toString());
+        jsonList.add(jsonObject);
     }
 
     /**

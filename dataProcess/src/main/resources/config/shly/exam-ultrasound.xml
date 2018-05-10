@@ -3,8 +3,8 @@
     <item-descriptor>
         <!--type="primary" 表示主表-->
         <table type="primary" name="shly_exam_ultrasound_report_20180423" id-column-names="id" group-column="" display-column="">
-            <property column-name="id" display-name="id"/>
-            <property column-name="PatientNo" patient-prefix="shly_" display-name="patientId"/>
+            <property column-name="id" display-name="#sourceId"/>
+            <property column-name="PatientNo" patient-prefix="shly_" display-name="#patientId"/>
             <property column-name="EncounterID"     display-name="就诊ID"/>
             <property column-name="EncounterType"   display-name="就诊类型">
                 <!--0-门诊，1-住院，2-急诊，3-体检-->

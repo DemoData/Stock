@@ -10,18 +10,23 @@ import com.hitales.entity.Record;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,15 +58,180 @@ public class DataClean {
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.test();
+        dataClean.shrjPatientProcess();
+    }
+
+    /**
+     * 仁济病人基本信息获取性别出生日等
+     */
+    public void shrjPatientProcess() {
+        int count = 0;
+        int result = 0;
+        List<BatchUpdateOption> options = new ArrayList<>();
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
+        query.addCriteria(Criteria.where("出生日期").is(""));
+        List<JSONObject> patients = mongoOperations.find(query, JSONObject.class, "Patient");
+        for (JSONObject record : patients) {
+            String pid = record.getString("_id");
+            List<Map<String, Object>> results = jdbcTemplate.queryForList("select sex,age,inHospitalDate from 仁济_patient where patientId = ?", pid.substring(pid.indexOf("_") + 1));
+            Integer ageInt = null;
+            Integer yearInt = null;
+            String sex = null;
+            for (Map<String, Object> map : results) {
+                Object age = map.get("age");
+                Object inHospitalDate = map.get("inHospitalDate");
+                if (age == null || inHospitalDate == null) {
+                    continue;
+                }
+                sex = map.get("sex") == null ? null : map.get("sex").toString();
+                ageInt = Integer.valueOf(age.toString());
+                yearInt = Integer.valueOf(inHospitalDate.toString().substring(0, 4));
+                break;
+            }
+
+            if (ageInt == null || yearInt == null) {
+                continue;
+            }
+            Integer birthday = yearInt - ageInt;
+
+            BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+            bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(pid)));
+            bathUpdateOption.setUpdate(Update.update("年龄", ageInt.toString())
+                    .set("性别", sex)
+                    .set("出生日期", birthday.toString()));
+            bathUpdateOption.setMulti(true);
+            bathUpdateOption.setUpsert(false);
+            options.add(bathUpdateOption);
+            count++;
+            //超过1000个执行一次更新
+            if (options.size() >= 1000) {
+                result += updateStart(options, "Patient");
+            }
+        }
+        if (!options.isEmpty()) {
+            result += updateStart(options, "Patient");
+        }
+        log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
+    }
+
+    public void setOrgCategories() {
+        int count = 0;
+        int result = 0;
+        List<BatchUpdateOption> options = new ArrayList<>();
+//        DBObject dbQuery = new BasicDBObject();
+//        dbQuery.put("batchNo", "shch20180416");
+//        List<String> allGroupRecordName = hrsMongoTemplate.getCollection("Record").distinct("groupRecordName", dbQuery);
+        Query query = new Query();
+        query.addCriteria(Criteria.where("batchNo").is("shly20180424"));
+        query.addCriteria(Criteria.where("source").is("病历文书"));
+        List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
+
+        for (JSONObject record : records) {
+            String rid = record.getString("_id");
+            String groupRecordName = record.getString("groupRecordName");
+            //找到就诊id
+            List<Map<String, Object>> icdList = jdbcTemplate.queryForList("select ID from shly_in_patient_visit_record_20180423 where AdmissionNumber=? group by AdmissionNumber,ID", groupRecordName);
+            if (icdList == null || icdList.isEmpty()) {
+                continue;
+            }
+            if (icdList.size() > 1) {
+                log.info("!!!!!!!!!!!!!!! > 1");
+            }
+            String encounterID = icdList.get(0).get("ID").toString();
+            List<String> ods = jdbcTemplate.queryForList("select DiagnoseName from shly_patient_diagnosis_20180423 where EncounterID=? group by DiagnoseName", String.class, encounterID);
+            if (ods == null || ods.isEmpty()) {
+                continue;
+            }
+
+            log.info("rid->" + rid + ",new odCategories is ->" + ods.toArray(new String[]{}));
+            BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+            bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
+            bathUpdateOption.setUpdate(Update.update("orgOdCategories", ods.toArray(new String[]{})));
+            bathUpdateOption.setMulti(true);
+            bathUpdateOption.setUpsert(false);
+            options.add(bathUpdateOption);
+
+            count++;
+            //超过1000个执行一次更新
+            if (options.size() >= 1000) {
+                result += updateStart(options, "Record");
+            }
+        }
+        if (!options.isEmpty()) {
+            result += updateStart(options, "Record");
+        }
+        log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
     }
 
     public void test() {
-        List<JSONObject> records = new ArrayList<>();
-        Record record = new Record();
-        JSONObject json = (JSONObject) JSONObject.toJSON(record);
-        records.add(json);
-        mongoOperations.insert(records, Record.class);
+        int pageNum = 1;
+        boolean isFinish = false;
+        Long count = 0L;
+
+        List<Mapping> mapping = mongoOperations.findAll(Mapping.class, "Mapping");
+
+        if (mapping == null || mapping.isEmpty()) {
+            MappingMatch.addMappingRule(mongoOperations.getMongoTemplate());
+            mapping = mongoOperations.findAll(Mapping.class, "Mapping");
+        }
+        Map<String, Long> calculator = new HashMap<>();
+        while (!isFinish) {
+            List<JSONObject> orderList = queryForList(jdbcTemplate, pageNum, 5000,
+                    "select r.* from `shly_medical_content_20180423` r where r.`status`=0 and r.`住院号` not in (select p.AdmissionNumber from `shly_in_patient_visit_record_20180423` p) ");
+            if ((orderList != null && orderList.size() < 5000)) {
+                isFinish = true;
+            }
+            for (JSONObject jsonObject : orderList) {
+                String name = jsonObject.getString("name");
+                if (name == null || "".equals(name)) {
+                    System.out.println("!!!!!!!!!!!!!!!!!");
+                    continue;
+                }
+                String mappedValue = MappingMatch.getMappedValue(mapping, name);
+
+                String[] types = mappedValue.split("-");
+                if (calculator.isEmpty() || calculator.get(types[0]) == null) {
+                    calculator.put(types[0], 1L);
+                    continue;
+                }
+                Long typeCount = calculator.get(types[0]);
+                calculator.put(types[0], ++typeCount);
+            }
+            count += orderList.size();
+            pageNum++;
+        }
+        System.out.println("Count : " + count);
+        System.out.println(calculator.toString());
+
+    }
+
+    protected List<JSONObject> queryForList(JdbcTemplate pJdbcTemplate, int currPageNum, int pageSize, String querySql) throws DataAccessException {
+        StringBuilder newSql = new StringBuilder(querySql);
+        if (pageSize > 0) {
+            int startIndex = (currPageNum - 1) * pageSize;            //开始行索引
+            if (StringUtils.isBlank(querySql)) {
+                log.error("queryForList(): sql is empty");
+                return null;
+            }
+            if (startIndex == 0) {
+                newSql.append(" limit " + pageSize);
+            }
+            if (startIndex > 0) {
+                newSql.append(" limit ").append(startIndex).append(",").append(pageSize);
+            }
+            log.info(">>>>>>>>>>sql : " + newSql.toString());
+        }
+        return pJdbcTemplate.query(newSql.toString(), new RowMapper<JSONObject>() {
+            @Override
+            public JSONObject mapRow(ResultSet rs, int rowNum) throws SQLException {
+                String name = rs.getString("文档名称");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", name);
+                return jsonObject;
+            }
+        });
     }
 
     public void print() {
@@ -205,29 +375,11 @@ public class DataClean {
             if (patientInDB != null) {
                 continue;
             }
-//            log.info("pid->" + pid);
-//            JSONObject newPatient = new JSONObject();
             Patient forgedPatient = new Patient();
             forgedPatient.setPatientId(pid);
             forgedPatient.setCreateTime(createTime);
             forgedPatient.setForged(true);
             JSONObject json = (JSONObject) JSONObject.toJSON(forgedPatient);
-            /*newPatient.put("_id", pid);
-            newPatient.put("姓名", "");
-            newPatient.put("batchNo", "shly20180423");
-            newPatient.put("婚姻状况", "");
-            newPatient.put("hospitalId", "5ad86cb8acc162a73ee74f16");
-            newPatient.put("createTime", createTime);
-            newPatient.put("出生日期", "");
-            newPatient.put("updateTime", System.currentTimeMillis());
-            newPatient.put("年龄", "");
-            newPatient.put("现住址", "");
-            newPatient.put("籍贯", "");
-            newPatient.put("性别", "");
-            newPatient.put("血型", "");
-            newPatient.put("名族", "");
-            newPatient.put("职业", "");
-            newPatient.put("isForged", true);*/
             options.add(json);
             jdbcPids.add(new Object[]{Integer.valueOf(pid.substring(pid.indexOf("_") + 1))});
             count++;

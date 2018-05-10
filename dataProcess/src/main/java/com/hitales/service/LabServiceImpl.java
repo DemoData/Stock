@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Deprecated
 @Slf4j
 @Service("assayService")
 public class LabServiceImpl extends TableService<Map<String, Object>, Map<String, Object>> {

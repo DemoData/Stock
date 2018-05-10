@@ -61,7 +61,7 @@ public class Record {
         this.info.put("textARS", "");
         this.info.put("formattedText", formattedText);
         this.info.put("table", table);
-        this.rid = ObjectId.get().toHexString();
+        this.rid = "";
         this.hospitalId = "";
         this.userId = "";
         this.groupRecordName = "";

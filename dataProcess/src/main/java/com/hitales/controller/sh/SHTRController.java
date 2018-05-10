@@ -1,4 +1,4 @@
-package com.hitales.controller.shtr;
+package com.hitales.controller.sh;
 
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;

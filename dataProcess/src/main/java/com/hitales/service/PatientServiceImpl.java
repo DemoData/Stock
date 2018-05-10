@@ -1,15 +1,18 @@
 package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.hitales.common.support.ProgressCount;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
+import com.hitales.entity.StockInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,7 @@ public class PatientServiceImpl extends BaseService {
     //﻿上海长海
     private String hospitalId = null;
 
-    private String patientPrefix = null;
+//    private String patientPrefix = null;
 
     @Override
     protected void initProcess() {
@@ -41,35 +44,16 @@ public class PatientServiceImpl extends BaseService {
             throw new RuntimeException("no xml path!");
         }
         patientDao.initXmlPath(super.getXmlPath());
-    }
 
-    /*@Override
-    public JSONObject bean2Json(Object entity) {
-        Patient patient = (Patient) entity;
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put(Patient.ColumnMapping.ID.value(), patientPrefix + patient.getPatientId());
-        jsonObj.put(Patient.ColumnMapping.BATCH_NO.value(), batchNo);
-        jsonObj.put(Patient.ColumnMapping.HOSPITAL_ID.value(), hospitalId);
-        jsonObj.put(Patient.ColumnMapping.CREATE_TIME.value(), patient.getCreateTime());
-        jsonObj.put(Patient.ColumnMapping.UPDATE_TIME.value(), patient.getUpdateTime());
-        jsonObj.put(Patient.ColumnMapping.SEX.value(), StringUtils.isEmpty(patient.getSex()) ? EMPTY_FLAG : patient.getSex());
-        jsonObj.put(Patient.ColumnMapping.AGE.value(), StringUtils.isEmpty(patient.getAge()) ? EMPTY_FLAG : patient.getAge());
-        jsonObj.put(Patient.ColumnMapping.BIRTHDAY.value(), StringUtils.isEmpty(patient.getBirthDay()) ? EMPTY_FLAG : patient.getBirthDay());
-        jsonObj.put(Patient.ColumnMapping.NAME.value(), StringUtils.isEmpty(patient.getName()) ? EMPTY_FLAG : patient.getName());
-        jsonObj.put(Patient.ColumnMapping.ADDRESS.value(), StringUtils.isEmpty(patient.getAddress()) ? EMPTY_FLAG : patient.getAddress());
-        jsonObj.put(Patient.ColumnMapping.ORIGIN.value(), StringUtils.isEmpty(patient.getOrigin()) ? EMPTY_FLAG : patient.getOrigin());
-        jsonObj.put(Patient.ColumnMapping.MARRIAGE.value(), StringUtils.isEmpty(patient.getMarriage()) ? EMPTY_FLAG : patient.getMarriage());
-        jsonObj.put(Patient.ColumnMapping.BLOOD_TYPE.value(), StringUtils.isEmpty(patient.getBloodType()) ? EMPTY_FLAG : patient.getBloodType());
-        jsonObj.put(Patient.ColumnMapping.NATION.value(), StringUtils.isEmpty(patient.getNation()) ? EMPTY_FLAG : patient.getNation());
-        jsonObj.put(Patient.ColumnMapping.JOB.value(), StringUtils.isEmpty(patient.getJob()) ? EMPTY_FLAG : patient.getJob());
-        jsonObj.put("isForged", patient.isForged());
-        return jsonObj;
-    }*/
+        initial();
+    }
 
     @Override
     public JSONObject bean2Json(Object entity) {
         Patient patient = (Patient) entity;
-        patient.setPatientId(patientPrefix + patient.getPatientId());
+        patient.setBatchNo(batchNo);
+        patient.setHospitalId(hospitalId);
+        patient.setCreateTime(currentTimeMillis);
         return super.bean2Json(patient);
     }
 
@@ -80,12 +64,17 @@ public class PatientServiceImpl extends BaseService {
         boolean isFinish = false;
         Long count = 0L;
         Map<String, JSONObject> patientMap = new HashMap<>();
-        initial();
         while (!isFinish) {
             if (pageNum >= endPage) {
                 isFinish = true;
+                ProgressCount.putProgress(batchNo+"-patient", 95);
                 continue;
             }
+            //只两位小数
+            String progressCount = String.format("%.2f", (pageNum + 0.0) / (endPage + 0.0));
+            Integer progressValue = Integer.valueOf(progressCount.substring(progressCount.indexOf(".") + 1));
+            ProgressCount.putProgress("patient", progressValue >= 95 ? 95 : progressValue);
+
             List<Patient> patientList = patientDao.findPatients(dataSource, pageNum, getPageSize());
             if (patientList != null && patientList.size() < getPageSize()) {
                 isFinish = true;
@@ -102,14 +91,12 @@ public class PatientServiceImpl extends BaseService {
                     continue;
                 }
                 //如果patient已近存在于mongodb中则不再插入
-                JSONObject result = patientDao.findPatientByIdInHRS(patientPrefix + patient.getPatientId());
+                JSONObject result = patientDao.findPatientByIdInHRS(patient.getPatientId());
                 if (result != null) {
                     log.debug("process(): Patient : " + patient.getPatientId() + " already exist in DB");
                     continue;
                 }
-                patient.setCreateTime(currentTimeMillis);
                 JSONObject patientJson = this.bean2Json(patient);
-
                 patientMap.put(patient.getPatientId(), patientJson);
             }
             //插入到mongodb中
@@ -123,8 +110,8 @@ public class PatientServiceImpl extends BaseService {
             count += insertList.size();
             patientDao.batchInsert2HRS(insertList);
             pageNum++;
-            //大小大于30000清空
-            if (patientMap.size() > 30000) {
+            //5000清空
+            if (patientMap.size() >= 5000) {
                 patientMap.clear();
             }
         }
@@ -133,14 +120,13 @@ public class PatientServiceImpl extends BaseService {
 
     private void initial() {
         Object basicInfo = super.getBasicInfo();
-        if (basicInfo instanceof Map) {
-            Map info = ((Map) basicInfo);
-            if (info == null || info.isEmpty()) {
+        if (basicInfo instanceof StockInfo) {
+            StockInfo info = ((StockInfo) basicInfo);
+            if (info == null) {
                 throw new RuntimeException("No basic info!");
             }
-            this.hospitalId = info.get("hospitalId").toString();
-            this.batchNo = info.get("batchNo").toString();
-            this.patientPrefix = info.get("patientPrefix").toString();
+            this.hospitalId = info.getHospitalId();
+            this.batchNo = info.getPrefix() + info.getBatchNo();
         }
     }
 

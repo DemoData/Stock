@@ -2,79 +2,146 @@
 <!--[if IE 8 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie8"> <![endif]-->
 <!--[if IE 9 ]><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--><html xmlns:th="http://www.thymeleaf.org" lang="en" class="no-js" > <!--<![endif]-->
-<head th:include="/common/common_head :: commonHeader('Patient')">
-    <script src="../static/js/patient.js" th:src="@{/js/patient.js}"></script>
+<head>
+    <head th:include="/common/common_head :: commonHeader('首页')"/>
+    <script type="text/javascript" src="../static/js/patient.js" th:src="@{/js/patient.js}"></script>
 </head>
-<body style="background-image: none;">
-<div class="body_wrap">
-    <div class="container">
-        <div class="alert alert-success text-center" role="alert">Patient入库界面</div>
-
-        <div class="add-comment styled boxed boxed-cream" id="addcomments">
-            <div class="add-comment-title gradient"><h3>入库信息</h3></div>
-            <div class="comment-form">
-                <script type="text/javascript">
-                    bkLib.onDomLoaded(function() {
-                        var myNicEditor = new nicEditor({
-                            buttonList : [
-                                'bold',
-                                'italic',
-                                'underline',
-                                'forecolor',
-                                'left',
-                                'center',
-                                'right',
-                                'justify'
-                            ]
-                        });
-                        myNicEditor.setPanel('edit_buttons');
-                        myNicEditor.addInstance('styled_message');
-                    });
-                    setTimeout(function () {
-                        var nic_width = $('.nicEdit-panel').width();
-                        $('.nicEdit-container').css('width', nic_width);
-                        $('.nicEdit-main').css('width', nic_width-24);
-                    }, 2000);
-                    $(window).resize(function() {
-                        var nic_width = $('.nicEdit-panel').width();
-                        $('.nicEdit-container').css('width', nic_width);
-                        $('.nicEdit-main').css('width', nic_width-24);
-                    });
-                </script>
-                <form action="#" method="post" id="commentForm" class="ajax_form">
-                    <div class="form-inner">
-                        <div class="field_select">
-                            <label for="contact_name" class="label_title">Name:</label>
-                            <select name="contact_name" id="contact_name" multiple data-placeholder="Your Selection">
-                                <option value='example1@gmail.com'>Mike Charley</option>
-                                <option value='example2@gmail.com'>Andy Lurs</option>
-                                <option value='example3@gmail.com'>Toby Lightman</option>
-                                <option value='example4@gmail.com'>Lene Marlin</option>
-                                <option value='example5@gmail.com'>Deep Purple</option>
-                            </select>
-                        </div>
-                        <div class="field_text">
-                            <label for="batchNo" class="label_title">批次号:</label>
-                            <input type="text" name="subject" id="batchNo" value="" placeholder="ex. 20180316" class="inputtext input_middle required" />
-                        </div>
-                        <div class="clear"></div>
-                        <div class="field_text">
-                            <label for="tableName" class="label_title">源数据库表名:</label>
-                            <input type="text" name="tableName" id="tableName" value="" placeholder="ex. Patient/患者基本信息" class="inputtext input_middle required gradient" />
-                        </div>
-                        <div class="clear"></div>
-                    </div>
-
-                    <div class="rowSubmit">
-                        <a onclick="document.getElementById('commentForm').reset();return false" href="#" class="link-reset btn btn-white"><span>Discard</span></a>
-                        <span class="btn"><input type="submit" id="send" value="Send" /></span>
-                    </div>
-                </form>
-            </div>
+<body>
+    <div style="width:80%;height:auto;margin-left: auto;margin-right: auto;">
+        <!--Patient基本信息-->
+        <div class="easyui-panel" title="Patient基本信息" style="width:40%;max-width:450px;height:auto;padding:30px 60px;"
+             data-options="fit:true,style:{float:'left'}">
+            <form id="patientForm" class="easyui-form" th:method="post" data-options="novalidate:true"
+                  th:action="@{/stock/processPatient}" th:object="${basicInfo}" >
+                <div style="margin-bottom:20px">
+                    <input id="hospitalId" th:name="hospitalId" style="width:100%;" data-options="label:'医院:',prompt:'选择医院...'"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <input id="prefix" class="easyui-textbox" th:name="prefix"  style="width:40%" data-options="label:'批次号:',readonly:true"/>
+                    <input id="batchNoDateBox" class="easyui-datebox" th:name="batchNo" style="width:50%;" data-options="required:true"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-textbox" th:name="userId" style="width:100%" data-options="label:'医生:',prompt:'所属医生...',required:false"/>
+                </div>
+                <div style="margin-bottom:20px">
+                    <input class="easyui-numberspinner" th:name="version" style="width:50%;" th:value="1" data-options="
+                    label:'版本号:',
+                    required:true,
+                    onChange: function(value){
+                        $('#versionNo').text(value);
+                    }
+                "/>
+                    <span id="versionNo" style="margin:10px 0;width:50%;">1</span>
+                </div>
+            </form>
         </div>
-
+        <!--Patient字段映射信息-->
+        <div class="easyui-panel" title="Patient字段映射" style="width:40%;max-width:450px;height:auto;padding:10px 15px;"
+             data-options="fit:true,style:{float:'left'}">
+            <table id="dg" class="easyui-datagrid" title="Row Editing in DataGrid" style="width:90%;height:auto;margin-left: auto;margin-right: auto;"
+                   data-options="
+                iconCls: 'icon-edit',
+                singleSelect: true,
+                toolbar: '#tb',
+                url: 'datagrid_data1.json',
+                method: 'get',
+                onClickCell: onClickCell,
+                onEndEdit: onEndEdit
+            ">
+                <thead>
+                <tr>
+                    <th data-options="field:'itemid',width:80">原表字段</th>
+                    <th data-options="field:'productid',width:100,
+                        formatter:function(value,row){
+                            return row.productname;
+                        },
+                        editor:{
+                            type:'combobox',
+                            options:{
+                                valueField:'productid',
+                                textField:'productname',
+                                method:'get',
+                                url:'products.json',
+                                required:true
+                            }
+                        }">对应字段</th>
+                    <th data-options="field:'unitcost',width:80,editor:'numberbox'">前缀</th>
+                    <th data-options="field:'attr1',width:250,editor:'textbox'">格式化</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <!--按钮-->
+        <div style="text-align:center;padding:5px 0;clear: both;">
+            <a id="submitBtn" href="javascript:void(0)" class="easyui-linkbutton" style="width:80px">开始导入</a>
+            <a id="clearBtn" href="javascript:void(0)" class="easyui-linkbutton" style="width:80px">重置</a>
+        </div>
+        <!--进度条-->
+        <div id="progressBar" class="easyui-progressbar" data-options="value:0,text:'处理中...{value}%'" style="width:100%;margin-top: 5px;"></div>
     </div>
-    <!--/ container -->
-</div>
+    <script type="text/javascript">
+        var editIndex = undefined;
+        function endEditing(){
+            if (editIndex == undefined){return true}
+            if ($('#dg').datagrid('validateRow', editIndex)){
+                $('#dg').datagrid('endEdit', editIndex);
+                editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function onClickCell(index, field){
+            if (editIndex != index){
+                if (endEditing()){
+                    $('#dg').datagrid('selectRow', index)
+                        .datagrid('beginEdit', index);
+                    var ed = $('#dg').datagrid('getEditor', {index:index,field:field});
+                    if (ed){
+                        ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                    }
+                    editIndex = index;
+                } else {
+                    setTimeout(function(){
+                        $('#dg').datagrid('selectRow', editIndex);
+                    },0);
+                }
+            }
+        }
+        function onEndEdit(index, row){
+            var ed = $(this).datagrid('getEditor', {
+                index: index,
+                field: 'productid'
+            });
+            row.productname = $(ed.target).combobox('getText');
+        }
+        function append(){
+            if (endEditing()){
+                $('#dg').datagrid('appendRow',{status:'P'});
+                editIndex = $('#dg').datagrid('getRows').length-1;
+                $('#dg').datagrid('selectRow', editIndex)
+                    .datagrid('beginEdit', editIndex);
+            }
+        }
+        function removeit(){
+            if (editIndex == undefined){return}
+            $('#dg').datagrid('cancelEdit', editIndex)
+                .datagrid('deleteRow', editIndex);
+            editIndex = undefined;
+        }
+        function accept(){
+            if (endEditing()){
+                $('#dg').datagrid('acceptChanges');
+            }
+        }
+        function reject(){
+            $('#dg').datagrid('rejectChanges');
+            editIndex = undefined;
+        }
+        function getChanges(){
+            var rows = $('#dg').datagrid('getChanges');
+            alert(rows.length+' rows are changed!');
+        }
+    </script>
 </body>
 </html>

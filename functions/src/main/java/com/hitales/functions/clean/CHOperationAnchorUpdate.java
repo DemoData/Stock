@@ -44,9 +44,11 @@ public class CHOperationAnchorUpdate {
     static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
 
     static List<MongoCredential> mongoCredentials = new ArrayList<>();
+
     static {
         mongoCredentials.add(mongoCredential);
     }
+
     //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
     static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
     //static MongoClient mongo = new MongoClient("localhost", 27017);
@@ -80,35 +82,16 @@ public class CHOperationAnchorUpdate {
         /*anchorsList.add("手术日期");
         anchorsList.add("手术人员");
         anchorsList.add("麻醉人员");*/
-        /*anchorsList.add("签署日期");
-        anchorsList.add("主治医师签名");*/
+//上海六院
+        anchorsList.add("签署日期");
+        anchorsList.add("主治医师签名");
     }
 
     //禁用的锚点
     static List<String> notAnchorList = new ArrayList<>();
 
     static {
-        /*notAnchorList.add("出院带药");
-        notAnchorList.add("住院");
-        notAnchorList.add("影像号");
-        notAnchorList.add("疼痛评分");
-        notAnchorList.add("门诊");
-        notAnchorList.add("健康指导");
-        notAnchorList.add("MRI号");
-        notAnchorList.add("住院号");
-        notAnchorList.add("CT号");
-        notAnchorList.add("病人ID");
-        notAnchorList.add("登记号");
-        notAnchorList.add("彩超号");
-        notAnchorList.add("电话");
 
-        /*notAnchorList.add("手术过程");
-        notAnchorList.add("手术经过");
-        notAnchorList.add("术前诊断");
-        notAnchorList.add("术后诊断");
-        notAnchorList.add("手术方式");
-        notAnchorList.add("麻醉方式");
-        notAnchorList.add("医师");*/
         /*notAnchorList.add("术后诊断");
         notAnchorList.add("手术经过");
         notAnchorList.add("诊断");
@@ -116,67 +99,41 @@ public class CHOperationAnchorUpdate {
         notAnchorList.add("术后向患者交代的注意事项");
         notAnchorList.add("穿刺过程");
         notAnchorList.add("内镜诊断");*/
-        /*notAnchorList.add("体格检查");
+//上海六院
+        notAnchorList.add("体格检查");
         notAnchorList.add("神经系统");
         notAnchorList.add("手术外伤史");
         notAnchorList.add("输血史");
-        notAnchorList.add("过敏史");*/
+        notAnchorList.add("过敏史");
     }
 
     //前面不是中文的需要打上锚点
     static List<String> prefAnchorList = new ArrayList<>();
 
     static {
-        /*prefAnchorList.add("性别");
-        prefAnchorList.add("出生日期");
-        prefAnchorList.add("年龄");*/
+
     }
 
     //前面是中文的锚点要去掉
     static List<String> prefNotAnchorList = new ArrayList<>();
 
     static {
-        /*prefNotAnchorList.add("住院医师");
-        prefNotAnchorList.add("主治医师");
-        prefNotAnchorList.add("建议");*/
-        /*prefNotAnchorList.add("住院医师");
-        prefNotAnchorList.add("主治医师");*/
+
     }
 
     //前面不能为中文，后面跟冒号作为锚点
     static List<String> colonAnchorList = new ArrayList<>();
 
     static {
-        /*colonAnchorList.add("主  诉");
-        colonAnchorList.add("并发症");
-        colonAnchorList.add("医疗院长");
-        colonAnchorList.add("抢救措施");
-        colonAnchorList.add("查体");
-        colonAnchorList.add("住院经过及死亡时情况");
-        colonAnchorList.add("治疗情况");
-        colonAnchorList.add("病史叙述人");
-        colonAnchorList.add("现病史");
-        colonAnchorList.add("普通门诊");
-        colonAnchorList.add("中医诊断");
-        colonAnchorList.add("医疗院长");
-        colonAnchorList.add("MRI号");
-        colonAnchorList.add("住院号");
-        colonAnchorList.add("CT号");
-        colonAnchorList.add("病人ID");
-        colonAnchorList.add("登记号");
-        colonAnchorList.add("彩超号");
-        colonAnchorList.add("门诊");
-        colonAnchorList.add("出院情况");
-        colonAnchorList.add("专 科 检 查");
-        colonAnchorList.add("门诊");*/
 
         /*colonAnchorList.add("诊断");
         colonAnchorList.add("结果");
         colonAnchorList.add("术者");
         colonAnchorList.add("操作者");
         colonAnchorList.add("DSA");*/
-        /*colonAnchorList.add("时间");
-        colonAnchorList.add("手机");*/
+//上海六院
+        colonAnchorList.add("时间");
+        colonAnchorList.add("手机");
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -227,7 +184,8 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("操作人员");
         colonEndAnchorList.add("住院医师");
         colonEndAnchorList.add("操作过程如下");*/
-        /*colonEndAnchorList.add("床位号");
+//上海六院
+        colonEndAnchorList.add("床位号");
         colonEndAnchorList.add("记录医生");
         colonEndAnchorList.add("家族史");
         colonEndAnchorList.add("联系方式");
@@ -254,8 +212,8 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("个人史");
         colonEndAnchorList.add("婚育史");
         colonEndAnchorList.add("主  诉");
-        colonEndAnchorList.add("副主任");*/
-//        colonEndAnchorList.add("中医诊断");
+        colonEndAnchorList.add("副主任");
+        colonEndAnchorList.add("中医诊断");
 
         /*colonEndAnchorList.add("手术医师");
         colonEndAnchorList.add("麻醉医师");
@@ -414,20 +372,20 @@ public class CHOperationAnchorUpdate {
             textARS = textARS.replaceAll("【【手术人员】】\\(第一为主刀医师\\)", "【【手术人员(第一为主刀医师)】】");
             textARS = textARS.replaceAll("【【手术经过】】时间】】", "【【手术经过时间】】");
             textARS = textARS.replaceAll("患者【【术前诊断】】", "【【患者术前诊断】】");*/
-
-//            textARS = textARS.replaceAll("主治【【医师签名】】", "【【主治医师签名】】");
-//            textARS = textARS.replaceAll("现居【【地址】】", "【【现居地址】】");
-//            textARS = textARS.replaceAll("主任\n【【医师】】", "【【主任医师】】");
-//            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
-//            textARS = textARS.replaceAll("住院【【医师】】", "【【住院医师】】");
-//            textARS = textARS.replaceAll("手术【【医师】】", "【【手术医师】】");
-//            textARS = textARS.replaceAll("麻醉【【医师】】", "【【麻醉医师】】");
-//            textARS = textARS.replaceAll("讨论【【日期】】", "【【讨论日期】】");
-//            textARS = textARS.replaceAll("\n体温T", "\n【【体格检查】】体温T");
-//            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
-//            textARS = textARS.replaceAll("心肌炎【【个人史】】", "心肌炎个人史");
-//            textARS = textARS.replaceAll("肿瘤【【个人史】】", "肿瘤个人史");
-//            textARS = textARS.replaceAll("\n主任\n", "\n【【主任】】：");
+            //上海六院
+            textARS = textARS.replaceAll("主治【【医师签名】】", "【【主治医师签名】】");
+            textARS = textARS.replaceAll("现居【【地址】】", "【【现居地址】】");
+            textARS = textARS.replaceAll("主任\n【【医师】】", "【【主任医师】】");
+            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
+            textARS = textARS.replaceAll("住院【【医师】】", "【【住院医师】】");
+            textARS = textARS.replaceAll("手术【【医师】】", "【【手术医师】】");
+            textARS = textARS.replaceAll("麻醉【【医师】】", "【【麻醉医师】】");
+            textARS = textARS.replaceAll("讨论【【日期】】", "【【讨论日期】】");
+            textARS = textARS.replaceAll("\n体温T", "\n【【体格检查】】体温T");
+            textARS = textARS.replaceAll("脑梗死【【个人史】】", "脑梗死个人史");
+            textARS = textARS.replaceAll("心肌炎【【个人史】】", "心肌炎个人史");
+            textARS = textARS.replaceAll("肿瘤【【个人史】】", "肿瘤个人史");
+            textARS = textARS.replaceAll("\n主任\n", "\n【【主任】】：");
 
             /*if (textARS.lastIndexOf("【【术中诊断】】") > 0) {
                 String temp = textARS.substring(0, textARS.lastIndexOf("【【术中诊断】】"));
@@ -437,10 +395,10 @@ public class CHOperationAnchorUpdate {
                     textARS = pre + suffix.replaceAll("【【术中诊断】】", "术中诊断");
                 }
             }*/
-
+//上海六院
             int start = textARS.indexOf("诊诊断】】：");
-            if(start > 0){
-                String temp = textARS.substring(start+6, textARS.indexOf("\n【【", start));
+            if (start > 0) {
+                String temp = textARS.substring(start + 6, textARS.indexOf("\n【【", start));
                 String[] split = temp.split("\n");
                 if (split == null || split.length < 2) {
                     continue;
@@ -449,7 +407,7 @@ public class CHOperationAnchorUpdate {
                 if (split[0].equals(split[1])) {
                     newStr = split[0];
                     textARS = textARS.replaceAll(temp, newStr);
-                    System.out.println("》》》》》》》》》》"+jsonObject.get("_id"));
+                    System.out.println("》》》》》》》》》》" + jsonObject.get("_id"));
                 }
             }
 
@@ -458,7 +416,7 @@ public class CHOperationAnchorUpdate {
             bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(jsonObject.get("_id"))));
             bathUpdateOption.setUpdate(Update.update("info.text", textARS)
 //                    .set("info.text_back", text_back)
-                    .set("updateTime",System.currentTimeMillis()));
+                    .set("updateTime", System.currentTimeMillis()));
             bathUpdateOption.setMulti(true);
             bathUpdateOption.setUpsert(false);
             options.add(bathUpdateOption);

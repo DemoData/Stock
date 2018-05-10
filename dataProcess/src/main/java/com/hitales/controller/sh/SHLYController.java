@@ -1,4 +1,4 @@
-package com.hitales.controller.shly;
+package com.hitales.controller.sh;
 
 import com.hitales.entity.Record;
 import com.hitales.service.standard.IDataService;
@@ -23,15 +23,15 @@ public class SHLYController {
 
     @Autowired
     @Qualifier("assayService")
-    private IDataService assayService;
+    private IDataService labService;
 
     @Autowired
-    @Qualifier("examService")
-    private IDataService examService;
+    @Qualifier("textService")
+    private IDataService textService;
 
     @Autowired
-    @Qualifier("adviceService")
-    private IDataService adviceService;
+    @Qualifier("tableService")
+    private IDataService tableService;
 
     @Autowired
     @Qualifier("medicalContentService")
@@ -50,9 +50,9 @@ public class SHLYController {
         basicInfo.setRecordType("化验记录");
         basicInfo.setSubRecordType("化验");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        assayService.setBasicInfo(basicInfo);
-        assayService.setXmlPath("config/shly/lab.xml");
-        if (assayService.processData()) {
+        labService.setBasicInfo(basicInfo);
+        labService.setXmlPath("config/shly/lab.xml");
+        if (labService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -71,9 +71,9 @@ public class SHLYController {
         basicInfo.setRecordType("检查记录");
         basicInfo.setSubRecordType("放射");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        examService.setBasicInfo(basicInfo);
-        examService.setXmlPath("config/shly/exam-radiology.xml");
-        if (examService.processData()) {
+        textService.setBasicInfo(basicInfo);
+        textService.setXmlPath("config/shly/exam-radiology.xml");
+        if (textService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -92,9 +92,9 @@ public class SHLYController {
         basicInfo.setRecordType("检查记录");
         basicInfo.setSubRecordType("超声");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        examService.setBasicInfo(basicInfo);
-        examService.setXmlPath("config/shly/exam-ultrasound.xml");
-        if (examService.processData()) {
+        textService.setBasicInfo(basicInfo);
+        textService.setXmlPath("config/shly/exam-ultrasound.xml");
+        if (textService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -113,9 +113,9 @@ public class SHLYController {
         basicInfo.setRecordType("病理");
         basicInfo.setSubRecordType("病理");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        examService.setBasicInfo(basicInfo);
-        examService.setXmlPath("config/shly/pathology.xml");
-        if (examService.processData()) {
+        textService.setBasicInfo(basicInfo);
+        textService.setXmlPath("config/shly/pathology.xml");
+        if (textService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -134,9 +134,9 @@ public class SHLYController {
         basicInfo.setRecordType("治疗方案");
         basicInfo.setSubRecordType("草药医嘱");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/advice-herbal-medication-orders.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/advice-herbal-medication-orders.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -155,9 +155,9 @@ public class SHLYController {
         basicInfo.setRecordType("治疗方案");
         basicInfo.setSubRecordType("住院用药医嘱");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/advice-medication-orders.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/advice-medication-orders.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -176,9 +176,9 @@ public class SHLYController {
         basicInfo.setRecordType("治疗方案");
         basicInfo.setSubRecordType("住院非药医嘱");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/advice-no-medication-orders.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/advice-no-medication-orders.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -197,9 +197,9 @@ public class SHLYController {
         basicInfo.setRecordType("门诊记录");
         basicInfo.setSubRecordType("门诊处方");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/out-patient-recipe.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/out-patient-recipe.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -237,9 +237,9 @@ public class SHLYController {
         basicInfo.setRecordType("门诊记录");
         basicInfo.setSubRecordType("就诊记录");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/out-patient-visit-record.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/out-patient-visit-record.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;
@@ -258,9 +258,9 @@ public class SHLYController {
         basicInfo.setRecordType("其他记录");
         basicInfo.setSubRecordType("过敏不良反应");
         basicInfo.setOdCategories(new String[]{"糖尿病"});
-        adviceService.setBasicInfo(basicInfo);
-        adviceService.setXmlPath("config/shly/patient-allergy-adverse-reaction.xml");
-        if (adviceService.processData()) {
+        tableService.setBasicInfo(basicInfo);
+        tableService.setXmlPath("config/shly/patient-allergy-adverse-reaction.xml");
+        if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

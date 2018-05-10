@@ -3,9 +3,7 @@ package com.hitales.dao;
 import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.config.MysqlDataSourceConfig;
 import com.hitales.common.config.SqlServerDataSourceConfig;
-import com.hitales.entity.LabBasic;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.PropertySource;
@@ -13,7 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +72,7 @@ public abstract class BaseDao extends GenericDao {
 
     protected static Map<String, JdbcTemplate> jdbcTemplatePool = new HashMap<>();
 
-    protected JdbcTemplate getJdbcTemplate(String dataSource) {
+    public JdbcTemplate getJdbcTemplate(String dataSource) {
         if (jdbcTemplatePool.isEmpty()) {
             initialJdbcPool();
         }
@@ -111,6 +108,16 @@ public abstract class BaseDao extends GenericDao {
             validResult.add(orgOd);
         }
         return validResult;
+    }
+
+    //兼容以前的老代码所以不设计为抽象方法，用于子类实现
+    protected void loadXml() {
+
+    }
+
+    public Integer getCount(String dataSource) {
+        this.loadXml();
+        return null;
     }
 
     @Override

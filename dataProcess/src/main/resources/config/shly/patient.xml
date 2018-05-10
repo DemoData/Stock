@@ -2,7 +2,7 @@
 <body>
     <table name="shly_patient_20180423" group-column="PatientNo" display-column="PatientNo,SexName,PatientName,ContactAdd,MarriageName,NationName,Career,DateOfBirth">
         <property bean-name="id" column-name="PatientNo" />
-        <property bean-name="patientId" column-name="PatientNo" />
+        <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_"/>
         <property bean-name="sex" column-name="SexName" />
         <property bean-name="name" column-name="PatientName" />
         <property bean-name="address" column-name="ContactAdd" />

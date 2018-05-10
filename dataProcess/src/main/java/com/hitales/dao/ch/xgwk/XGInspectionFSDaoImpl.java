@@ -48,7 +48,7 @@ public class XGInspectionFSDaoImpl extends BaseDao implements IExamDao<Exam> {
     }
 
     @Override
-    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String groupRecordName) {
+    public List<String> findOrgOdCatByGroupRecordName(String dataSource, String column, String groupRecordName) {
         return null;
     }
 

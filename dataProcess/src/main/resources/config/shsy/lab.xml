@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <item-descriptor>
+        <record type="record" name="急诊绩效_检验大项" group-column="FillerOrderNo,PatientID,VisitNumber">
+            <property bean-name="id" column-name="FillerOrderNo" data-type="string"/>
+            <property bean-name="sourceId" column-name="FillerOrderNo" data-type="string"/>
+            <property bean-name="patientId" column-name="PatientID" patient-prefix="shsy_" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="VisitNumber" data-type="string"/>
+        </record>
+        <table type="primary" name="急诊绩效_检验大项" id-column-names="FillerOrderNo">
+            <property column-name="UniversalServiceName" display-name="@化验名称"/>
+            <property column-name="Category" display-name="化验分类名称"/>
+            <property column-name="RequestDateTime" display-name="申请时间"/>
+            <property column-name="" display-name="采样时间"/>
+            <property column-name="ReceiveTime" display-name="接收时间"/>
+            <property column-name="" display-name="审核时间"/>
+            <property column-name="IssueTime" display-name="报告时间"/>
+            <property column-name="" display-name="报告状态"/>
+            <property column-name="" display-name="仪器编号"/>
+            <property column-name="" display-name="仪器名称"/>
+            <property column-name="" display-name="申请科室"/>
+            <property column-name="" display-name="申请病区"/>
+        </table>
+        <table type="multi" name="急诊绩效_检验明细" id-column-names="FillerOrderNo">
+            <property column-name="ObservationValue" display-name="文本结果"/>
+            <property column-name="" display-name="数值结果"/>
+            <property column-name="Units" display-name="结果单位"/>
+            <property column-name="" display-name="结果状态"/>
+            <property column-name="" display-name="正常低值"/>
+            <property column-name="" display-name="正常高值"/>
+            <property column-name="ReferencesRange" display-name="参考范围"/>
+            <property column-name="AbnormalFlags" display-name="异常标识"/>
+            <property column-name="Description" display-name="备注"/>
+            <property column-name="ObservationItem" display-name="化验项名称"/>
+            <property column-name="" display-name="化验项代码"/>
+            <property column-name="PerformTime" display-name="检测时间"/>
+            <property column-name="SpecimenSourceName" display-name="标本名称"/>
+        </table>
+    </item-descriptor>
+    <queryList>
+        <!--就诊信息表-->
+        <table id="odCategories" name="急诊绩效_op_diagnosis" display-column="DiagName" condition-column="VisitNumber" group-column="DiagName"/>
+    </queryList>
+
+</body>

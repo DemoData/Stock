@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -57,10 +58,16 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
         String groupRecordName = entity.getGroupRecordName();
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
-            List<String> orgOdCategories = medicalHistoryDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
-            if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
-                orgOdCatCaches.put(groupRecordName, orgOdCategories);
+            //====上海六院病历文书特殊逻辑处理===
+            List<Map<String, Object>> icdList = medicalHistoryDao.getJdbcTemplate(dataSource).queryForList("select ID from shly_in_patient_visit_record_20180423 where AdmissionNumber=? group by AdmissionNumber,ID", groupRecordName);
+            if (icdList != null || !icdList.isEmpty()) {
+                String encounterID = icdList.get(0).get("ID").toString();
+                List<String> orgOdCategories = medicalHistoryDao.findOrgOdCatByGroupRecordName(dataSource, encounterID);
+                if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
+                    orgOdCatCaches.put(groupRecordName, orgOdCategories);
+                }
             }
+            //====end====
         }
         List<String> orgOds = orgOdCatCaches.get(groupRecordName);
         if (orgOds != null && !orgOds.isEmpty()) {

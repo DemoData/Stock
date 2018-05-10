@@ -40,7 +40,7 @@ public class BDZLInspectionServiceImpl extends TextService<Exam> {
         }
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
-            List<String> orgOdCategories = inspectionDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
+            List<String> orgOdCategories = inspectionDao.findOrgOdCatByGroupRecordName(dataSource, null, groupRecordName);
             orgOdCatCaches.put(groupRecordName, orgOdCategories);
         }
 

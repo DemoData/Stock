@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<standard>
+    <table type="primary">
+        <property name="patientId"/>
+        <property name="groupRecordName"/>
+        <property name="化验名称"/>
+        <property name="化验分类名称"/>
+        <property name="申请时间"/>
+        <property name="采样时间"/>
+        <property name="接收时间"/>
+        <property name="审核时间"/>
+        <property name="报告时间"/>
+        <property name="报告状态"/>
+        <property name="仪器编号"/>
+        <property name="仪器名称"/>
+        <property name="申请科室"/>
+        <property name="申请病区"/>
+    </table>
+    <table>
+        <property name="referenceId"/>
+        <property name="文本结果"/>
+        <property name="数值结果"/>
+        <property name="结果单位"/>
+        <property name="结果状态"/>
+        <property name="正常低值"/>
+        <property name="正常高值"/>
+        <property name="参考范围"/>
+        <property name="异常标识"/>
+        <property name="备注"/>
+        <property name="检测时间"/>
+        <property name="化验项名称"/>
+        <property name="标本名称"/>
+        <!--option="true" 主表不存在才录入-->
+    </table>
+</standard>

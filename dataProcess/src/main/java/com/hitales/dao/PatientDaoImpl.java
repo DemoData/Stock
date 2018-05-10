@@ -15,17 +15,16 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 患者基本信息Dao
+ *
  * @author aron
  */
 @Slf4j
@@ -35,11 +34,10 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     private Element table = null;
 
     private String tableName;
-    private String groupCol;
     private String displayCol;
-    private boolean loadedXml = false;
+    private String idColumn;
 
-    private void loadXml() {
+    protected void loadXml() {
         String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
         SAXReader reader = new SAXReader();
         File xml = new File(path);
@@ -47,7 +45,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
             Document document = reader.read(xml);
             table = document.getRootElement().element("table");
             tableName = table.attribute("name").getValue();
-            groupCol = table.attribute("group-column").getValue();
+            idColumn = table.attribute("id-column-names").getValue();
             displayCol = table.attribute("display-column").getValue();
         } catch (DocumentException e) {
             e.printStackTrace();
@@ -75,7 +73,18 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     @Override
     public void batchInsert2HRS(List<JSONObject> records) {
         synchronized (this) {
-            hrsMongoTemplate.insert(records, "Patient");
+            List<JSONObject> insertRecords = new ArrayList<>();
+            //如果patient已近存在于mongodb中则不再插入
+            for (JSONObject record : records) {
+                JSONObject patient = hrsMongoTemplate.findOne(Query.query(Criteria.where("_id").is(record.getString("_id"))),
+                        JSONObject.class, "Patient");
+                if (patient != null) {
+                    log.debug("process(): Patient : " + record.getString("_id") + " already exist in DB");
+                    continue;
+                }
+                insertRecords.add(record);
+            }
+            hrsMongoTemplate.insert(insertRecords, "Patient");
         }
     }
 
@@ -88,9 +97,7 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
 
     @Override
     public Integer getCount(String dataSource) {
-        if (!loadedXml) {
-            loadXml();
-        }
+        super.getCount(dataSource);
         if (dataSource == null) {
             return 0;
         }
@@ -98,14 +105,14 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         if (dataSource.contains(SqlServerDataSourceConfig.SQL_SERVER)) {
             sql = "select count(t.id) from " + tableName + " t";
         } else {
-            sql = "select count(*) from (select " + groupCol + " from " + tableName + " group by " + groupCol + ") t";
+            sql = "select count(*) from " + tableName;
         }
         return getJdbcTemplate(dataSource).queryForObject(sql, Integer.class);
     }
 
     @Override
     protected String generateQuerySql() {
-        String sql = "select " + displayCol + " from " + tableName + " group by " + groupCol;
+        String sql = "select " + displayCol + " from " + tableName + " order by " + idColumn;
         return sql;
     }
 
@@ -135,7 +142,50 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
                 if (beanName == null || sourceValue == null) {
                     continue;
                 }
-                dataMap.put(beanName, rs.getObject(sourceValue));
+                Object value = rs.getObject(sourceValue);
+                if (value == null) {
+                    continue;
+                }
+                if ("patientId".equals(beanName)) {
+                    StringBuffer patientPrefix = new StringBuffer(columnElement.attribute("patient-prefix").getValue());
+                    value = patientPrefix.append(value.toString()).toString();
+                }
+                //处理字段值映射
+                List<Element> options = columnElement.elements("option");
+                if (options != null && !options.isEmpty()) {
+                    for (Element option : options) {
+                        String optionValue = option.attribute("value").getValue();
+                        if (optionValue != null && optionValue.equals(value.toString())) {
+                            value = option.getText();
+                            break;
+                        }
+                    }
+                }
+                String type = columnElement.attribute("type") == null ? null : columnElement.attribute("type").getValue();
+                if ("birthDay".equals(type)) {
+                    //清空之前的值
+                    value = "";
+                    String inHospitalDateStr = columnElement.attribute("in-hospital-date").getValue();
+                    String ageStr = columnElement.attribute("age").getValue();
+                    Object inHospitalDate = rs.getObject(inHospitalDateStr) == null ? null : rs.getObject(inHospitalDateStr);
+                    String ageValue = rs.getObject(ageStr) == null ? "" : rs.getObject(ageStr).toString();
+                    Integer year = null;
+                    if (inHospitalDate instanceof Date) {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime((Date) inHospitalDate);
+                        year = calendar.get(Calendar.YEAR);
+                    }
+                    if (inHospitalDate instanceof String) {
+                        year = Integer.valueOf(((String) inHospitalDate).substring(0, 4));
+                    }
+                    if (year != null && !StringUtils.isEmpty(ageValue)) {
+                        value = year - Integer.valueOf(ageValue);
+                    }
+                }
+                if (StringUtils.isEmpty(value)) {
+                    value = columnElement.attribute("default-value") == null ? "" : columnElement.attribute("default-value").getValue();
+                }
+                dataMap.put(beanName, value);
             }
             Patient patient = BeanUtil.map2Bean(dataMap, Patient.class);
             return patient;

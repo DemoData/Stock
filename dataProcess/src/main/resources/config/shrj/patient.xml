@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <!--病人基本信息-->
+    <table name="仁济_patient" id-column-names="patientId" display-column="patientId,name,sex,age,inHospitalDate">
+        <property bean-name="id" column-name="patientId"/>
+        <property bean-name="patientId" column-name="patientId" patient-prefix="shrj_"/>
+        <property bean-name="name" column-name="name"/>
+        <property bean-name="sex" column-name="sex"/>
+        <property bean-name="age" column-name="age"/>
+        <property bean-name="birthDay" column-name="inHospitalDate" type="birthDay" in-hospital-date="inHospitalDate"
+                  age="age"/>
+    </table>
+</body>
