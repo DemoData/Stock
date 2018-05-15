@@ -29,6 +29,18 @@ public class SHRJTableServiceImpl extends TableServiceImpl {
             record.setPatientId(groupRecordCaches.get(identifiedStr));
         }
 
+        /*if (StringUtils.isEmpty(record.getPatientId())) {
+            String groupRecordName = record.getGroupRecordName();
+            String value = groupRecordName.substring(groupRecordName.length() - 5);
+            if (groupRecordCaches.isEmpty() || StringUtils.isEmpty(groupRecordCaches.get(value))) {
+                List<Map<String, Object>> maps = getAdviceDao()().getJdbcTemplate(dataSource).queryForList("select patientId from 仁济_patient where groupRecordName like '%" + value + "%'");
+                if (!maps.isEmpty()) {
+                    groupRecordCaches.put(value, maps.get(0).get("patientId").toString());
+                }
+            }
+            record.setPatientId(groupRecordCaches.get(value) == null ? "" : shrj_+groupRecordCaches.get(value));
+        }*/
+
     }
 
 }

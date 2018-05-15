@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -41,10 +42,10 @@ public class DataClean {
     static {
         MongoProperties hrsProperties = new MongoProperties();
         hrsProperties.setHost("localhost");
-        hrsProperties.setPort(27017);
-        hrsProperties.setDatabase("HRS");
-        hrsProperties.setUsername("aron");
-        hrsProperties.setPassword("aron".toCharArray());
+        hrsProperties.setPort(3718);
+        hrsProperties.setDatabase("HRS-live");
+        hrsProperties.setUsername("xh");
+        hrsProperties.setPassword("rt0hizu{j9lzJNqi".toCharArray());
         mongoOperations = new MongoOperations(DBConnection.generateTemplate(hrsProperties));
 
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
@@ -58,7 +59,57 @@ public class DataClean {
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.shrjPatientProcess();
+        dataClean.haha();
+    }
+
+    public void haha() {
+        int count = 0;
+        int result = 0;
+        List<BatchUpdateOption> options = new ArrayList<>();
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
+        query.addCriteria(Criteria.where("source").is("病历文书"));
+        query.addCriteria(Criteria.where("groupRecordName").regex("^.{11,}$"));
+        List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
+        for (JSONObject jsonObject : records) {
+            String rid = jsonObject.getString("_id");
+            String groupRecordName = jsonObject.getString("groupRecordName");
+            groupRecordName = groupRecordName.replace("30000", "3000");
+            BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+            bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
+            bathUpdateOption.setUpdate(Update.update("groupRecordName", groupRecordName));
+            bathUpdateOption.setMulti(true);
+            bathUpdateOption.setUpsert(false);
+            options.add(bathUpdateOption);
+
+            count++;
+            //超过1000个执行一次更新
+            if (options.size() >= 1000) {
+                result += updateStart(options, "Record");
+            }
+        }
+        if (!options.isEmpty()) {
+            result += updateStart(options, "Record");
+        }
+        log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
+    }
+
+    /**
+     * 仁济病人基本信息获取性别出生日等
+     */
+    public void shrjPatientIgnore() {
+        List<Map<String, Object>> results = jdbcTemplate.queryForList("select id,groupRecordName from 仁济_patient where groupRecordName like '%E%'");
+        for (Map<String, Object> map : results) {
+            String groupRecordName = map.get("groupRecordName").toString();
+            String id = map.get("id").toString();
+//            String[] split = groupRecordName.split("E");
+//            String temp = groupRecordName.replace("E","E+");
+            BigDecimal bd = new BigDecimal(groupRecordName);
+            String value = bd.toPlainString();
+            jdbcTemplate.update("update 仁济_patient set groupRecordName=? where id=?", value, id);
+        }
+
     }
 
     /**
@@ -408,10 +459,10 @@ public class DataClean {
         List<BatchUpdateOption> options = new ArrayList<>();
         while (!isFinished) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("batchNo").is("shly20180424"));
+            query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
             query.addCriteria(Criteria.where("source").is("病历文书"));
 //            query.addCriteria(Criteria.where("odCategories").is("肝癌相关"));
-            query.addCriteria(Criteria.where("recordType").is("手术操作记录"));
+            query.addCriteria(Criteria.where("recordType").in("入院记录", "出院记录"));
 //            query.addCriteria(Criteria.where("sourceId").is("32127"));
             log.info(">>>>>>>>> pageNum:" + pageNum);
             query.with(new PageRequest(pageNum, 1000));
@@ -455,14 +506,14 @@ public class DataClean {
 
                 anchorMatch(anchorContent, dbRecordType, dbSubRecordType, item.getString("_id"), types);
 
-                if (!dbSubRecordType.equals(types[1])) {
-//                        && ("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
-                    /*if ("入院记录".equals(types[0])) {
+                if (!dbSubRecordType.equals(types[1])
+                        && ("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
+                    if ("入院记录".equals(types[0])) {
                         inCount++;
                     }
                     if ("出院记录".equals(types[0])) {
                         outCount++;
-                    }*/
+                    }
                     item.put("recordType", types[0]);
                     item.put("subRecordType", types[1]);
                     log.info(">>>>>>>>>>>原类型：" + dbRecordType + "-" + dbSubRecordType + ", 新类型：" + types[0] + "-" + types[1] + "->" + item.getString("_id"));

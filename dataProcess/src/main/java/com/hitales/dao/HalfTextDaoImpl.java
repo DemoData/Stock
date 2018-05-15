@@ -160,6 +160,9 @@ public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Obj
             e.printStackTrace();
             return null;
         }
+        if (displayCol.toLowerCase().contains("patient")) {
+            return groupRecordName.attribute("prefix").getValue() + strings.get(0);
+        }
         return strings.get(0);
     }
 

@@ -27,6 +27,6 @@
     <queryList>
         <!--获取patientId-->
         <table id="condition" name="仁济_patient" display-column="patientId" condition-column="groupRecordName"
-               group-column="patientId" patient-prefix="shrj_"/>
+               group-column="patientId" prefix="shrj_"/>
     </queryList>
 </body>

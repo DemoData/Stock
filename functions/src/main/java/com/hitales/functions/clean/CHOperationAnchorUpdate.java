@@ -83,8 +83,8 @@ public class CHOperationAnchorUpdate {
         anchorsList.add("手术人员");
         anchorsList.add("麻醉人员");*/
 //上海六院
-        anchorsList.add("签署日期");
-        anchorsList.add("主治医师签名");
+        /*anchorsList.add("签署日期");
+        anchorsList.add("主治医师签名");*/
     }
 
     //禁用的锚点
@@ -100,18 +100,21 @@ public class CHOperationAnchorUpdate {
         notAnchorList.add("穿刺过程");
         notAnchorList.add("内镜诊断");*/
 //上海六院
-        notAnchorList.add("体格检查");
+        /*notAnchorList.add("体格检查");
         notAnchorList.add("神经系统");
         notAnchorList.add("手术外伤史");
         notAnchorList.add("输血史");
-        notAnchorList.add("过敏史");
+        notAnchorList.add("过敏史");*/
     }
 
     //前面不是中文的需要打上锚点
     static List<String> prefAnchorList = new ArrayList<>();
 
     static {
-
+        prefAnchorList.add("日期");
+        prefAnchorList.add("记录时间");
+        prefAnchorList.add("病史陈述者");
+        prefAnchorList.add("主治医师第一次查房诊断");
     }
 
     //前面是中文的锚点要去掉
@@ -132,8 +135,8 @@ public class CHOperationAnchorUpdate {
         colonAnchorList.add("操作者");
         colonAnchorList.add("DSA");*/
 //上海六院
-        colonAnchorList.add("时间");
-        colonAnchorList.add("手机");
+        /*colonAnchorList.add("时间");
+        colonAnchorList.add("手机");*/
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -185,7 +188,7 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("住院医师");
         colonEndAnchorList.add("操作过程如下");*/
 //上海六院
-        colonEndAnchorList.add("床位号");
+        /*colonEndAnchorList.add("床位号");
         colonEndAnchorList.add("记录医生");
         colonEndAnchorList.add("家族史");
         colonEndAnchorList.add("联系方式");
@@ -213,7 +216,7 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("婚育史");
         colonEndAnchorList.add("主  诉");
         colonEndAnchorList.add("副主任");
-        colonEndAnchorList.add("中医诊断");
+        colonEndAnchorList.add("中医诊断");*/
 
         /*colonEndAnchorList.add("手术医师");
         colonEndAnchorList.add("麻醉医师");
@@ -238,6 +241,55 @@ public class CHOperationAnchorUpdate {
         colonEndAnchorList.add("术前准备");
         colonEndAnchorList.add("记录者签名");*/
 
+        colonAnchorList.add("补充病史和体征");
+        colonAnchorList.add("初步诊断");
+        colonAnchorList.add("诊断依据");
+        colonAnchorList.add("鉴别诊断");
+        colonAnchorList.add("诊疗计划");
+        colonAnchorList.add("注意事项");
+        colonAnchorList.add("分析讨论");
+        colonAnchorList.add("入院日期");
+        colonAnchorList.add("出院日期");
+        colonAnchorList.add("门诊诊断");
+        colonAnchorList.add("入院诊断");
+        colonAnchorList.add("出院诊断");
+        colonAnchorList.add("入院时主要症状及体征");
+        colonAnchorList.add("病程与治疗结果（注明手术日期、手术名称、输血量及抢救情况）");
+        colonAnchorList.add("病程与治疗结果(注明手术日期、手术名称、输血量及抢救情况)");
+        colonAnchorList.add("出院时情况（症状及体征）");
+        colonAnchorList.add("出院时情况(症状及体征)");
+        colonAnchorList.add("出院后用药及建议");
+        colonAnchorList.add("医师签名");
+        colonAnchorList.add("主　诉");
+        colonAnchorList.add("现病史");
+        colonAnchorList.add("既往史");
+        colonAnchorList.add("个人史");
+        colonAnchorList.add("婚育史");
+        colonAnchorList.add("月经史");
+        colonAnchorList.add("家族史");
+        colonAnchorList.add("体　格　检　查");
+        colonAnchorList.add("专　科　检　查");
+        colonAnchorList.add("实验室及其他辅助检查");
+        colonAnchorList.add("初步诊断");
+        colonAnchorList.add("医师签名");
+        colonAnchorList.add("日　　期");
+        colonAnchorList.add("主要化验结果");
+        colonAnchorList.add("特殊检验及重要会诊");
+        colonAnchorList.add("合并症");
+        colonAnchorList.add("治疗结果");
+        colonAnchorList.add("病史可靠程度");
+        colonAnchorList.add("病史陈述者");
+        colonAnchorList.add("病史采集时间");
+        colonAnchorList.add("入院时主要病状及体征");
+        colonAnchorList.add("预约提示");
+        colonAnchorList.add("主任医师");
+        colonAnchorList.add("主治医师");
+        colonAnchorList.add("住院医师");
+        colonAnchorList.add("记录日期");
+        colonAnchorList.add("系统回顾(阳性表现应在空间内填写发病时间及扼要诊疗经过)");
+        colonAnchorList.add("姓名");
+        colonAnchorList.add("门（急）诊诊断");
+        colonAnchorList.add("与患者关系");
     }
 
     public static void main(String[] args) {

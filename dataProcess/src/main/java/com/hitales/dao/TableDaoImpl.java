@@ -179,7 +179,7 @@ public class TableDaoImpl extends BaseDao implements IAdviceDao<Map<String, Obje
             return null;
         }
         if (displayCol.toLowerCase().contains("patient")) {
-            return groupRecordName.attribute("patient-prefix").getValue() + strings.get(0);
+            return groupRecordName.attribute("prefix").getValue() + strings.get(0);
         }
         return strings.get(0);
     }

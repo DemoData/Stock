@@ -26,7 +26,7 @@ public class SHRJController {
     private IDataService tableService;
 
     @Autowired
-    @Qualifier("medicalContentService")
+    @Qualifier("shrjMedicalContentService")
     private IDataService medicalContentService;
 
     @GetMapping("/processAssay")
@@ -43,7 +43,7 @@ public class SHRJController {
         basicInfo.setSubRecordType("化验");
         basicInfo.setOdCategories(new String[]{"SLE"});
         tableService.setBasicInfo(basicInfo);
-        tableService.setXmlPath("config/shrj/lab.xml");
+        tableService.setXmlPath("config/shrj/lab-test.xml");
         if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -64,7 +64,7 @@ public class SHRJController {
         basicInfo.setSubRecordType("医嘱单");
         basicInfo.setOdCategories(new String[]{"SLE"});
         tableService.setBasicInfo(basicInfo);
-        tableService.setXmlPath("config/shrj/orders.xml");
+        tableService.setXmlPath("config/shrj/orders-test.xml");
         if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -76,7 +76,7 @@ public class SHRJController {
         Record basicInfo = new Record();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a117");
         basicInfo.setBatchNo("shrj20180508");
-        basicInfo.setDepartment("急诊科");
+        basicInfo.setDepartment("风湿免疫科");
         basicInfo.setFormat(Record.FormatType.TEXT.value());
         basicInfo.setDeleted(false);
         basicInfo.setSource("病历文书");

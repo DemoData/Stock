@@ -34,7 +34,7 @@ public class SHLYController {
     private IDataService tableService;
 
     @Autowired
-    @Qualifier("medicalContentService")
+    @Qualifier("shlyMedicalContentService")
     private IDataService medicalContentService;
 
     @GetMapping("/processAssay")

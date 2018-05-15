@@ -1,7 +1,6 @@
 package com.hitales.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.hitales.common.constant.CommonConstant;
 import com.hitales.dao.standard.TableDao;
 import com.hitales.entity.Record;
 import lombok.extern.slf4j.Slf4j;

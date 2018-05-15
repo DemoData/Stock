@@ -58,21 +58,16 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
         String groupRecordName = entity.getGroupRecordName();
         //如果cache中已近存在就不在重复查找
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
-            //====上海六院病历文书特殊逻辑处理===
-            List<Map<String, Object>> icdList = medicalHistoryDao.getJdbcTemplate(dataSource).queryForList("select ID from shly_in_patient_visit_record_20180423 where AdmissionNumber=? group by AdmissionNumber,ID", groupRecordName);
-            if (icdList != null || !icdList.isEmpty()) {
-                String encounterID = icdList.get(0).get("ID").toString();
-                List<String> orgOdCategories = medicalHistoryDao.findOrgOdCatByGroupRecordName(dataSource, encounterID);
-                if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
-                    orgOdCatCaches.put(groupRecordName, orgOdCategories);
-                }
+            List<String> orgOdCategories = medicalHistoryDao.findOrgOdCatByGroupRecordName(dataSource, groupRecordName);
+            if (orgOdCategories != null && !orgOdCategories.isEmpty()) {
+                orgOdCatCaches.put(groupRecordName, orgOdCategories);
             }
-            //====end====
         }
         List<String> orgOds = orgOdCatCaches.get(groupRecordName);
         if (orgOds != null && !orgOds.isEmpty()) {
             record.setOrgOdCategories(orgOds.toArray(new String[0]));
         }
+
         if (patientCaches.isEmpty() || StringUtils.isEmpty(patientCaches.get(groupRecordName))) {
             String patientId = medicalHistoryDao.findRequiredColByCondition(dataSource, groupRecordName);
             if (!StringUtils.isEmpty(patientId)) {
@@ -107,17 +102,17 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
         if (StringUtils.isEmpty(medicalContent)) {
             log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
-//        String text = TextFormatter.formatTextByAnchaor(medicalContent);
-        info.put(TextFormatter.TEXT, medicalContent);
+        String text = TextFormatter.formatTextByAnchaor(medicalContent);
+        info.put(TextFormatter.TEXT, text);
 
-        String temp = medicalContent.replaceAll("【【", "");
-        String textARS = temp.replaceAll("】】", "");
-        info.put(TextFormatter.TEXT_ARS, textARS);
+        /*String temp = medicalContent.replaceAll("【【", "");
+        String textARS = temp.replaceAll("】】", "");*/
+        info.put(TextFormatter.TEXT_ARS, medicalContent);
 
 //        anchorMatch(medicalContent, record);
     }
 
-    private void setRecordType(Record record, MedicalHistory medicalHistory) {
+    protected void setRecordType(Record record, MedicalHistory medicalHistory) {
         String medicalHistoryName = medicalHistory.getMedicalHistoryName();
         if (StringUtils.isEmpty(medicalHistoryName)) {
             log.error("!!!!!!!!!!!! mapping is empty , id : " + medicalHistory.getId() + "!!!!!!!!!!");
@@ -247,4 +242,7 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
         }*/
     }
 
+    public IMedicalHistoryDao getMedicalHistoryDao() {
+        return medicalHistoryDao;
+    }
 }

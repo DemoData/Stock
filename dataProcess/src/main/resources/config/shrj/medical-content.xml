@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--病历文书-->
+<body>
+    <item-descriptor>
+        <record type="record" name="仁济_medical_content" display-column="id,groupRecordName,recordType,content" where-column="status" where-value="0" where-type="int">
+            <property bean-name="id" column-name="id" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="groupRecordName" data-type="string"/>
+            <property bean-name="medicalHistoryName" column-name="recordType" data-type="string"/>
+            <property bean-name="medicalContent" column-name="content" data-type="string"/>
+        </record>
+    </item-descriptor>
+    <queryList>
+        <!--获取patientId-->
+        <table id="condition" name="仁济_patient" display-column="patientId" condition-column="groupRecordName"
+               group-column="patientId" prefix="shrj_"/>
+    </queryList>
+</body>
