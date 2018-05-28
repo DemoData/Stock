@@ -118,6 +118,7 @@ public class AssayServiceImpl extends TableService<LabBasic,LabDetail> {
             map.put(LabDetail.ColumnMapping.REFERENCE_RANGE.value(), assay.getReferenceRange() == null ? EMPTY_FLAG : assay.getReferenceRange());
             map.put(LabDetail.ColumnMapping.ASSAY_STATE.value(), assay.getAssayState() == null ? EMPTY_FLAG : assay.getAssayState());
             map.put(LabDetail.ColumnMapping.ASSAY_METHODNAME.value(), assay.getAssayMethodName() == null ? EMPTY_FLAG : assay.getAssayMethodName());
+            map.put(LabDetail.ColumnMapping.MACHINE_NO.value(), assay.getMachineNo() == null ? EMPTY_FLAG : assay.getMachineNo());
             detailArray.add(map);
         }
     }

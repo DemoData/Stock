@@ -186,7 +186,7 @@ public class SHSYController {
         basicInfo.setSource("病历文书");
         basicInfo.setStatus("AMD识别完成");
         medicalContentService.setBasicInfo(basicInfo);
-        medicalContentService.setXmlPath("config/shsy/medical-content.xml");
+        medicalContentService.setXmlPath("config/shsy/medical-content-gz.xml");
         if (medicalContentService.processData()) {
             return SUCCESS_FLAG;
         }

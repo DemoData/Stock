@@ -56,6 +56,19 @@ public class ClinicalLabContoller {
      */
     @GetMapping("/processAssay")
     public String processAssay() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("5ac9c2b83c265da1663abc9a");
+        basicInfo.setUserId("5a7c0adcc2f9c4944dd2b070");
+        basicInfo.setBatchNo("shch20180309");
+        basicInfo.setDepartment("检验科");
+        basicInfo.setFormat("table");
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("化验");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setRecordType("化验记录");
+        basicInfo.setSubRecordType("化验");
+        basicInfo.setVersion(2.0);
+        assayService.setBasicInfo(basicInfo);
         if (assayService.processData()) {
             return SUCCESS_FLAG;
         }

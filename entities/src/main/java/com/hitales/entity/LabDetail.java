@@ -25,6 +25,7 @@ public class LabDetail {
     private String referenceRange;//参考范围
     private String assayState;//检验状态
     private String assayMethodName;//检验方法名称
+    private String machineNo;//仪器编号
 
     public enum ColumnMapping {
         ASSAY_TIME("化验时间"),
@@ -36,7 +37,8 @@ public class LabDetail {
         ASSAY_SPECIMEN("标本"),
         REFERENCE_RANGE("参考值"),//一个参考范围
         ASSAY_STATE("化验状态"),
-        ASSAY_METHODNAME("化验方法名称");
+        ASSAY_METHODNAME("化验方法名称"),
+        MACHINE_NO("仪器编号");
 
         private final String value;
 

@@ -96,7 +96,6 @@ public class Record {
 
     public enum FormatType {
         TEXT("text"),
-        HALF_TEXT("half-text"),
         TABLE("table");
         private final String value;
 

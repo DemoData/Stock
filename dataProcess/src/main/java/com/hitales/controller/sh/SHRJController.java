@@ -29,6 +29,10 @@ public class SHRJController {
     @Qualifier("shrjMedicalContentService")
     private IDataService medicalContentService;
 
+    @Autowired
+    @Qualifier("rjnyMedicalContentService")
+    private IDataService rjnyMedicalContentService;
+
     @GetMapping("/processAssay")
     public String processAssay() {
         Record basicInfo = new Record();
@@ -43,7 +47,7 @@ public class SHRJController {
         basicInfo.setSubRecordType("化验");
         basicInfo.setOdCategories(new String[]{"SLE"});
         tableService.setBasicInfo(basicInfo);
-        tableService.setXmlPath("config/shrj/lab-test.xml");
+        tableService.setXmlPath("config/shrj/lab.xml");
         if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -64,7 +68,7 @@ public class SHRJController {
         basicInfo.setSubRecordType("医嘱单");
         basicInfo.setOdCategories(new String[]{"SLE"});
         tableService.setBasicInfo(basicInfo);
-        tableService.setXmlPath("config/shrj/orders-test.xml");
+        tableService.setXmlPath("config/shrj/orders.xml");
         if (tableService.processData()) {
             return SUCCESS_FLAG;
         }
@@ -85,6 +89,44 @@ public class SHRJController {
         medicalContentService.setBasicInfo(basicInfo);
         medicalContentService.setXmlPath("config/shrj/medical-content.xml");
         if (medicalContentService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processMedicalContentGZ")
+    public String processMedicalContentGZ() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a117");
+        basicInfo.setBatchNo("shrj20180521");
+        basicInfo.setDepartment("风湿免疫科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病历文书");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"干燥综合症"});
+        rjnyMedicalContentService.setBasicInfo(basicInfo);
+        rjnyMedicalContentService.setXmlPath("config/rjny/medical-content-gz.xml");
+        if (rjnyMedicalContentService.processData()) {
+            return SUCCESS_FLAG;
+        }
+        return FAIL_FLAG;
+    }
+
+    @GetMapping("/processMedicalContentYH")
+    public String processMedicalContentYH() {
+        Record basicInfo = new Record();
+        basicInfo.setHospitalId("57b1e21fd897cd373ec7a117");
+        basicInfo.setBatchNo("shrj20180522");
+        basicInfo.setDepartment("风湿免疫科");
+        basicInfo.setFormat(Record.FormatType.TEXT.value());
+        basicInfo.setDeleted(false);
+        basicInfo.setSource("病历文书");
+        basicInfo.setStatus("AMD识别完成");
+        basicInfo.setOdCategories(new String[]{"硬化症"});
+        rjnyMedicalContentService.setBasicInfo(basicInfo);
+        rjnyMedicalContentService.setXmlPath("config/rjny/medical-content-yhz.xml");
+        if (rjnyMedicalContentService.processData()) {
             return SUCCESS_FLAG;
         }
         return FAIL_FLAG;

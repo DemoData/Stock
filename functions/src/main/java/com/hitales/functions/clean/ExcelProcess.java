@@ -13,7 +13,9 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExcelProcess {
 
@@ -34,9 +36,12 @@ public class ExcelProcess {
         ExcelProcess excelProcess = new ExcelProcess();
 //        System.out.println(excelProcess.readRtf(new File("/Users/aron/Desktop/24ry.rtf")));
         //遍历文件
-        iteratorAllDoc("/Users/aron/Documents/renji_docs");
-        /*for (File file : fileList) {
-            excelProcess.readDocx(file);
+        iteratorAllDoc("/Users/aron/Documents/入库/rjny_converted");
+        /*System.out.println(fileList.size());
+        for (File file : fileList) {
+            String s = excelProcess.readDocx(file);
+            System.out.println(s);
+            System.out.println("=============================");
         }*/
 
         int count = 0;
@@ -46,8 +51,8 @@ public class ExcelProcess {
             String[] split = absolutePath.split("/");
             String fileName = file.getName().toLowerCase();
             String recordType = null;
-            String patientName = null;
-            String[] groupName = null;
+            String patientName = split[7];
+            /*String[] groupName = null;
             if (split[0].equals("")) {
                 patientName = split[split.length - 4];
                 groupName = split[split.length - 3].split("-");
@@ -58,9 +63,9 @@ public class ExcelProcess {
             if (patientName.contains("月病史") || patientName.contains("1.源文件")) {
                 patientName = split[split.length - 3];
                 groupName = split[split.length - 2].split("-");
-            }
-
-            String groupRecordName = null;
+            }*/
+            String groupRecordName = "";
+            /*String groupRecordName = null;
             for (String s : groupName) {
                 if (s.contains(".")) {
                     continue;
@@ -75,15 +80,15 @@ public class ExcelProcess {
                 }
                 groupRecordName = prefix.toString();
                 break;
-            }
-            if (groupRecordName.contains("何银香")) {
+            }*/
+            /*if (groupRecordName.contains("何银香")) {
                 groupRecordName = "3000090542";
                 patientName = "何银香";
-            }
-
-            /*if (fileName.contains("bc")) {
-                recordType = "病程";
             }*/
+
+            if (fileName.contains("bc")) {
+                recordType = "病程";
+            }
             if (fileName.contains("cy") || "c.doc".equals(fileName)) {
                 recordType = "出院记录";
             }
@@ -100,7 +105,7 @@ public class ExcelProcess {
                 recordType = "病程";
             }
             String content = excelProcess.readDocx(file);
-            String sourceFilePath = absolutePath.substring(absolutePath.indexOf("renji_docs") + 10);
+            String sourceFilePath = absolutePath.substring(absolutePath.indexOf("rjny_converted") + 14);
             //打锚点
 //            String text = excelProcess.processAnchor(content);
             String[] params = {patientName, groupRecordName, content, recordType == null ? "" : recordType, sourceFilePath};
@@ -108,7 +113,7 @@ public class ExcelProcess {
             System.out.println(count++ + "recordType:" + recordType + ",patientName:" + patientName + ",groupRecordName:" + groupRecordName);
         }
         System.out.println(">>>>>>>>>>>starting insert：" + records.size());
-        int[] ints = jdbcTemplate.batchUpdate("insert into 仁济_medical_content(patientName,groupRecordName,content,recordType,sourceFilePath) values(?,?,?,?,?)", records);
+        int[] ints = jdbcTemplate.batchUpdate("insert into 仁济南院_medical_content(patientName,groupRecordName,content,recordType,sourceFilePath) values(?,?,?,?,?)", records);
         System.out.println("插入成功：" + ints.length);
     }
 
@@ -120,7 +125,7 @@ public class ExcelProcess {
             @Override
             public boolean accept(File dir, String name) {
                 File file = new File(dir.getAbsolutePath() + "/" + name);
-                if (file.isFile() && name.contains(".docx")) {
+                if (file.isFile() && name.contains(".doc")) {
                     return true;
                 }
                 if (file.isDirectory()) {

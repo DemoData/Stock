@@ -86,6 +86,7 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
     protected void customInitInfo(Record record, MedicalHistory medicalHistory) {
         record.setGroupRecordName(medicalHistory.getGroupRecordName());
         record.setSourceId(medicalHistory.getId().toString());
+        record.setPatientId(medicalHistory.getPatientId());
         record.setSourceRecordType(medicalHistory.getMedicalHistoryName());
     }
 

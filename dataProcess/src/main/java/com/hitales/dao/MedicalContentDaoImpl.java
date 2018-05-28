@@ -41,13 +41,15 @@ public class MedicalContentDaoImpl extends BaseDao implements IMedicalHistoryDao
         try {
             Element rootElement = reader.read(xml).getRootElement();
             Element descriptor = rootElement.element("item-descriptor");
-            List<Element> queryList = rootElement.element("queryList").elements();
-            for (Element query : queryList) {
-                String id = query.attribute("id").getValue();
-                if ("odCategories".equals(id)) {
-                    diagnosis = query;
-                } else {
-                    conditionElement = query;
+            List<Element> queryList = rootElement.element("queryList") == null ? null : rootElement.element("queryList").elements();
+            if (queryList != null) {
+                for (Element query : queryList) {
+                    String id = query.attribute("id").getValue();
+                    if ("odCategories".equals(id)) {
+                        diagnosis = query;
+                    } else {
+                        conditionElement = query;
+                    }
                 }
             }
             record = descriptor.element("record");

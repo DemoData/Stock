@@ -20,8 +20,8 @@
         <property name="referenceId"/>
         <property name="文本结果"/>
         <property name="数值结果"/>
-        <property name="结果单位"/>
-        <property name="结果状态"/>
+        <property name="数值单位"/>
+        <property name="化验值状态"/>
         <property name="正常低值"/>
         <property name="正常高值"/>
         <property name="参考范围"/>

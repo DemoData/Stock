@@ -19,9 +19,9 @@ import java.util.List;
 
 public class SHRJAnchorUpdate {
 
-    static MongoCredential mongoCredential = MongoCredential.createCredential("aron", "HRS", "aron".toCharArray());
-    //static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
-    static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
+    static MongoCredential mongoCredential = MongoCredential.createCredential("xh", "HRS-live", "rt0hizu{j9lzJNqi".toCharArray());
+    static ServerAddress serverAddress = new ServerAddress("localhost", 3718);
+//    static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
 
     static List<MongoCredential> mongoCredentials = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class SHRJAnchorUpdate {
     //static ServerAddress serverAddress = new ServerAddress("localhost", 27017);
     static MongoClient mongo = new MongoClient(serverAddress, mongoCredentials, new MongoClientOptions.Builder().build());
     //static MongoClient mongo = new MongoClient("localhost", 27017);
-    static MongoDatabase db = mongo.getDatabase("HRS");
+    static MongoDatabase db = mongo.getDatabase("HRS-live");
     static MongoCollection dc = db.getCollection("Record");
 
     private static MongoTemplate hrsMongoTemplate;
@@ -40,10 +40,10 @@ public class SHRJAnchorUpdate {
     static {
         MongoProperties mongoProperties = new MongoProperties();
         mongoProperties.setHost("localhost");
-        mongoProperties.setPort(27017);
-        mongoProperties.setDatabase("HRS");
-        mongoProperties.setUsername("aron");
-        mongoProperties.setPassword("aron".toCharArray());
+        mongoProperties.setPort(3718);
+        mongoProperties.setDatabase("HRS-live");
+        mongoProperties.setUsername("xh");
+        mongoProperties.setPassword("rt0hizu{j9lzJNqi".toCharArray());
         hrsMongoTemplate = DBConnection.generateTemplate(mongoProperties);
     }
 
@@ -57,13 +57,63 @@ public class SHRJAnchorUpdate {
 
     static {
 //        notAnchorList.add("出院诊断");
+//        notAnchorList.add("初步诊断");
     }
 
     //前面不是中文的需要打上锚点
     static List<String> prefAnchorList = new ArrayList<>();
 
     static {
-
+        /*prefAnchorList.add("补充病史和体征");
+        prefAnchorList.add("初步诊断");
+        prefAnchorList.add("诊断依据");
+        prefAnchorList.add("鉴别诊断");
+        prefAnchorList.add("诊疗计划");
+        prefAnchorList.add("注意事项");
+        prefAnchorList.add("分析讨论");
+        prefAnchorList.add("入院日期");
+        prefAnchorList.add("出院日期");
+        prefAnchorList.add("门诊诊断");
+        prefAnchorList.add("入院诊断");
+        prefAnchorList.add("出院诊断");
+        prefAnchorList.add("入院时主要症状及体征");
+        prefAnchorList.add("病程与治疗结果（注明手术日期、手术名称、输血量及抢救情况）");
+        prefAnchorList.add("病程与治疗结果(注明手术日期、手术名称、输血量及抢救情况)");
+        prefAnchorList.add("出院时情况（症状及体征）");
+        prefAnchorList.add("出院时情况(症状及体征)");
+        prefAnchorList.add("出院后用药及建议");
+        prefAnchorList.add("医师签名");
+        prefAnchorList.add("主　诉");
+        prefAnchorList.add("现病史");
+        prefAnchorList.add("既往史");
+        prefAnchorList.add("个人史");
+        prefAnchorList.add("婚育史");
+        prefAnchorList.add("月经史");
+        prefAnchorList.add("家族史");
+        prefAnchorList.add("体　格　检　查");
+        prefAnchorList.add("专　科　检　查");
+        prefAnchorList.add("实验室及其他辅助检查");
+        prefAnchorList.add("初步诊断");
+        prefAnchorList.add("医师签名");
+        prefAnchorList.add("日　　期");
+        prefAnchorList.add("主要化验结果");
+        prefAnchorList.add("特殊检验及重要会诊");
+        prefAnchorList.add("合并症");
+        prefAnchorList.add("治疗结果");
+        prefAnchorList.add("病史可靠程度");
+        prefAnchorList.add("病史陈述者");
+        prefAnchorList.add("病史采集时间");
+        prefAnchorList.add("入院时主要病状及体征");
+        prefAnchorList.add("预约提示");
+        prefAnchorList.add("主任医师");
+        prefAnchorList.add("主治医师");
+        prefAnchorList.add("住院医师");
+        prefAnchorList.add("记录日期");
+        prefAnchorList.add("系统回顾(阳性表现应在空间内填写发病时间及扼要诊疗经过)");
+        prefAnchorList.add("姓名");
+        prefAnchorList.add("门（急）诊诊断");
+        prefAnchorList.add("与患者关系");*/
+        prefAnchorList.add("签名");
     }
 
     //前面是中文的锚点要去掉
@@ -79,6 +129,7 @@ public class SHRJAnchorUpdate {
     static {
 //        colonAnchorList.add("查体");
 //        colonAnchorList.add("入院查体");
+//        colonAnchorList.add("诊断日期");
     }
 
     //中括号包围的锚点，中括号是特殊字符
@@ -91,11 +142,17 @@ public class SHRJAnchorUpdate {
 
     static {
 //        colonEndAnchorList.add("出院诊断");
+//        colonEndAnchorList.add("初步诊断");
+//        colonEndAnchorList.add("病例特点");
+        colonEndAnchorList.add("诊断日期");
+        colonEndAnchorList.add("主要诊断");
+        colonEndAnchorList.add("其他诊断");
     }
 
     public static void main(String[] args) {
         BasicDBObject docQuery = new BasicDBObject();
-        docQuery.append("batchNo", "shrj20180508");
+//        shrj20180521，shrj20180522
+        docQuery.append("batchNo", "shrj20180522");
         docQuery.append("source", "病历文书");
         BasicDBList recordTypeList = new BasicDBList();
 //        recordTypeList.add(new BasicDBObject("recordType", "手术操作记录"));
@@ -189,7 +246,8 @@ public class SHRJAnchorUpdate {
                 int lastIndex = 0;
                 while (textARS.indexOf(anchor, lastIndex) != -1) {
                     int index = textARS.indexOf(anchor, lastIndex);
-                    if ('：' == textARS.charAt(index + anchor.length()) || ':' == textARS.charAt(index + anchor.length()) || ' ' == textARS.charAt(index + anchor.length())) {
+                    if ('：' == textARS.charAt(index + anchor.length()) || ':' == textARS.charAt(index + anchor.length())
+                            || ' ' == textARS.charAt(index + anchor.length()) || '　'== textARS.charAt(index + anchor.length()) ) {
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append(textARS.substring(0, index));
                         stringBuilder.append("【【" + anchor + "】】");
@@ -201,11 +259,9 @@ public class SHRJAnchorUpdate {
             }
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
 
-//            textARS = textARS.replaceAll("【【家族史】】　（注意与患者现病有关的遗传病及传染性疾病）", "【【家族史（注意与患者现病有关的遗传病及传染性疾病）】】");
-            textARS = textARS.replaceAll("【【家族史（注意与患者现病有关的遗传病及传染性疾病）】】", "【【家族史】】");
-
-            textARS = textARS.replaceAll("（记录父母、兄弟、姐妹健康状况，有无与患者类似疾病，有无家族遗传倾向的疾病）","");
-            textARS = textARS.replaceAll("（注意与患者现病有关的遗传病及传染性疾病）","");
+            textARS = textARS.replaceAll("【【既往史】】、手术史、药敏史、【【家族史】】", "既往史、手术史、药敏史、家族史");
+            textARS = textARS.replaceAll("【化验检查】", "【【化验检查】】");
+            textARS = textARS.replaceAll("【入院前检查】", "【【入院前检查】】");
 
             textARS = textARS.replaceAll("【【【【", "【【").replaceAll("】】】】", "】】");
             BathUpdateOptions bathUpdateOption = BathUpdateOptions.getInstance();

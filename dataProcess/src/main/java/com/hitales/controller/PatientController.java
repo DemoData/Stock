@@ -3,10 +3,7 @@ package com.hitales.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.support.ProgressCount;
-import com.hitales.entity.Menu;
 import com.hitales.entity.StockInfo;
-import com.hitales.other.BlobToContent;
-import com.hitales.other.DataToMysql;
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,10 +61,10 @@ public class PatientController {
     public String processPatientWithoutParam() {
         StockInfo basicInfo = new StockInfo();
         basicInfo.setHospitalId("57b1e21fd897cd373ec7a117");
-        basicInfo.setBatchNo("20180508");
+        basicInfo.setBatchNo("20180521");
         basicInfo.setPrefix("shrj");
         patientService.setBasicInfo(basicInfo);
-        patientService.setXmlPath("config/shrj/patient.xml");
+        patientService.setXmlPath("config/rjny/patient-gz.xml");
         if (patientService.processData()) {
             return SUCCESS_FLAG;
         }

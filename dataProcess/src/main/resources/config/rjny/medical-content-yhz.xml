@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--病历文书-->
+<body>
+    <item-descriptor>
+        <record type="record" name="仁济南院_硬化症_medical_content" display-column="id,patientId,groupRecordName,recordType,content"
+                where-column="status" where-value="0" where-type="int">
+            <property bean-name="id" column-name="id" data-type="string"/>
+            <property bean-name="groupRecordName" column-name="groupRecordName" data-type="string"/>
+            <property bean-name="medicalHistoryName" column-name="recordType" data-type="string"/>
+            <property bean-name="medicalContent" column-name="content" data-type="string"/>
+            <property bean-name="patientId" column-name="patientId" data-type="string" patient-prefix="shrj_"/>
+        </record>
+    </item-descriptor>
+</body>

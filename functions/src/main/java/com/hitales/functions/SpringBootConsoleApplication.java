@@ -1,5 +1,6 @@
 package com.hitales.functions;
 
+import com.hitales.functions.clean.DataClean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
@@ -10,14 +11,13 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 
 import static java.lang.System.exit;
 
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class SpringBootConsoleApplication implements CommandLineRunner {
 
     @Autowired
-    private TestMain testMain;
+    private DataClean dataClean;
 
     public static void main(String[] args) throws Exception {
-
         //disabled banner, don't want to see the spring logo
         SpringApplication app = new SpringApplication(SpringBootConsoleApplication.class);
         app.setBannerMode(Banner.Mode.OFF);
@@ -28,8 +28,7 @@ public class SpringBootConsoleApplication implements CommandLineRunner {
     // Put your logic here.
     @Override
     public void run(String... args) throws Exception {
-
-        testMain.execute();
+        dataClean.shchRestore4Lab();
         exit(0);
     }
 }

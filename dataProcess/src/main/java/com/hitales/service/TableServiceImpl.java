@@ -81,6 +81,7 @@ public class TableServiceImpl extends TableService<Map<String, Object>, Map<Stri
         JSONObject basicInfo = record.getInfo().getJSONObject("basicInfo");
         //init detail array
         List<String> names = new ArrayList<>();
+        //对于存在化验主记录同一个检验申请号对应多条记录的情况，需要特殊处理
         if (applyList.size() > 1) {
             String nameKey = null;
             for (Map<String, Object> assay : applyList) {
@@ -138,40 +139,10 @@ public class TableServiceImpl extends TableService<Map<String, Object>, Map<Stri
         if (assayList == null || assayList.isEmpty()) {
             return;
         }
-        //处理数值中文和非中文
-        if ("化验记录".equals(record.getRecordType())) {
-            for (Map<String, Object> map : assayList) {
-                String textValue = map.get("文本结果") == null ? "" : map.get("文本结果").toString();
-                String numValue = map.get("数值结果") == null ? "" : map.get("数值结果").toString();
-                String chineseRegex = "([\\u4e00-\\u9fa5]+)";
-                String nonChineseRegex = "([^\\u4e00-\\u9fa5]+)";
-                if (!StringUtils.isEmpty(textValue)) {
-                    filterValue(chineseRegex, "文本结果", textValue, map);
-                }
-                if (!StringUtils.isEmpty(numValue)) {
-                    filterValue(nonChineseRegex, "数值结果", numValue, map);
-                }
-                if (StringUtils.isEmpty(numValue) && !StringUtils.isEmpty(textValue)) {
-                    filterValue(nonChineseRegex, "数值结果", textValue, map);
-                }
-                if (StringUtils.isEmpty(textValue) && !StringUtils.isEmpty(numValue)) {
-                    filterValue(chineseRegex, "文本结果", numValue, map);
-                }
-            }
-        }
         //init info
         List<Map<String, Object>> detailArray = record.getInfo().getObject("detailArray", List.class);
         //init detail array
         detailArray.addAll(assayList);
-    }
-
-    private void filterValue(String regex, String key, String value, Map<String, Object> map) {
-        StringBuffer temp = new StringBuffer();
-        Matcher matcher = Pattern.compile(regex).matcher(value);
-        while (matcher.find()) {
-            temp.append(matcher.group(0));
-        }
-        map.put(key, temp.toString());
     }
 
     protected boolean validateRecord(Record record) {

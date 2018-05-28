@@ -122,6 +122,7 @@ $(function () {
             modleView.progressBar.hide();
         }
     };
+
     //initial
     modleView.initial();
     //bind click

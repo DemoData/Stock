@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<body>
+    <!--病人基本信息-->
+    <table name="仁济南院_干燥_patient" id-column-names="patientId" display-column="patientId,name">
+        <property bean-name="id" column-name="patientId"/>
+        <property bean-name="name" column-name="name"/>
+        <property bean-name="patientId" column-name="patientId" patient-prefix="shrj_"/>
+    </table>
+</body>

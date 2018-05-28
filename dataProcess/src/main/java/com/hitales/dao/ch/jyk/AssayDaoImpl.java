@@ -35,7 +35,7 @@ public class AssayDaoImpl extends BaseDao implements ILabDao<LabBasic,LabDetail>
     @Override
     public List<LabDetail> findArrayListByCondition(String dataSource, String... params) {
         log.debug("findAssaysByApplyId(): 查找化验报告通过检验申请号: " + params[0]);
-        String sql = "select t.`检验时间` AS 'assayTime',t.`项目名称` AS 'assayName',t.`结果正常标志` AS 'resultFlag',t.`检验结果` AS 'assayResult',t.`检验值` AS 'assayValue',t.`单位` AS 'assayUnit',t.`标本` AS 'assaySpecimen',t.`参考范围` AS 'referenceRange',t.`检验状态` AS 'assayState',t.`检验方法名称` AS 'assayMethodName' from `检验报告明细` t where t.`检验申请号`=?";
+        String sql = "select t.`检验时间` AS 'assayTime',t.`项目名称` AS 'assayName',t.`结果正常标志` AS 'resultFlag',t.`检验结果` AS 'assayResult',t.`检验值` AS 'assayValue',t.`单位` AS 'assayUnit',t.`标本` AS 'assaySpecimen',t.`参考范围` AS 'referenceRange',t.`检验状态` AS 'assayState',t.`检验方法名称` AS 'assayMethodName',t.`仪器编号` AS 'machineNo' from `检验报告明细` t where t.`检验申请号`=?";
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<LabDetail> assays = jdbcTemplate.query(sql, new BeanPropertyRowMapper(LabDetail.class), params[0]);
         return assays;

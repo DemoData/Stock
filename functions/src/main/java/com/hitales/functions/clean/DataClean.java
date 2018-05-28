@@ -1,16 +1,22 @@
 package com.hitales.functions.clean;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.support.BatchUpdateOption;
 import com.hitales.common.support.Mapping;
 import com.hitales.common.support.MappingMatch;
 import com.hitales.common.support.MongoOperations;
+import com.hitales.common.util.TimeUtil;
+import com.hitales.entity.LabDetail;
 import com.hitales.entity.Patient;
 import com.hitales.entity.Record;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.dao.DataAccessException;
@@ -18,8 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.io.BufferedWriter;
@@ -33,11 +42,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@Component
 public class DataClean {
 
     private static MongoOperations mongoOperations;
 
     private static JdbcTemplate jdbcTemplate;
+
+    private static String EMPTY_FLAG = "";
 
     static {
         MongoProperties hrsProperties = new MongoProperties();
@@ -57,42 +69,146 @@ public class DataClean {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.haha();
-    }
+        dataClean.shchRestore4Lab();
+    }*/
 
-    public void haha() {
+    private Integer index = 1;
+
+    public void shchRestore4Lab() {
         int count = 0;
         int result = 0;
+        int pageNum = 0;
+        boolean isFinished = false;
         List<BatchUpdateOption> options = new ArrayList<>();
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
-        query.addCriteria(Criteria.where("source").is("病历文书"));
-        query.addCriteria(Criteria.where("groupRecordName").regex("^.{11,}$"));
-        List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
-        for (JSONObject jsonObject : records) {
-            String rid = jsonObject.getString("_id");
-            String groupRecordName = jsonObject.getString("groupRecordName");
-            groupRecordName = groupRecordName.replace("30000", "3000");
-            BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
-            bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
-            bathUpdateOption.setUpdate(Update.update("groupRecordName", groupRecordName));
-            bathUpdateOption.setMulti(true);
-            bathUpdateOption.setUpsert(false);
-            options.add(bathUpdateOption);
+        query.addCriteria(Criteria.where("batchNo").is("shch20180309"));
+        query.addCriteria(Criteria.where("subRecordType").is("化验"));
 
-            count++;
-            //超过1000个执行一次更新
-            if (options.size() >= 1000) {
-                result += updateStart(options, "Record");
+        while(!isFinished){
+            query.with(new PageRequest(pageNum, 5000));
+            List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
+            log.info(">>>>>>>>> found jsonObjects:" + records.size());
+            if (records.size() < 5000) {
+                isFinished = true;
             }
+            for (JSONObject record : records) {
+                String rid = record.getString("_id");
+                String sourceId = record.getString("sourceId");
+                StringBuilder sql = new StringBuilder("select t.`检验时间` AS 'assayTime',t.`项目名称` AS 'assayName',t.`结果正常标志` AS 'resultFlag',t.`检验结果` AS 'assayResult',t.`检验值` AS 'assayValue',t.`单位` AS 'assayUnit',t.`标本` AS 'assaySpecimen',t.`参考范围` AS 'referenceRange',t.`检验状态` AS 'assayState',t.`检验方法名称` AS 'assayMethodName',t.`仪器编号` AS 'machineNo' from ");
+                JSONArray odCategories = record.getJSONArray("odCategories");
+                List<LabDetail> details = null;
+                if (odCategories.contains("胰腺相关")) {
+                    sql.append("`shch_yxxg_检验报告明细` t ");
+                }
+                if (odCategories.contains("胰腺占位")) {
+                    sql.append("`shch_yxzw_检验报告明细` t ");
+                }
+                if (odCategories.contains("糖尿病相关")) {
+                    sql.append("`shch_tnb_检验报告明细` t ");
+                }
+                if (odCategories.contains("健康查体")) {
+                    sql.append("`shch_jkct_检验报告明细` t ");
+                }
+                sql.append("where t.`检验申请号`=?");
+                details = jdbcTemplate.query(sql.toString(), new BeanPropertyRowMapper(LabDetail.class), sourceId);
+                if (details == null || details.isEmpty()) {
+                    continue;
+                }
+                List<Map<String, String>> updatedArray = detailaArray2Map(details);
+                BatchUpdateOption bathUpdateOption = new BatchUpdateOption();
+                bathUpdateOption.setQuery(Query.query(Criteria.where("_id").is(rid)));
+                bathUpdateOption.setUpdate(Update.update("info.detailArray", updatedArray));
+                bathUpdateOption.setMulti(true);
+                bathUpdateOption.setUpsert(false);
+                options.add(bathUpdateOption);
+                count++;
+                //超过1000个执行一次更新
+                if (options.size() >= 1000) {
+//                result += updateStart(options, "Record");
+                }
+            }
+            if (!options.isEmpty()) {
+//            result += updateStart(options, "Record");
+            }
+            pageNum++;
+            log.info(">>>>>>>>> 页数:" + pageNum);
         }
         if (!options.isEmpty()) {
-            result += updateStart(options, "Record");
+//            result += updateStart(options, "Record");
         }
         log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
+    }
+
+    private List<Map<String, String>> detailaArray2Map(List<LabDetail> assayList) {
+        if (assayList == null || assayList.isEmpty()) {
+            return null;
+        }
+        //init info
+        List<Map<String, String>> detailArray = new ArrayList<>();
+        //init detail array
+        for (LabDetail assay : assayList) {
+            Map<String, String> map = new HashMap<>();
+            map.put(LabDetail.ColumnMapping.ASSAY_TIME.value(), assay.getAssayTime() == null ? EMPTY_FLAG : assay.getAssayTime());
+            map.put(LabDetail.ColumnMapping.ASSAY_NAME.value(), assay.getAssayName() == null ? EMPTY_FLAG : assay.getAssayName());
+            map.put(LabDetail.ColumnMapping.RESULT_FLAG.value(), assay.getResultFlag() == null ? EMPTY_FLAG : assay.getResultFlag());
+            map.put(LabDetail.ColumnMapping.ASSAY_RESULT.value(), assay.getAssayResult() == null ? EMPTY_FLAG : assay.getAssayResult());
+            map.put(LabDetail.ColumnMapping.ASSAY_VALUE.value(), assay.getAssayValue() == null ? EMPTY_FLAG : assay.getAssayValue());
+            map.put(LabDetail.ColumnMapping.ASSAY_UNIT.value(), assay.getAssayUnit() == null ? EMPTY_FLAG : assay.getAssayUnit());
+            map.put(LabDetail.ColumnMapping.ASSAY_SPECIMEN.value(), assay.getAssaySpecimen() == null ? EMPTY_FLAG : assay.getAssaySpecimen());
+            map.put(LabDetail.ColumnMapping.REFERENCE_RANGE.value(), assay.getReferenceRange() == null ? EMPTY_FLAG : assay.getReferenceRange());
+            map.put(LabDetail.ColumnMapping.ASSAY_STATE.value(), assay.getAssayState() == null ? EMPTY_FLAG : assay.getAssayState());
+            map.put(LabDetail.ColumnMapping.ASSAY_METHODNAME.value(), assay.getAssayMethodName() == null ? EMPTY_FLAG : assay.getAssayMethodName());
+            map.put(LabDetail.ColumnMapping.MACHINE_NO.value(), assay.getMachineNo() == null ? EMPTY_FLAG : assay.getMachineNo());
+            detailArray.add(map);
+        }
+        return detailArray;
+    }
+
+    private void startUpdate(Map<String, List<String>> filter) {
+        List<Object[]> updateList = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : filter.entrySet()) {
+            String str = entry.getKey();
+            StringBuilder groupRecordName = new StringBuilder();
+            //处理前缀
+            for (int i = index.toString().length(); i < 4; i++) {
+                groupRecordName.append("0");
+            }
+            groupRecordName.append(index++);
+            if (str.length() > 4 && str.contains(".")) {
+                String[] dateArray = str.split("\\.");
+                if (dateArray == null || dateArray.length == 0) {
+                    groupRecordName.append(dateArray[0]);
+                }
+                groupRecordName.append(dateArray[0]);
+                Integer month = Integer.valueOf(dateArray[1]);
+                Integer day = Integer.valueOf(dateArray[2]);
+
+                String monthValue = month < 10 ? "0" + month : month.toString();
+                String dayValue = day < 10 ? "0" + day : day.toString();
+                groupRecordName.append(monthValue).append(dayValue);
+            } else {
+                String suffix = UUID.randomUUID().toString().substring(0, 8);
+                groupRecordName.append(suffix);
+            }
+//            String[] params = {groupRecordName.toString(), entry.getValue()};
+            for (String id : entry.getValue()) {
+                String[] params = {groupRecordName.toString(), id};
+                updateList.add(params);
+            }
+            if (updateList.size() > 500) {
+                log.info(">>>>>>>>>>> updating:" + updateList.size() + " <<<<<<<<<<<<");
+                jdbcTemplate.batchUpdate("update 仁济南院_medical_content set groupRecordName=? where id=?", updateList);
+                updateList.clear();
+            }
+        }
+        if (!updateList.isEmpty()) {
+            log.info(">>>>>>>>>>> updating:" + updateList.size() + " <<<<<<<<<<<<");
+            jdbcTemplate.batchUpdate("update 仁济南院_medical_content set groupRecordName=? where id=?", updateList);
+            updateList.clear();
+        }
     }
 
     /**
@@ -109,7 +225,6 @@ public class DataClean {
             String value = bd.toPlainString();
             jdbcTemplate.update("update 仁济_patient set groupRecordName=? where id=?", value, id);
         }
-
     }
 
     /**
@@ -459,7 +574,8 @@ public class DataClean {
         List<BatchUpdateOption> options = new ArrayList<>();
         while (!isFinished) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
+//            shrj20180521，shrj20180522
+            query.addCriteria(Criteria.where("batchNo").is("shrj20180522"));
             query.addCriteria(Criteria.where("source").is("病历文书"));
 //            query.addCriteria(Criteria.where("odCategories").is("肝癌相关"));
             query.addCriteria(Criteria.where("recordType").in("入院记录", "出院记录"));
@@ -483,7 +599,7 @@ public class DataClean {
 
             for (JSONObject item : jsonObjects) {
                 JSONObject info = item.getJSONObject("info");
-//                String sourceRecordType = item.getString("sourceRecordType");
+                String sourceRecordType = item.getString("sourceRecordType");
                 String dbRecordType = item.getString("recordType");
                 String dbSubRecordType = item.getString("subRecordType");
                 if (info == null) {
@@ -500,7 +616,7 @@ public class DataClean {
                 textARS = textARS.replaceAll("[　*| *| *|\\s*]*", "");
 
                 textARS = textARS.length() > 50 ? textARS.substring(0, 50) : textARS;
-                String mappedValue = MappingMatch.getMappedValue(mapping, textARS);
+                String mappedValue = MappingMatch.getMappedValue(mapping, sourceRecordType);
 
                 String[] types = mappedValue.split("-");
 
@@ -561,7 +677,7 @@ public class DataClean {
             return;
         }
         String[] inHospital = {"现病史", "个人史", "婚育史", "月经史", "家族史", "既往史"};
-        String[] outHospital = {"治疗经过", "诊疗经过", "出院指导", "出院医嘱", "出院诊断"};
+        String[] outHospital = {"治疗经过", "诊疗经过", "出院指导", "出院医嘱", "出院诊断", "出院情况"};
 
         Pattern pattern = Pattern.compile("【【(.*?)】】");
         Matcher matcher = pattern.matcher(anchorContent);
