@@ -5,14 +5,12 @@ import com.hitales.common.support.ProgressCount;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
-import com.hitales.entity.StockInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -16,6 +16,11 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * text数据类型服务类
+ *
+ * @author aron
+ */
 @Slf4j
 public abstract class TextService<T> extends BaseService {
 

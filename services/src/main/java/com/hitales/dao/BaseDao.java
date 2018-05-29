@@ -16,6 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * DAO基类
+ *
+ * @author aron
+ */
 @Slf4j
 @PropertySource("classpath:config/dao.properties")
 public abstract class BaseDao extends GenericDao {
@@ -79,7 +84,11 @@ public abstract class BaseDao extends GenericDao {
         return jdbcTemplatePool.get(dataSource);
     }
 
+    /**
+     * 这是由于初期存在过多数据源，为了方便动态切换获取，把多个数据源放入一个pool中
+     */
     private void initialJdbcPool() {
+        //TODO:入库已规范为一个数据库,这里待优化
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_JKCT_DATASOURCE, jkctJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_YXZW_DATASOURCE, yxzwJdbcTemplate);
         jdbcTemplatePool.put(MysqlDataSourceConfig.MYSQL_TNB_DATASOURCE, tnbJdbcTemplate);
@@ -130,7 +139,7 @@ public abstract class BaseDao extends GenericDao {
     }
 
     /**
-     * 兼容以前的代码
+     * 这三个方法用于兼容以前的代码
      *
      * @param dataSource
      * @param params

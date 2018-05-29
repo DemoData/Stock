@@ -2,6 +2,11 @@ package com.hitales.service;
 
 import com.hitales.service.standard.IDataService;
 
+/**
+ * 通用服务
+ *
+ * @author aron
+ */
 public abstract class GenericService implements IDataService {
 
     public final static String EMPTY_FLAG = "";

@@ -3,11 +3,14 @@ package com.hitales.common.support;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 进度条工具
+ */
 public class ProgressCount {
     private static Map<String, Integer> progressMap = new HashMap<>();
 
     public static void putProgress(String key, Integer count) {
-        synchronized (ProgressCount.class){
+        synchronized (ProgressCount.class) {
             Integer value = progressMap.get(key);
             if (value == null || count > value) {
                 progressMap.put(key, count);

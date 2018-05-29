@@ -9,6 +9,11 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.util.List;
 
+/**
+ * 通用DAO
+ *
+ * @author aron
+ */
 @Slf4j
 public abstract class GenericDao extends MongoOperations {
     private RowMapper rowMapper;

@@ -6,17 +6,12 @@ import com.hitales.common.support.BatchUpdateOption;
 import com.hitales.common.support.Mapping;
 import com.hitales.common.support.MappingMatch;
 import com.hitales.common.support.MongoOperations;
-import com.hitales.common.util.TimeUtil;
 import com.hitales.entity.LabDetail;
 import com.hitales.entity.Patient;
-import com.hitales.entity.Record;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.dao.DataAccessException;
@@ -28,7 +23,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.io.BufferedWriter;
@@ -53,26 +47,26 @@ public class DataClean {
 
     static {
         MongoProperties hrsProperties = new MongoProperties();
-        hrsProperties.setHost("localhost");
-        hrsProperties.setPort(3718);
+        hrsProperties.setHost("dds-bp1baff8ad4002a41.mongodb.rds.aliyuncs.com");
+        hrsProperties.setPort(3717);
         hrsProperties.setDatabase("HRS-live");
         hrsProperties.setUsername("xh");
         hrsProperties.setPassword("rt0hizu{j9lzJNqi".toCharArray());
         mongoOperations = new MongoOperations(DBConnection.generateTemplate(hrsProperties));
 
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url("jdbc:mysql://localhost:3306/local?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useSSL=false");
+        dataSourceBuilder.url("jdbc:mysql://rm-bp191mn7925119b5awo.mysql.rds.aliyuncs.com:3306/rk?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&useSSL=false");
         dataSourceBuilder.username("root");
-        dataSourceBuilder.password("woshixuhu1217");
+        dataSourceBuilder.password("Yiy1health_2017");
         dataSourceBuilder.driverClassName("com.mysql.jdbc.Driver");
         DataSource dataSource = dataSourceBuilder.build();
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         DataClean dataClean = new DataClean();
         dataClean.shchRestore4Lab();
-    }*/
+    }
 
     private Integer index = 1;
 
@@ -87,7 +81,7 @@ public class DataClean {
         query.addCriteria(Criteria.where("batchNo").is("shch20180309"));
         query.addCriteria(Criteria.where("subRecordType").is("化验"));
 
-        while(!isFinished){
+        while (!isFinished) {
             query.with(new PageRequest(pageNum, 5000));
             List<JSONObject> records = mongoOperations.find(query, JSONObject.class, "Record");
             log.info(">>>>>>>>> found jsonObjects:" + records.size());
@@ -127,17 +121,17 @@ public class DataClean {
                 count++;
                 //超过1000个执行一次更新
                 if (options.size() >= 1000) {
-//                result += updateStart(options, "Record");
+                    result += updateStart(options, "Record");
                 }
             }
             if (!options.isEmpty()) {
-//            result += updateStart(options, "Record");
+                result += updateStart(options, "Record");
             }
             pageNum++;
             log.info(">>>>>>>>> 页数:" + pageNum);
         }
         if (!options.isEmpty()) {
-//            result += updateStart(options, "Record");
+            result += updateStart(options, "Record");
         }
         log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
     }

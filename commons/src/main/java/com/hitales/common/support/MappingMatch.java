@@ -33,7 +33,7 @@ public class MappingMatch {
         //其他记录
         String[] containArray = new String[]{"宣教", "清单", "报告卡", "计划", "计划", "评分", "健康教育", "全院通用", "心电图、TCD、脑电图", "病历名称",
                 "输血反应报告", "自费", "饮食-低脂普食", "输血", "镇痛记录", "高危患者", "病史摘要", "输血前评估"};
-        //TODO:改进成Object类型 然后通过哦按段类型做不同的处理方式
+        //TODO:改进成Object类型 然后通过按段类型做不同的处理方式
         subList.add(generateItem(containArray, new String[]{"查房", "病程"}, "其他", null, 2, 1));
         subList.add(generateItem(new String[]{"会诊单", "会诊记录"}, null, "会诊单", null, 2, 2));
         subList.add(generateItem(new String[]{"体温单"}, null, "体温单", null, 2, 3));
@@ -75,18 +75,8 @@ public class MappingMatch {
         bingcheng.put("subType", subList);
         subList.add(generateItem(new String[]{"ICU出室记录"}, otherArray, "ICU出室记录", null, 2, 1));
         subList.add(generateItem(new String[]{"ICU入室记录"}, otherArray, "ICU入室记录", null, 2, 2));
-//        "转出", "转入"
         subList.add(generateItem(new String[]{"病程", "查房", "危急值记录", "危急值报告", "拔管记录", "术后记录", "术后第"}, excludeArray, "病程", null, 2, 3));
         subList.add(generateItem(new String[]{"医嘱单"}, otherArray, "医嘱单", null, 2, 4));
-        //化验记录
-        /*JSONObject assay = new JSONObject();
-        subList = new ArrayList<>();
-        assay.put("type", "化验记录");
-        assay.put("level", 1);
-        assay.put("rank", 3);
-        assay.put("subType", subList);
-        subList.add(generateItem(new String[]{"微生物"}, null, "微生物", null, 2, 1));
-        subList.add(generateItem(new String[]{"化验记录"}, null, "化验", null, 2, 2));*/
         //门诊记录
         JSONObject menzhen = new JSONObject();
         subList = new ArrayList<>();
@@ -153,7 +143,6 @@ public class MappingMatch {
         mapping.add(bingcheng);
         mapping.add(chuyuan);
         mapping.add(inspection);
-//        mapping.add(assay);
         mapping.add(operate);
         mapping.add(menzhen);
         mapping.add(bingli);

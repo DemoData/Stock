@@ -36,8 +36,8 @@ public class HrsToSds {
 
     private static Long projectProcessId = System.currentTimeMillis();
     private static String date = TimeUtil.intToStandardTime(projectProcessId);
-    private static String HOST = "localhost";
-    private static Integer PORT = 3718;
+    private static String HOST = "dds-bp1baff8ad4002a41.mongodb.rds.aliyuncs.com";
+    private static Integer PORT = 3717;
     private static String USERNAME = "xh";
     private static String PASSWORD = "rt0hizu{j9lzJNqi";
 
@@ -251,9 +251,9 @@ public class HrsToSds {
 
     public void startProcess() {
         Query query = new Query();
-        query.addCriteria(Criteria.where("batchNo").is("shrj20180508"));
-        query.addCriteria(Criteria.where("recordType").is("化验记录"));
-        query.addCriteria(Criteria.where("source").is("化验"));
+        query.addCriteria(Criteria.where("batchNo").is("shch20180309"));
+        query.addCriteria(Criteria.where("subRecordType").is("化验"));
+//        query.addCriteria(Criteria.where("source").is("化验"));
         int pageNum = 0;
         boolean isFinished = false;
         List<JSONObject> msdataList = new ArrayList<>();
@@ -323,6 +323,7 @@ public class HrsToSds {
             msdataLab.add(lab);
         }
     }
+
     //处理长海胰腺的化验
     /*private void processLab(JSONObject msdata, JSONObject basicInfo, JSONArray detailArray) {
         //time
@@ -333,11 +334,12 @@ public class HrsToSds {
         for (JSONObject detailItem : detailArray.toJavaList(JSONObject.class)) {
             String labTime = detailItem.getString("化验时间") == null ? "" : detailItem.getString("化验时间");
             String reference = detailItem.getString("参考值");
-            String textValue = detailItem.getString("检验结果");
-            String numValue = detailItem.getString("检验值");
+            String textValue = detailItem.getString("定性结果");
+            String numValue = detailItem.getString("定量结果");
             String itemName = detailItem.getString("化验名称");
             String flag = detailItem.getString("异常情况");
             String unit = detailItem.getString("化验单位");
+            String machineNo = detailItem.getString("仪器编号");
             JSONObject lab = generateLab();
             lab.put("时间", StringUtils.isBlank(labTime) ? applyTime : labTime);
             lab.put("化验组样本", specimen == null ? "" : specimen);
@@ -346,6 +348,7 @@ public class HrsToSds {
             lab.put("异常", flag == null ? "" : flag);
             lab.put("数值单位", unit == null ? "" : unit);
             lab.put("参考范围", reference == null ? "" : reference);
+            lab.put("仪器编号", machineNo == null ? "" : machineNo);
 
             formattResultText(lab, textValue, numValue);
 
@@ -408,6 +411,9 @@ public class HrsToSds {
             return;
         }
         StringBuilder numberValue = new StringBuilder("");
+        //去掉已复，已复查
+        textValue = textValue.replace("(已复查)", "").replace("(已复)", "");
+        textValue = textValue.replace("已复查", "").replace("已复", "");
         String labTextValue = textValue;
         //筛选出只包含中文，数字，小数点，括号，空格的
         String regex = "[ (（)）E.0-9\\u4E00-\\u9FA5]+$";
@@ -430,6 +436,7 @@ public class HrsToSds {
             //去掉中英文括号
             labTextValue = valueWithoutNum.replaceAll("[ (（)）]*", "");
         }
+        //处理负数
         if ("".equals(numberValue.toString())) {
             String negativRregex = "^[-]?[0-9.]+$";
             Matcher nMatcher = Pattern.compile(negativRregex).matcher(textValue);
@@ -437,7 +444,23 @@ public class HrsToSds {
                 numberValue.append(nMatcher.group(0));
                 labTextValue = nMatcher.replaceAll("");
             }
+            //单独处理数字加ml
+            String mlRegex = "(^[-]?[0-9.]+)ml";
+            Matcher mlMatcher = Pattern.compile(mlRegex).matcher(textValue);
+            if (mlMatcher.matches()) {
+                numberValue.append(textValue.substring(0, textValue.indexOf("ml")));
+                labTextValue = "";
+                lab.put("数值单位", "ml");
+            }
+            //单独处理数字加溶血+
+            String rxRegex = "(^[-]?[0-9.]+)溶血[\\+]*";
+            Matcher rxMatcher = Pattern.compile(rxRegex).matcher(textValue);
+            if (rxMatcher.matches()) {
+                numberValue.append(textValue.substring(0, textValue.indexOf("溶血")));
+                labTextValue = textValue.substring(textValue.indexOf("溶血"));
+            }
         }
+
         lab.put("数值", numberValue.toString());
         lab.put("化验定性结果", labTextValue);
     }
@@ -491,7 +514,7 @@ public class HrsToSds {
         msdata.put("hospitalId", hospitalId);
         msdata.put("recordType", recordType);
         msdata.put("format", format);
-        msdata.put("SDS_Version", "V1.0.0");
+        msdata.put("SDS_Version", "V2.0.0");
     }
 
 }

@@ -12,6 +12,11 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+/**
+ * table数据类型服务类
+ *
+ * @author aron
+ */
 @Slf4j
 public abstract class TableService<Basic, Sub> extends BaseService {
 
@@ -71,12 +76,24 @@ public abstract class TableService<Basic, Sub> extends BaseService {
         log.info(">>>>>>>>>>>total inserted records: " + count + " from " + dataSource);
     }
 
+    /**
+     * 后续处理
+     *
+     * @param record
+     * @param jsonList
+     */
     private void postProcess(Record record, List<JSONObject> jsonList) {
         JSONObject jsonObject = bean2Json(record);
         jsonObject.put("_id", ObjectId.get().toString());
         jsonList.add(jsonObject);
     }
 
+    /**
+     * 初始化操作
+     *
+     * @param record
+     * @param dataSource
+     */
     private void initial(Record record, String dataSource) {
         initRecordBasicColumn(record);
 

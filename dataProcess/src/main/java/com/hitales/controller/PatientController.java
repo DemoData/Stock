@@ -3,7 +3,6 @@ package com.hitales.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.hitales.common.config.MongoDataSourceConfig;
 import com.hitales.common.support.ProgressCount;
-import com.hitales.entity.StockInfo;
 import com.hitales.service.standard.IDataService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +59,11 @@ public class PatientController {
     @ResponseBody
     public String processPatientWithoutParam() {
         StockInfo basicInfo = new StockInfo();
-        basicInfo.setHospitalId("57b1e21fd897cd373ec7a117");
-        basicInfo.setBatchNo("20180521");
-        basicInfo.setPrefix("shrj");
+        basicInfo.setHospitalId("5ad86cb8acc162a73ee74f16");
+        basicInfo.setBatchNo("20180423");
+        basicInfo.setPrefix("shly");
         patientService.setBasicInfo(basicInfo);
-        patientService.setXmlPath("config/rjny/patient-gz.xml");
+        patientService.setXmlPath("config/shly/patient.xml");
         if (patientService.processData()) {
             return SUCCESS_FLAG;
         }

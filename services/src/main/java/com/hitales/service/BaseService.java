@@ -11,6 +11,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 服务基类
+ *
+ * @author aron
+ */
 @Slf4j
 @PropertySource("classpath:config/service.properties")
 public abstract class BaseService extends GenericService {
@@ -19,8 +24,13 @@ public abstract class BaseService extends GenericService {
     private int pageSize;
     @Value("${datasource.list}")
     private String dataSourceList;
-
+    /**
+     * record基本信息
+     */
     private Object basicInfo;
+    /**
+     * 配置文件路径
+     */
     private String xmlPath;
 
     /**
@@ -30,12 +40,18 @@ public abstract class BaseService extends GenericService {
 
     private ExecutorService threadPool;
 
+    /**
+     * 多线程并行处理数据
+     *
+     * @return
+     */
     @Override
     public boolean processData() {
+        //初始化操作,例如加载xml配置文件
         initProcess();
         try {
             /*
-             * 一个服务提供一个线程池,当前线程池关闭后无法再次使用
+             * 一个服务提供一个线程池,每个线程池最大运行线程数为8,当前服务结束后关闭线程池
              */
             threadPool = Executors.newFixedThreadPool(8);
             String dataSourceList = getDataSourceList();
@@ -50,7 +66,7 @@ public abstract class BaseService extends GenericService {
                 // 超时的时候向线程池中所有的线程发出中断(interrupted)
                 threadPool.shutdownNow();
             }
-            //清空
+            //清空，便于GC回收
             threadPool = null;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -60,7 +76,7 @@ public abstract class BaseService extends GenericService {
         return true;
     }
 
-    protected void initProcess(){
+    protected void initProcess() {
 
     }
 
@@ -83,6 +99,12 @@ public abstract class BaseService extends GenericService {
         return (JSONObject) JSONObject.toJSON(entity);
     }
 
+    /**
+     * 根据数据量拆分为对应线程总数
+     *
+     * @param count
+     * @param dataSource
+     */
     private void executeByMultiThread(Integer count, String dataSource) {
         if (count == 0) {
             log.error("executeByMultiThread(): count is 0");
@@ -106,10 +128,12 @@ public abstract class BaseService extends GenericService {
 
     /**
      * 通过数据源获取OdCategory
+     * 注：已弃用，病种信息属于基本信息，现已转由basicInfo处理
      *
      * @param dataSource
      * @return
      */
+    @Deprecated
     protected String getOdCategory(String dataSource) {
         String odCategorie = EMPTY_FLAG;
         if (MysqlDataSourceConfig.MYSQL_XZDM_DATASOURCE.equals(dataSource)) {
@@ -136,8 +160,21 @@ public abstract class BaseService extends GenericService {
         return odCategorie;
     }
 
+    /**
+     * 数据处理行为方法
+     *
+     * @param dataSource
+     * @param startPage
+     * @param endPage
+     */
     protected abstract void runStart(String dataSource, Integer startPage, Integer endPage);
 
+    /**
+     * 获取数据量
+     *
+     * @param dataSource
+     * @return
+     */
     protected abstract Integer getCount(String dataSource);
 
     public int getPageSize() {
@@ -173,6 +210,9 @@ public abstract class BaseService extends GenericService {
         this.xmlPath = xmlPath;
     }
 
+    /**
+     * 线程内部类
+     */
     class storageRunnable implements Runnable {
         private Integer startPage;
         private Integer endPage;
@@ -190,14 +230,4 @@ public abstract class BaseService extends GenericService {
         }
     }
 
-    /*private static class ThreadPool {
-        public static ExecutorService INSTANCE = Executors.newFixedThreadPool(8);
-
-        private ThreadPool() {
-        }
-
-        public static ExecutorService getInstance() {
-            return ThreadPool.INSTANCE;
-        }
-    }*/
 }

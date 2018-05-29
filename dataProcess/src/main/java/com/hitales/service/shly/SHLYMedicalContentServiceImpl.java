@@ -14,7 +14,6 @@ import java.util.Map;
 @Service("shlyMedicalContentService")
 public class SHLYMedicalContentServiceImpl extends MedicalContentServiceImpl {
 
-
     @Override
     protected void customProcess(Record record, MedicalHistory entity, Map<String, List<String>> orgOdCatCaches, Map<String, String> patientCaches, String dataSource) {
         //通過mapping set对应的类型
