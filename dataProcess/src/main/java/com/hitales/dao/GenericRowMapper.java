@@ -13,6 +13,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 处理数据通用mapper
+ *
+ * @param <T>
+ * @author aron
+ */
 public abstract class GenericRowMapper<T> implements RowMapper<T> {
 
     public static String RECORD = "record";
