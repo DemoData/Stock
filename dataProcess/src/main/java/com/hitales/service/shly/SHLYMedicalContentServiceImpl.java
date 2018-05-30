@@ -24,7 +24,7 @@ public class SHLYMedicalContentServiceImpl extends MedicalContentServiceImpl {
         if (orgOdCatCaches.isEmpty() || StringUtils.isEmpty(orgOdCatCaches.get(groupRecordName))) {
             //====上海六院病历文书特殊逻辑处理===
             List<Map<String, Object>> icdList = getMedicalHistoryDao().getJdbcTemplate(dataSource).queryForList("select ID from shly_in_patient_visit_record_20180423 where AdmissionNumber=? group by AdmissionNumber,ID", groupRecordName);
-            if (icdList != null || !icdList.isEmpty()) {
+            if (icdList != null && !icdList.isEmpty()) {
                 String encounterID = icdList.get(0).get("ID").toString();
                 List<String> orgOdCategories = getMedicalHistoryDao().findOrgOdCatByGroupRecordName(dataSource, encounterID);
                 if (orgOdCategories != null && !orgOdCategories.isEmpty()) {

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -34,11 +35,11 @@ public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Obj
     private String examDetailTable;
 
     protected void loadXml() {
-        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
+        reset();
+        InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(super.getXmlPath());
         SAXReader reader = new SAXReader();
-        File xml = new File(path);
         try {
-            Element rootElement = reader.read(xml).getRootElement();
+            Element rootElement = reader.read(resourceStream).getRootElement();
             Element descriptor = rootElement.element("item-descriptor");
             List<Element> queryList = rootElement.element("queryList").elements();
             for (Element query : queryList) {
@@ -65,6 +66,15 @@ public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Obj
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void reset() {
+        examReport = null;
+        examDetail = null;
+        diagnosis = null;
+        groupRecordName = null;
+        examReportTable = null;
+        examDetailTable = null;
     }
 
     @Override
@@ -100,7 +110,11 @@ public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Obj
     protected <T> RowMapper<T> generateRowMapper() {
         if (getRowMapper() == null) {
             setRowMapper(new ExamRowMapper(examReport, examDetail));
+            return getRowMapper();
         }
+        ExamRowMapper examRowMapper = (ExamRowMapper) getRowMapper();
+        examRowMapper.setElementMain(examReport);
+        examRowMapper.setElementDetail(examDetail);
         return getRowMapper();
     }
 
@@ -234,6 +248,14 @@ public class HalfTextDaoImpl extends BaseDao implements IExamDao<Map<String, Obj
                 }
                 dataMap.put(displayName, value == null ? "" : value);
             }
+        }
+
+        public void setElementMain(Element elementMain) {
+            this.elementMain = elementMain;
+        }
+
+        public void setElementDetail(Element elementDetail) {
+            this.elementDetail = elementDetail;
         }
     }
 

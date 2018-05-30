@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -38,11 +40,12 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     private String idColumn;
 
     protected void loadXml() {
-        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
+        reset();
+        //由于是通过jar包启动，需要使用流的形式读取
+        InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(super.getXmlPath());
         SAXReader reader = new SAXReader();
-        File xml = new File(path);
         try {
-            Document document = reader.read(xml);
+            Document document = reader.read(resourceStream);
             table = document.getRootElement().element("table");
             tableName = table.attribute("name").getValue();
             idColumn = table.attribute("id-column-names").getValue();
@@ -50,6 +53,13 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
         } catch (DocumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void reset() {
+        table = null;
+        tableName = null;
+        displayCol = null;
+        idColumn = null;
     }
 
     @Override
@@ -120,7 +130,10 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
     protected RowMapper<Patient> generateRowMapper() {
         if (getRowMapper() == null) {
             setRowMapper(new PatientRowMapper(table));
+            return getRowMapper();
         }
+        PatientRowMapper rowMapper = (PatientRowMapper) getRowMapper();
+        rowMapper.setElement(table);
         return getRowMapper();
     }
 
@@ -129,6 +142,10 @@ public class PatientDaoImpl extends BaseDao implements IPatientDao {
 
         public PatientRowMapper(Element table) {
             this.element = table;
+        }
+
+        public void setElement(Element element) {
+            this.element = element;
         }
 
         @Override

@@ -22,6 +22,7 @@ public class MedicalHistory {
     private String orgOdCategories;//病种
     private String mapping;//病历名称类型mapping
 
+    @Deprecated
     public enum ColumnMapping {
         GROUP_RECORD_NAME("一次就诊号"),
         MEDICAL_CONTENT("更新内容"),

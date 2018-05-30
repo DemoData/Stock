@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -42,11 +43,11 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
     private String labDetailTable;
 
     protected void loadXml() {
-        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
+        reset();
+        InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(super.getXmlPath());
         SAXReader reader = new SAXReader();
-        File xml = new File(path);
         try {
-            Element rootElement = reader.read(xml).getRootElement();
+            Element rootElement = reader.read(resourceStream).getRootElement();
             Element descriptor = rootElement.element("item-descriptor");
             List<Element> queryList = rootElement.element("queryList").elements();
             for (Element query : queryList) {
@@ -58,7 +59,7 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
                     groupRecordName = query;
                 }
             }
-            List<Element> tables = descriptor.elements("record");
+            List<Element> tables = descriptor.elements("table");
             for (Element tableElement : tables) {
                 String tableType = tableElement.attribute("type").getValue();
                 if ("primary".equals(tableType)) {
@@ -79,6 +80,19 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
         }
     }
 
+    private void reset() {
+        record = null;
+        labBasic = null;
+        labDetail = null;
+        diagnosis = null;
+        groupRecordName = null;
+        tableName = null;
+        groupCol = null;
+        displayCol = null;
+        labBasicTable = null;
+        labDetailTable = null;
+    }
+
     @Override
     public Integer getCount(String dataSource) {
         super.getCount(dataSource);
@@ -93,7 +107,7 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
     @Override
     public List<Map<String, Object>> findArrayListByCondition(String dataSource, String... params) {
         log.debug("findArrayListByCondition(): 查找化验报告通过: " + params[0]);
-        String conditionCol = labDetail.attribute("condition-column").getValue();
+        String conditionCol = labDetail.attribute("id-column-names").getValue();
         List<Element> elements = labDetail.elements();
         StringBuffer colNames = new StringBuffer();
         for (Element element : elements) {
@@ -109,7 +123,7 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
 
     @Override
     public List<Map<String, Object>> findBasicArrayByCondition(String dataSource, String applyId) {
-        String conditionCol = labBasic.attribute("condition-column").getValue();
+        String conditionCol = labBasic.attribute("id-column-names") == null ? "" : labBasic.attribute("id-column-names").getValue();
         List<Element> elements = labBasic.elements();
         StringBuffer colNames = new StringBuffer();
         for (Element element : elements) {
@@ -118,6 +132,7 @@ public class LabDaoImpl extends BaseDao implements ILabDao<Map<String, Object>, 
         }
         String columns = colNames.substring(0, colNames.length() - 1);
         String sql = "select " + columns + " from " + labBasicTable + " where " + conditionCol + "=?";
+
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dataSource);
         List<Map<String, Object>> assays = jdbcTemplate.query(sql, new LabRowMapper(labBasic), applyId);
         return assays;

@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -37,11 +38,11 @@ public class TableDaoImpl extends BaseDao implements IAdviceDao<Map<String, Obje
     private String detailTableName;
 
     protected void loadXml() {
-        String path = this.getClass().getClassLoader().getResource(super.getXmlPath()).getPath();
+        reset();
+        InputStream resourceStream = this.getClass().getClassLoader().getResourceAsStream(super.getXmlPath());
         SAXReader reader = new SAXReader();
-        File xml = new File(path);
         try {
-            Element rootElement = reader.read(xml).getRootElement();
+            Element rootElement = reader.read(resourceStream).getRootElement();
             Element descriptor = rootElement.element("item-descriptor");
             List<Element> queryList = rootElement.element("queryList").elements();
             if (queryList == null) queryList = Collections.emptyList();
@@ -72,6 +73,16 @@ public class TableDaoImpl extends BaseDao implements IAdviceDao<Map<String, Obje
         }
     }
 
+    private void reset() {
+        record = null;
+        basicTable = null;
+        detailTable = null;
+        diagnosis = null;
+        groupRecordName = null;
+        basicTableName = null;
+        detailTableName = null;
+    }
+
     @Override
     protected String generateQuerySql() {
         if (record == null) {
@@ -87,7 +98,10 @@ public class TableDaoImpl extends BaseDao implements IAdviceDao<Map<String, Obje
     protected <T> RowMapper<T> generateRowMapper() {
         if (getRowMapper() == null) {
             setRowMapper(new RecordRowMapper(record));
+            return getRowMapper();
         }
+        RecordRowMapper rowMapper = (RecordRowMapper) getRowMapper();
+        rowMapper.setElement(record);
         return getRowMapper();
     }
 
@@ -203,6 +217,10 @@ public class TableDaoImpl extends BaseDao implements IAdviceDao<Map<String, Obje
 
     class RecordRowMapper extends GenericRowMapper<Record> {
         private Element element;
+
+        public void setElement(Element element) {
+            this.element = element;
+        }
 
         public RecordRowMapper(Element pElement) {
             this.element = pElement;

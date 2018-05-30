@@ -1,6 +1,7 @@
 package com.hitales.functions;
 
 import com.hitales.functions.clean.DataClean;
+import com.hitales.functions.clean.HrsToSds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +16,7 @@ import static java.lang.System.exit;
 public class SpringBootConsoleApplication implements CommandLineRunner {
 
     @Autowired
-    private DataClean dataClean;
+    private HrsToSds function;
 
     public static void main(String[] args) throws Exception {
         //disabled banner, don't want to see the spring logo
@@ -28,7 +29,7 @@ public class SpringBootConsoleApplication implements CommandLineRunner {
     // Put your logic here.
     @Override
     public void run(String... args) throws Exception {
-        dataClean.shchRestore4Lab();
+        function.startProcess();
         exit(0);
     }
 }

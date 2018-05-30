@@ -5,6 +5,7 @@ import com.hitales.common.support.ProgressCount;
 import com.hitales.common.util.TimeUtil;
 import com.hitales.dao.standard.IPatientDao;
 import com.hitales.entity.Patient;
+import com.hitales.entity.StockInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

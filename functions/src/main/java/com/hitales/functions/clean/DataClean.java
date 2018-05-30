@@ -65,12 +65,12 @@ public class DataClean {
 
     public static void main(String[] args) {
         DataClean dataClean = new DataClean();
-        dataClean.shchRestore4Lab();
+//        dataClean.shchRestore4Lab();
     }
 
     private Integer index = 1;
 
-    public void shchRestore4Lab() {
+    /*public void shchRestore4Lab() {
         int count = 0;
         int result = 0;
         int pageNum = 0;
@@ -134,32 +134,7 @@ public class DataClean {
             result += updateStart(options, "Record");
         }
         log.info(">>>>>>>>>>>Done," + count + ",effected:" + result);
-    }
-
-    private List<Map<String, String>> detailaArray2Map(List<LabDetail> assayList) {
-        if (assayList == null || assayList.isEmpty()) {
-            return null;
-        }
-        //init info
-        List<Map<String, String>> detailArray = new ArrayList<>();
-        //init detail array
-        for (LabDetail assay : assayList) {
-            Map<String, String> map = new HashMap<>();
-            map.put(LabDetail.ColumnMapping.ASSAY_TIME.value(), assay.getAssayTime() == null ? EMPTY_FLAG : assay.getAssayTime());
-            map.put(LabDetail.ColumnMapping.ASSAY_NAME.value(), assay.getAssayName() == null ? EMPTY_FLAG : assay.getAssayName());
-            map.put(LabDetail.ColumnMapping.RESULT_FLAG.value(), assay.getResultFlag() == null ? EMPTY_FLAG : assay.getResultFlag());
-            map.put(LabDetail.ColumnMapping.ASSAY_RESULT.value(), assay.getAssayResult() == null ? EMPTY_FLAG : assay.getAssayResult());
-            map.put(LabDetail.ColumnMapping.ASSAY_VALUE.value(), assay.getAssayValue() == null ? EMPTY_FLAG : assay.getAssayValue());
-            map.put(LabDetail.ColumnMapping.ASSAY_UNIT.value(), assay.getAssayUnit() == null ? EMPTY_FLAG : assay.getAssayUnit());
-            map.put(LabDetail.ColumnMapping.ASSAY_SPECIMEN.value(), assay.getAssaySpecimen() == null ? EMPTY_FLAG : assay.getAssaySpecimen());
-            map.put(LabDetail.ColumnMapping.REFERENCE_RANGE.value(), assay.getReferenceRange() == null ? EMPTY_FLAG : assay.getReferenceRange());
-            map.put(LabDetail.ColumnMapping.ASSAY_STATE.value(), assay.getAssayState() == null ? EMPTY_FLAG : assay.getAssayState());
-            map.put(LabDetail.ColumnMapping.ASSAY_METHODNAME.value(), assay.getAssayMethodName() == null ? EMPTY_FLAG : assay.getAssayMethodName());
-            map.put(LabDetail.ColumnMapping.MACHINE_NO.value(), assay.getMachineNo() == null ? EMPTY_FLAG : assay.getMachineNo());
-            detailArray.add(map);
-        }
-        return detailArray;
-    }
+    }*/
 
     private void startUpdate(Map<String, List<String>> filter) {
         List<Object[]> updateList = new ArrayList<>();
