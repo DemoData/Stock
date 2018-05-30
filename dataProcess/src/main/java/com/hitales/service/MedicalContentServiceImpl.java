@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author aron
+ */
 @Slf4j
 @Service("medicalContentService")
 public class MedicalContentServiceImpl extends TextService<MedicalHistory> {

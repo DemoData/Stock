@@ -15,6 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author aron
+ */
 @Slf4j
 @Service("textService")
 public class HalfTextServiceImpl extends TextService<Map<String, Object>> {
