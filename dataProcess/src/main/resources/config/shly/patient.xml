@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <body>
-    <table name="shly_patient_20180423" group-column="PatientNo" display-column="PatientNo,SexName,PatientName,ContactAdd,MarriageName,NationName,Career,DateOfBirth">
+    <table name="六院_patient" group-column="PatientNo" id-column-names="PatientNo" display-column="PatientNo,SexName,PatientName,ContactAdd,MarriageName,NationName,Career,DateOfBirth">
         <property bean-name="id" column-name="PatientNo" />
         <property bean-name="patientId" column-name="PatientNo" patient-prefix="shly_"/>
         <property bean-name="sex" column-name="SexName" />
