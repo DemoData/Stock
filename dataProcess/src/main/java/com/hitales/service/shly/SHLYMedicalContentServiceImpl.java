@@ -1,5 +1,7 @@
 package com.hitales.service.shly;
 
+import com.alibaba.fastjson.JSONObject;
+import com.hitales.common.support.TextFormatter;
 import com.hitales.entity.MedicalHistory;
 import com.hitales.entity.Record;
 import com.hitales.service.MedicalContentServiceImpl;
@@ -44,6 +46,20 @@ public class SHLYMedicalContentServiceImpl extends MedicalContentServiceImpl {
             }
         }
         record.setPatientId(patientCaches.get(groupRecordName) == null ? "" : patientCaches.get(groupRecordName));
+    }
+
+    protected void putText2Record(MedicalHistory medicalHistory, Record record) {
+        JSONObject info = record.getInfo();
+        //调用提供的方法得到锚点文本
+        String medicalContent = medicalHistory.getMedicalContent();
+        if (StringUtils.isEmpty(medicalContent)) {
+            log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
+        }
+        info.put(TextFormatter.TEXT, medicalContent);
+
+        String temp = medicalContent.replaceAll("【【", "");
+        String textARS = temp.replaceAll("】】", "");
+        info.put(TextFormatter.TEXT_ARS, textARS);
     }
 
 

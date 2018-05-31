@@ -106,14 +106,9 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
         if (StringUtils.isEmpty(medicalContent)) {
             log.error("!!!! 病历内容为空 , id : " + medicalHistory.getId() + "!!!!");
         }
+        info.put(TextFormatter.TEXT_ARS, medicalContent);
         String text = TextFormatter.formatTextByAnchaor(medicalContent);
         info.put(TextFormatter.TEXT, text);
-
-        /*String temp = medicalContent.replaceAll("【【", "");
-        String textARS = temp.replaceAll("】】", "");*/
-        info.put(TextFormatter.TEXT_ARS, medicalContent);
-
-//        anchorMatch(medicalContent, record);
     }
 
     protected void setRecordType(Record record, MedicalHistory medicalHistory) {

@@ -88,7 +88,7 @@ public abstract class GenericRowMapper<T> implements RowMapper<T> {
             if (StringUtils.isEmpty(value)) {
                 value = columnElement.attribute("default-value") == null ? "" : columnElement.attribute("default-value").getValue();
             }
-            dataMap.put(keyName, value == null ? "" : value);
+            dataMap.put(keyName, value == null || "NULL".equals(value) ? "" : value);
         }
     }
 }
