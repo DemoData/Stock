@@ -133,6 +133,9 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
             log.error("!!!!!!!!!!!! mapping value is invalid , id : " + medicalHistory.getId() + "!!!!!!!!!!");
             return;
         }
+        //入出院锚点类型过滤
+//        anchorMatch(record.getInfo().getString("text"), record.getRecordType(), record.getSubRecordType(), record.getId(), types);
+
         record.setRecordType(types[0]);
         record.setSubRecordType(types[1]);
     }
@@ -159,17 +162,20 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
     }
 
     /**
-     * 锚点匹配操作，目前只对出入院做处理
+     * 锚点匹配操作，目前只对入院做处理
      *
      * @param anchorContent
-     * @param record
+     * @param dbRecordType
+     * @param dbSubRecordType
+     * @param id
+     * @param types
      */
-    protected void anchorMatch(String anchorContent, Record record) {
-        if (!("入院记录".equals(record.getRecordType()) || "出院记录".equals(record.getRecordType()))) {
+    private void anchorMatch(String anchorContent, String dbRecordType, String dbSubRecordType, String id, String[] types) {
+        if (!("入院记录".equals(types[0]) || "出院记录".equals(types[0]))) {
             return;
         }
-        String[] inHospital = {"现病史", "个人史", "婚育史", "月经史", "家族史"};
-        String[] outHospital = {"治疗经过", "诊疗经过", "出院指导", "出院医嘱", "出院诊断"};
+        String[] inHospital = {"现病史", "个人史", "婚育史", "月经史", "家族史", "既往史"};
+        String[] outHospital = {"治疗经过", "诊疗经过", "出院指导", "出院医嘱", "出院诊断", "出院情况"};
 
         Pattern pattern = Pattern.compile("【【(.*?)】】");
         Matcher matcher = pattern.matcher(anchorContent);
@@ -186,6 +192,7 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
             }
             anchors.put(matcher.group(1), null);
         }
+
         int inCount = 0;
         int outCount = 0;
         for (String in : inHospital) {
@@ -199,46 +206,43 @@ public class MedicalContentServiceImpl extends TextService<MedicalHistory> {
             }
         }
         boolean matched = false;
-        if ("入院记录".equals(record.getRecordType())) {
+        if ("入院记录".equals(types[0])) {
             if (inCount >= 2) {
                 matched = true;
-            }
-            if (inCount < 2 && outCount >= 2) {
+            } else if (inCount < 2 && outCount >= 2) {
                 matched = true;
-                log.info("匹配锚点个数为：" + inCount + "，修改为出院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
-                record.setRecordType("出院记录");
+                log.info("匹配锚点个数为：" + inCount + "，修改为出院记录,原始类型:" + dbRecordType + ",id:" + id);
+                types[0] = "出院记录";
                 if (anchorContent.contains("死亡时间")) {
-                    record.setSubRecordType("死亡记录");
+                    types[1] = "死亡记录";
                 } else if (anchorContent.contains("出院小结")) {
-                    record.setSubRecordType("出院小结");
+                    types[1] = "出院小结";
                 } else {
-                    record.setSubRecordType("出院记录");
+                    types[1] = "出院记录";
                 }
             }
         }
-        if ("出院记录".equals(record.getRecordType())) {
+        if ("出院记录".equals(types[0])) {
             if (outCount >= 2) {
                 matched = true;
-            }
-            if (outCount < 2 && inCount >= 2) {
+            } else if (outCount < 2 && inCount >= 2) {
                 matched = true;
-                log.info("匹配锚点个数为：" + outCount + "，修改为入院记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
-                record.setRecordType("入院记录");
+                log.info("匹配锚点个数为：" + outCount + "，修改为入院记录,sourceRecordType:" + dbRecordType + ",id:" + id);
+                types[0] = "入院记录";
 
                 if (anchorContent.contains("小时内入出院")) {
-                    record.setSubRecordType("24小时内入出院");
+                    types[1] = "24小时内入出院";
                 } else if (anchorContent.contains("病案首页")) {
-                    record.setSubRecordType("病案首页");
+                    types[1] = "病案首页";
                 } else {
-                    record.setSubRecordType("入院记录");
+                    types[1] = "入院记录";
                 }
             }
         }
-        /*if (!matched) {
-            log.info("沒有匹配修改为其他记录,sourceRecordType:" + record.getSourceRecordType() + ",id:" + record.getSourceId());
-            record.setRecordType("其他记录");
-            record.setSubRecordType("其他");
-        }*/
+        if (!matched) {
+            types[0] = dbRecordType;
+            types[1] = dbSubRecordType;
+        }
     }
 
     public IMedicalHistoryDao getMedicalHistoryDao() {
